@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         
+    <modelVersion>4.0.0</modelVersion>
+    
+    <groupId>com.riskmetrics.sapon</groupId>
+    <artifactId>sapon-parent</artifactId>
+    <version>SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>Sapon API</name>
+    <description>Parent pom for Sapon projects.</description>
+
+    <dependencyManagement>
+        <!-- 
+             Dependencies that will live in the same classloader when working
+             with Sapon.  If you're also going to live in this classloader, 
+             try not to introduce any dependencies that override or otherwise 
+             conflict with anything in here.
+             
+             List in alphabetical order (by groupId, then by artifactId). 
+             If a dependency should be out of order for any reason, or if 
+             there is any additional metadata needed besides groupId, 
+             artifactId, type, or version, please leave an explanatory 
+             comment.     
+        -->     
+        <dependencies>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>addressing</artifactId>
+                <type>mar</type>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>axiom-api</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>axiom-dom</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>axiom-impl</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>                     
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>axis2-kernel</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>axis2-mtompolicy</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency> 
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>axis2-transport-base</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>mex</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>neethi</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>            
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>rampart-policy</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>rampart-trust</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency> 
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>synapse-commons</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>synapse-core</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency> 
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>1.4</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-fileupload</groupId>
+                <artifactId>commons-fileupload</artifactId>
+                <version>1.2.1</version>
+            </dependency>  
+            <dependency>
+                <!-- Can we replace with httpcomponents:httpclient? -->
+                <groupId>commons-httpclient</groupId>
+                <artifactId>commons-httpclient</artifactId>
+                <version>3.1</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>1.4</version>
+            </dependency>                  
+            <dependency>
+                <groupId>commons-logging</groupId>
+                <artifactId>commons-logging</artifactId>
+                <version>1.1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.mail</groupId>
+                <artifactId>mail</artifactId>
+                <version>1.4</version>
+            </dependency>
+            <dependency>
+                <!-- Can we work to get rid of this? -->
+                <groupId>javax.servlet</groupId>
+                <artifactId>servlet-api</artifactId>
+                <version>2.4</version>
+                <!-- Any WARs built will not want this included -->
+                <scope>provided</scope>
+            </dependency> 
+            <dependency>
+                <!-- Can we work to get rid of this? -->
+                <groupId>jaxen</groupId>
+                <artifactId>jaxen</artifactId>
+                <version>1.1.1</version>
+            </dependency>              
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpcore</artifactId>
+                <version>4.0.1</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.santuario</groupId>
+                <artifactId>xmlsec</artifactId>
+                <version>1.4.3</version>
+            </dependency>                                
+            <dependency>
+                <groupId>org.apache.ws.commons.schema</groupId>
+                <artifactId>XmlSchema</artifactId>
+                <version>1.4.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.ws.security</groupId>
+                <artifactId>wss4j</artifactId>
+                <version>1.5.8</version>
+            </dependency>
+            <dependency>
+                <groupId>org.opensaml</groupId>
+                <artifactId>opensaml</artifactId>
+                <!-- Can we upgrade to 2.2.3? -->
+                <version>1.1</version>
+            </dependency>
+            <dependency>
+                <groupId>wsdl4j</groupId>
+                <artifactId>wsdl4j</artifactId>
+                <version>1.6.2</version>
+            </dependency>
+            <dependency>
+                <groupId>xml-apis</groupId>
+                <artifactId>xml-apis</artifactId>
+                <version>1.3.04</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    
+    <dependencies>
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.7</version>
+            <scope>test</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>1.2</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.6</source>
+                    <target>1.6</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <!-- Build and attach source jars -->
+                <artifactId>maven-source-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <attach>true</attach>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

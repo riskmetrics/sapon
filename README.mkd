@@ -1,0 +1,90 @@
+Sapon
+================================================================================
+
+Sapon is a minimalist fork of selected Apache webservices projects, most
+notably Axis2 and Synapse.  Where Axis2 offers a full-featured webservices 
+framework, and Synapse aims to provide a complete Enterprise Service Bus, 
+Sapon is primarily intended for simple filtering and redistribution of SOAP 
+messages.  
+
+Some differences between Sapon and the upstream projects include:
+
+  -  Sapon specifies a minimum of Java 6.  Sapon has the explicit goal (not yet 
+     completed) of transitioning to Java 6 idioms where they improve 
+     readability, type safety, performance, or resource management.
+     
+  -  Sapon projects use Maven's default layout consistently.  Poms are generally
+     kept small and easy to understand, and intentionally do not take advantage 
+     of many of Maven's features.
+   
+  -  Sapon has the explicit goal (not yet completed) of no compilation warnings.     
+ 
+  -  Sapon's port of axis2-kernel replaces the MessageContext class with an 
+     equivalent interface, and is able to save some per-message memory by moving
+     the bookkeeping needed for serialization to a lazily-initialized helper
+     object.  This is part of a larger goal to isolate a core set of interfaces 
+     that can peeled out into a stable api, so that projects based on that api 
+     can minimize the versioning deadlock that's a pain point of the current 
+     upstream projects.
+   
+  -  Sapon drops functionality that is not needed for its limited aims, when
+     doing so allows dependencies to be removed.  Sapon has the explicit goal of 
+     shipping smaller deployables and reducing the effort required to understand
+     and manage the project's dependencies.
+   
+  -  Sapon uses Git for SCM.  Fork away!  
+   
+
+The following codebases were forked for Sapon:
+
+From [Axiom](http://ws.apache.org/commons/axiom/):
+  
+  -  [axiom-api 1.2.8](http://repo1.maven.org/maven2/org/apache/ws/commons/axiom/axiom-api/1.2.8/)
+  -  [axiom-impl 1.2.8](http://repo1.maven.org/maven2/org/apache/ws/commons/axiom/axiom-impl/1.2.8/)
+  -  [axiom-dom 1.2.8](http://repo1.maven.org/maven2/org/apache/ws/commons/axiom/axiom-dom/1.2.8/)
+
+
+From [Neethi](http://ws.apache.org/commons/neethi/):
+  
+  -  neethi 3.0 (not yet released)
+ 
+
+From [Axis2](http://ws.apache.org/axis2/):
+  
+  -  [axis2-kernel 1.5](http://repo1.maven.org/maven2/org/apache/axis2/axis2-kernel/1.5/)
+  -  [axis2-mtompolicy 1.5](http://repo1.maven.org/maven2/org/apache/axis2/axis2-mtompolicy/)
+  -  [axis2-transport-http 1.5](http://repo1.maven.org/maven2/org/apache/axis2/axis2-transport-http/1.5/)
+  -  [mex](http://repo1.maven.org/maven2/org/apache/axis2/mex/1.5/)
+  -  [addressing](http://repo1.maven.org/maven2/org/apache/axis2/addressing/1.5/)
+
+
+From [Rampart](http://ws.apache.org/rampart/):
+  
+  -  rampart-policy 1.5 (not yet released)
+  -  rampart-trust 1.5 (not yet released)
+  -  rampart-core 1.5 (not yet released)
+  -  rampart 1.5 (not yet released)
+
+
+From [WS-Commons](http://ws.apache.org/commons/):
+  
+  -  axis2-transport-base 1.0 (not yet released)
+
+
+From [Synapse](http://synapse.apache.org/): 
+  
+  -  synapse-commons 1.3 (not yet released)
+  -  synapse-core 1.3 (not yet released)
+
+
+Note that upstream code will be periodically ported back as needed.
+
+
+Copyright 2009 RiskMetrics Group
+
+
+
+
+
+
+
