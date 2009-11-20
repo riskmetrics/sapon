@@ -77,6 +77,31 @@ contained therein are reproduced here.
 --------------------------------------------------------------------------------
 
 
+sapon-neethi is derived from Apache's Neethi project, which included the 
+following attributions at the time Sapon was forked:
+
+    This product includes software developed by
+    The Apache Software Foundation (http://www.apache.org/).
+
+    Please read the different LICENSE files present in the licenses directory of
+    this distribution.
+
+In addition, the project specified an AUTHORS.txt file, which included the 
+following attributions at the time Sapon was forked:
+
+    Authors:
+    Sanjiva Weerawarana (sanjiva AT opensource.lk)
+    Davanum Srinivas (dims AT wso2.com)
+    Sanka Samaranayake (sanka AT apache.org)
+    Werner Dittmann (werner.dittmann AT siemens.com)
+
+    Documentation:
+    Chatra Nakkawita (chatra AT gmail.com)
+
+
+--------------------------------------------------------------------------------
+
+
 
 
 
