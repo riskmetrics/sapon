@@ -102,6 +102,32 @@ following attributions at the time Sapon was forked:
 --------------------------------------------------------------------------------
 
 
+sapon-axis2-addressing, sapon-axis2-kernel, sapon-axis2-mex, 
+sapon-axis2-mtompolicy, and sapon-axis2-transport-http are derived from
+Apache's Axis2 project, which included the following attributions at the
+time Sapon was forked:
 
+    This product includes software developed by
+    The Apache Software Foundation (http://www.apache.org/).
+    Portions Copyright 2006 International Business Machines Corp.
+    Portions Copyright 2005-2007 WSO2, Inc.
+    
+    This product also includes schemas and specification developed by:
+    - the W3C consortium (http://www.w3c.org)
+    
+    This product also includes WS-* schemas developed by International
+    Business Machines Corporation, Microsoft Corporation, BEA Systems, 
+    TIBCO Software, SAP AG, Sonic Software, and VeriSign
+    
+    This product also includes a WSDL developed by salesforce.com
+    - Copyright 1999-2006 salesforce.com, inc.
+    
+    Portions of the included xmlbeans library were originally based on the 
+    following:
+    - software copyright (c) 2000-2003, BEA Systems, <http://www.bea.com/>.
+    
+    Please read the different LICENSE files present in the lib directory of
+    this distribution.
+    
 
-
+--------------------------------------------------------------------------------
