@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.riskmetrics.sapon</groupId>
+        <artifactId>sapon-parent</artifactId>
+        <version>SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>axis2-kernel</artifactId>
+    <version>SNAPSHOT</version>
+    <name>Sapon Axis2 Kernel</name>
+    <description>Sapon's modified core Axis2 functionality</description>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>axiom-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>axiom-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.mail</groupId>
+            <artifactId>mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>wsdl4j</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.schema</groupId>
+            <artifactId>XmlSchema</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-fileupload</groupId>
+            <artifactId>commons-fileupload</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>neethi</artifactId>
+        </dependency>
+    </dependencies>
+    
+</project>
