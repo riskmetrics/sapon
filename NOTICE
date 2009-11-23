@@ -196,7 +196,30 @@ contained therein are reproduced here.
     Eric Hubert 
     Hadrian Zbarcea 
     Sanjesh Pathak 
-    Dave Irving 
+    Dave Irving
+
+
+--------------------------------------------------------------------------------
+
+
+sapon-transport-base is derived from Apache's WS-Commons Transport, which did
+not include a NOTICE file at the time Sapon was forked.
+
+The following people were listed in the as developers or contributors to 
+WS-Commons Transport in the original projects' parent pom at the time it was
+forked.  That parent pom is not included as part of Sapon, and so the 
+attributions contained therein are reproduced here.
+
+    Saminda Abeyruwan (saminda AT wso2.com)
+    Eran Chinthaka (chinthaka AT wso2.com)
+    Glen Daniels (gdaniels AT apache.org)
+    Deepal Jayasinghe (deepal AT wso2.com)
+    Srinath Perera (hemapani AT apache.org)
+    Ajith Ranabahu (ajith AT wso2.com)
+    Davanum Srinivas (dims AT wso2.com)
+    Andreas Veithen (veithen AT apache.org)
+    Sanjiva Weerawarana (sanjiva AT wso2.com)
+
 
 
 
