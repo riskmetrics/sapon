@@ -155,4 +155,51 @@ contained therein are reproduced here.
     Nandana Mihindukulasooriya (nandana AT wso2.com)
 
 
+--------------------------------------------------------------------------------
+
+
+sapon-synapse-commons and sapon-synapse-core are derived from Apache's Synapse
+project, which included the following NOTICE file attributions in the projects
+included in Sapon at the time Sapon was forked:
+
+    Apache Synapse
+	Copyright 2005-2006 The Apache Software Foundation
+	
+	This product includes software developed at
+	The Apache Software Foundation (http://www.apache.org/).
+
+The following people were listed in the as developers or contributors to 
+Synapse in the original projects' parent pom at the time they were forked.
+That parent pom is not included as part of Sapon, and so the attributions 
+contained therein are reproduced here.
+
+    Saminda Abeyruwan (saminda AT wso2.com)
+    Afkham Azeez (azeez AT wso2.com)
+    Paul Fremantle (paul AT wso2.com)
+    Eran Chinthaka (chinthaka AT wso2.com)
+    Ant Elder (ant.elder AT gmail.com)
+    Glen Daniels (gdaniels AT apache.org)
+    Deepal Jayasinghe (deepal AT wso2.com)
+    Davanum Srinivas (davanum AT gmail.com)
+    Sanjiva Weerawarana (sanjiva AT wso2.com)
+    Ruwan Linton (ruwan AT wso2.com)
+    Jaliya Ekanayake (jnekanayake AT gmail.com)
+    Indika Kumara (indika AT wso2.com)
+    Chathura Ekanayake (chathura AT wso2.com)
+    Kasun Samarasinghe (kasun2010 AT gmail.com)
+    Tijs Rademakers (t.rademakers AT chello.nl)
+    Asankha Perera (asankha AT apache.org)
+    Upul Godage (upul AT apache.org)
+    Oleg Kalnichevski (OlegK AT apache.org)
+    Andreas Veithen (veithen AT apache.org)
+    Asanka Abeysinghe (asankaa AT wso2.com)
+    Eric Hubert 
+    Hadrian Zbarcea 
+    Sanjesh Pathak 
+    Dave Irving 
+
+
+
+
+
     
