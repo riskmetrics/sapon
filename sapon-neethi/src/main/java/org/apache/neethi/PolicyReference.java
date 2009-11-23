@@ -19,10 +19,7 @@
 
 package org.apache.neethi;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.PrintStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
@@ -62,18 +59,18 @@ public class PolicyReference implements PolicyComponent {
         if (Constants.TYPE_POLICY_REF != policyComponent.getType()) {
             return false;
         }
-        
+
         String URI = ((PolicyReference) policyComponent).getURI();
         if (URI != null && URI.length() != 0) {
             return URI.equals(this.uri);
-        } 
-        
+        }
+
         return false;
     }
 
 
     /**
-     * Returns short value of Constants.TYPE_POLICY_REF 
+     * Returns short value of Constants.TYPE_POLICY_REF
      */
     public short getType() {
         return Constants.TYPE_POLICY_REF;
@@ -87,12 +84,12 @@ public class PolicyReference implements PolicyComponent {
     public PolicyComponent normalize() {
         throw new UnsupportedOperationException("PolicyReference.normalize() is meaningless");
     }
-    
+
     /**
-     * Returns normalized version of the Policy that is refered by self. The specified 
-     * PolicyRegistry is used to lookup for the Policy that is refered and <tt>dee</tt> 
+     * Returns normalized version of the Policy that is refered by self. The specified
+     * PolicyRegistry is used to lookup for the Policy that is refered and <tt>dee</tt>
      * indicates the level of normalization fo the returning Policy.
-     * 
+     *
      * @param reg the PolicyRegistry that is used to resolved the Policy refered by self
      * @param deep the falg to indicate whether returning Policy should be fully normailized
      * @return the normalized version fo the Policy refered by self
@@ -105,79 +102,79 @@ public class PolicyReference implements PolicyComponent {
         }else if(pos > 0){
         	key = key.substring(0, pos);
         }
-        
-        Policy policy = reg.lookup(key);        
-        
+
+        Policy policy = reg.lookup(key);
+
         if (policy == null) {
         	policy = getRemoteReferencedPolicy(key);
-        	
+
         	if(policy == null){
         		throw new RuntimeException(key + " can't be resolved" );
         	}
-        	
+
         	reg.register(key, policy);
-            
+
         }
-        
+
         return policy.normalize(reg, deep);
     }
 
     public void serialize(XMLStreamWriter writer) throws XMLStreamException {
 
         String wspPrefix = writer.getPrefix(Constants.URI_POLICY_NS);
-        
+
         if (wspPrefix == null) {
             wspPrefix = Constants.ATTR_WSP;
             writer.setPrefix(wspPrefix, Constants.URI_POLICY_NS);
         }
-        
+
         writer.writeStartElement(wspPrefix, Constants.ELEM_POLICY_REF, Constants.URI_POLICY_NS);
         writer.writeNamespace(Constants.ATTR_WSP, Constants.URI_POLICY_NS);
         writer.writeAttribute(Constants.ATTR_URI, getURI());
-        
+
         writer.writeEndElement();
     }
-    
+
     public OMElement getRemoteReferedElement(String uri){
     	OMElement documentElement = null;
-    	
-    	try{    		    		
-    		
-	    	//create java.net URL pointing to remote resource			
+
+    	try{
+
+	    	//create java.net URL pointing to remote resource
 			URL url = new URL(uri);
 			URLConnection connection = url.openConnection();
 			connection.setDoInput(true);
-			
+
 			//create stax parser with the url content
 			XMLStreamReader parser = XMLInputFactory.newInstance().
-			                                         createXMLStreamReader(connection.getInputStream()); 
-			
+			                                         createXMLStreamReader(connection.getInputStream());
+
 	        //get the root element (in this case the envelope)
-			StAXOMBuilder builder = new StAXOMBuilder(parser); 
-			documentElement = builder.getDocumentElement();	
-			
-        }catch(XMLStreamException se){        	        	
+			StAXOMBuilder builder = new StAXOMBuilder(parser);
+			documentElement = builder.getDocumentElement();
+
+        }catch(XMLStreamException se){
         	throw new RuntimeException("Bad policy content: " + uri);
-        }catch(MalformedURLException mue){        	
+        }catch(MalformedURLException mue){
         	throw new RuntimeException("Malformed uri: " + uri);
-        }catch(IOException ioe){        
+        }catch(IOException ioe){
         	throw new RuntimeException("Cannot reach remote resource: " + uri);
-        }       
-		
+        }
+
 		return documentElement;
     }
-    
-    
-    
+
+
+
     public Policy getRemoteReferencedPolicy(String uri) {
     	Policy policy = null;
-    	
+
     	//extract the remote resource contents
     	OMElement policyElement = getRemoteReferedElement(uri);
-    	
+
     	//call the policy engine with already extracted content
     	policy = PolicyEngine.getPolicy(policyElement);
-    	
+
 		return policy;
     }
 }

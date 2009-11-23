@@ -28,7 +28,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +47,7 @@ public class Service {
 
     // Remember providers we have looked up before.
     static Map<String, List<?>> instanceMap = new HashMap<String, List<?>>();
-    
+
     @SuppressWarnings("unchecked")
     private static <T> List<T> cast(List<?> p) {
         return (List<T>)p;
@@ -84,11 +83,17 @@ public class Service {
             // Ooops! can't get his class loader.
         }
         // Can always request your own class loader. But it might be 'null'.
-        if (cl == null) cl = Service.class.getClassLoader();
-        if (cl == null) cl = ClassLoader.getSystemClassLoader();
+        if (cl == null) {
+			cl = Service.class.getClassLoader();
+		}
+        if (cl == null) {
+			cl = ClassLoader.getSystemClassLoader();
+		}
 
         // No class loader so we can't find 'serviceFile'.
-        if (cl == null) return l;
+        if (cl == null) {
+			return l;
+		}
 
         Enumeration<URL> e;
         try {
@@ -103,7 +108,7 @@ public class Service {
                 URL u = e.nextElement();
 
                 is = u.openStream();
-                
+
                 Reader         r  = new InputStreamReader(is, "UTF-8");
                 BufferedReader br = new BufferedReader(r);
 
@@ -112,8 +117,9 @@ public class Service {
                     try {
                         // First strip any comment...
                         int idx = line.indexOf('#');
-                        if (idx != -1)
-                            line = line.substring(0, idx);
+                        if (idx != -1) {
+							line = line.substring(0, idx);
+						}
 
                         // Trim whitespace.
                         line = line.trim();
@@ -124,7 +130,7 @@ public class Service {
                             continue;
                         }
 
-                        // Try and load the class 
+                        // Try and load the class
                         Object obj = cl.loadClass(line).newInstance();
                         // stick it into our vector...
                         l.add(cls.cast(obj));
@@ -149,5 +155,5 @@ public class Service {
         }
         return l;
     }
-    
+
 }
