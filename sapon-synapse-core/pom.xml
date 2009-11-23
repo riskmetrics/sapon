@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.riskmetrics.sapon</groupId>
+        <artifactId>sapon-parent</artifactId>
+        <version>SNAPSHOT</version>
+    </parent>
+
+    <artifactId>synapse-core</artifactId>
+    <version>SNAPSHOT</version>
+    <name>Sapon Synapse Core</name>
+    <description>Sapon's modified Synapse core functionality.</description>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.ws.commons.schema</groupId>
+            <artifactId>XmlSchema</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>synapse-commons</artifactId>
+        </dependency>
+        <dependency>
+        	<groupId>com.riskmetrics.sapon</groupId>
+        	<artifactId>axis2-kernel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>axiom-dom</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>axis2-transport-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>jaxen</groupId>
+            <artifactId>jaxen</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>com.riskmetrics.sapon</groupId>
+                                    <artifactId>addressing</artifactId>
+                                    <version>SNAPSHOT</version>
+                                    <type>mar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>src/test/resources/test_repos/synapse/modules</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build> 
+       
+</project>
