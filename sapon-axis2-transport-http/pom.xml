@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" 
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>com.riskmetrics.sapon</groupId>
+        <artifactId>sapon-parent</artifactId>
+        <version>SNAPSHOT</version>
+    </parent>
+    
+    <artifactId>axis2-transport-http</artifactId>
+    <version>SNAPSHOT</version>
+    <name>Sapon Axis2 HTTP Transport</name>
+    <description>Sapon's modified Axis2 HTTP Transport implementation.</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>axis2-kernel</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.ws.commons.schema</groupId>
+            <artifactId>XmlSchema</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-httpclient</groupId>
+            <artifactId>commons-httpclient</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>neethi</artifactId>
+        </dependency>
+    </dependencies>
+    
+</project>
