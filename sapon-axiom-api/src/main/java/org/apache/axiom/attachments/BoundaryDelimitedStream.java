@@ -81,10 +81,8 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
         return ++streamCount;
     }
 
-    /** Field streamNo. */
     protected int streamNo = -1;    // Keeps track of stream
 
-    /** Field isDebugEnabled. */
     static boolean isDebugEnabled = false;
 
     /**
@@ -225,7 +223,8 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
      * @return the number of bytes read. -1 if endof stream.
      * @throws java.io.IOException
      */
-    public synchronized int read(byte[] b, final int off, final int len)
+    @Override
+	public synchronized int read(byte[] b, final int off, final int len)
             throws java.io.IOException {
 
         if (closed) {
@@ -346,7 +345,8 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
      * @return the number of bytes read. -1 if endof stream.
      * @throws java.io.IOException
      */
-    public int read(byte[] b) throws java.io.IOException {
+    @Override
+	public int read(byte[] b) throws java.io.IOException {
         return read(b, 0, b.length);
     }
 
@@ -356,7 +356,8 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
      * @return The byte read, or -1 if endof stream.
      * @throws java.io.IOException
      */
-    public int read() throws java.io.IOException {
+    @Override
+	public int read() throws java.io.IOException {
 
         byte[] b = new byte[1];    // quick and dirty. //for now
         int read = read(b);
@@ -373,7 +374,8 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
      *
      * @throws java.io.IOException
      */
-    public synchronized void close() throws java.io.IOException {
+    @Override
+	public synchronized void close() throws java.io.IOException {
 
         if (closed) {
             return;
@@ -400,7 +402,8 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
      *
      * @param readlimit
      */
-    public void mark(int readlimit) {
+    @Override
+	public void mark(int readlimit) {
 
         // do nothing
     }
@@ -410,16 +413,19 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
      *
      * @throws java.io.IOException
      */
-    public void reset() throws java.io.IOException {
+    @Override
+	public void reset() throws java.io.IOException {
         throw new java.io.IOException("attach.bounday.mns");
     }
 
     /** markSupported return false; */
-    public boolean markSupported() {
+    @Override
+	public boolean markSupported() {
         return false;
     }
 
-    public int available() throws java.io.IOException {
+    @Override
+	public int available() throws java.io.IOException {
 
         int bcopy = readBufEnd - readBufPos - boundaryBufLen;
 
@@ -538,7 +544,9 @@ public class BoundaryDelimitedStream extends java.io.FilterInputStream {
      * @throws java.io.IOException if the stream could not be closed
      */
     protected void finalClose() throws java.io.IOException {
-        if (theEnd) return;
+        if (theEnd) {
+			return;
+		}
         theEnd = true;
         is.close();
         is = null;

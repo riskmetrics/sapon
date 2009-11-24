@@ -37,7 +37,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * PartOnMemoryEnhanced stores the attachment in memory (in non-contigous byte arrays)
+ * PartOnMemoryEnhanced stores the attachment in memory
+ * (in non-contiguous byte arrays)
  * This implementation is used for smaller attachments to enhance
  * performance.
  *
