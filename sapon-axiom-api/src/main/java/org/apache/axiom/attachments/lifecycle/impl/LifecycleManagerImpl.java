@@ -25,6 +25,9 @@ import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.Hashtable;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.axiom.attachments.lifecycle.LifecycleManager;
 import org.apache.axiom.om.util.UUIDGenerator;
@@ -33,6 +36,9 @@ import org.apache.commons.logging.LogFactory;
 
 public class LifecycleManagerImpl implements LifecycleManager {
     private static final Log log = LogFactory.getLog(LifecycleManagerImpl.class);
+
+    private static final ScheduledExecutorService scheduler
+    	= Executors.newScheduledThreadPool(1);
 
     //Hashtable to store file accessors.
     private static Hashtable<String, FileAccessor> table = new Hashtable<String, FileAccessor>();
@@ -60,6 +66,8 @@ public class LifecycleManagerImpl implements LifecycleManager {
             throw new IllegalArgumentException("Given Axis2 Attachment File Cache Location "
                 + dir + "  should be a directory.");
         }
+
+        //TODO: is createTempFile not good enough for some reason?
         // Generate unique id.  The UUID generator is used so that we can limit
         // synchronization with the java random number generator.
         String id = UUIDGenerator.getUUID();
@@ -80,73 +88,50 @@ public class LifecycleManagerImpl implements LifecycleManager {
         return fa;
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.axiom.lifecycle.LifecycleManager#delete(java.io.File)
-     */
     public void delete(File file) throws IOException {
-        if(log.isDebugEnabled()){
-            log.debug("Start delete()");
+        if(log.isDebugEnabled()) {
+            log.debug("Deleting " + file);
         }
 
-        if(file!=null && file.exists()){
+        if(file != null && file.exists()) {
             table.remove(file);
-            if(log.isDebugEnabled()){
-                log.debug("invoking file.delete()");
-            }
 
-            if(file.delete()){
-                if(log.isDebugEnabled()){
-                    log.debug("delete() successful");
+            if(file.delete()) {
+                if(log.isDebugEnabled()) {
+                    log.debug("Successfully deleted " + file);
                 }
-            }else{
-                if(log.isDebugEnabled()){
-                    log.debug("Cannot delete file, set to delete on VM shutdown");
+            } else {
+                if(log.isDebugEnabled()) {
+                    log.debug("Cannot delete " + file + ", setting to delete on VM shutdown");
                 }
                 deleteOnExit(file);
             }
         }
-        if(log.isDebugEnabled()){
-            log.debug("End delete()");
-        }
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.axiom.lifecycle.LifecycleManager#deleteOnExit(java.io.File)
-     */
     public void deleteOnExit(File file) throws IOException {
         if(log.isDebugEnabled()){
-            log.debug("Start deleteOnExit()");
+            log.debug("Setting VM shutdown deletion hook for " + file);
         }
         if(hook == null){
             hook = RegisterVMShutdownHook();
         }
 
-        if(file!=null){
-            if(log.isDebugEnabled()){
-                log.debug("Invoking deleteOnExit() for file = "+file.getAbsolutePath());
-            }
+        if(file!=null) {
             hook.add(file);
             table.remove(file);
         }
         if(log.isDebugEnabled()){
-            log.debug("End deleteOnExit()");
+            log.debug("VM shutdown deletion hook set for " + file);
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.apache.axiom.lifecycle.LifecycleManager#deleteOnTimeInterval(int)
-     */
     public void deleteOnTimeInterval(int interval, File file) throws IOException {
         if(log.isDebugEnabled()){
-            log.debug("Start deleteOnTimeInterval()");
+            log.debug("Scheduling deletion in " + interval + " seconds of " + file);
         }
 
-        Thread t = new Thread(new LifecycleManagerImpl.FileDeletor(interval, file));
-        t.setDaemon(true);
-        t.start();
-        if(log.isDebugEnabled()){
-            log.debug("End deleteOnTimeInterval()");
-        }
+        scheduler.schedule(new FileDeletor(file), interval, TimeUnit.SECONDS);
     }
 
     private VMShutdownHook RegisterVMShutdownHook() throws RuntimeException{
@@ -177,29 +162,25 @@ public class LifecycleManagerImpl implements LifecycleManager {
         return hook;
     }
 
-    public class FileDeletor implements Runnable{
-        int interval;
-        File _file;
+    private class FileDeletor implements Runnable {
+        final File _file;
 
-        public FileDeletor(int interval, File file) {
+        public FileDeletor(final File file) {
             super();
-            this.interval = interval;
             this._file = file;
         }
 
         public void run() {
-            try{
-                Thread.sleep(interval*1000);
-                if(_file.exists()){
-                    table.remove(_file);
-                    _file.delete();
-                }
-            }catch(InterruptedException e){
-                //Log Exception
-                if(log.isDebugEnabled()){
-                    log.warn("InterruptedException occured "+e.getMessage());
-                }
-            }
+        	if(log.isDebugEnabled()) {
+        		log.debug("Attempting scheduled deletion of " + _file);
+        	}
+        	if(_file.exists()){
+        		table.remove(_file);
+        		_file.delete();
+        	}
+        	if(log.isDebugEnabled()) {
+        		log.debug("Successful scheduled deletion of " + _file);
+        	}
         }
     }
 
