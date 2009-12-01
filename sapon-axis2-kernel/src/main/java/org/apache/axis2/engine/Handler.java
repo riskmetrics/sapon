@@ -39,7 +39,7 @@ public interface Handler {
      *
      * @param handlerDesc the HandlerDescription for this Handler
      */
-    public void init(HandlerDescription handlerDesc);
+    void init(HandlerDescription handlerDesc);
 
     /**
      * This method will be called on each registered handler when a message
@@ -61,7 +61,7 @@ public interface Handler {
      *         the next step in the message processing should be.
      * @throws AxisFault if the handler encounters an error
      */
-    public InvocationResponse invoke(MessageContext msgContext) throws AxisFault;
+    InvocationResponse invoke(MessageContext msgContext) throws AxisFault;
 
     /**
      * This method will be called on each registered handler that had its
@@ -75,21 +75,21 @@ public interface Handler {
      * @param msgContext the <code>MessageContext</code> to process with this
      *                   <code>Handler</code>.
      */
-    public void flowComplete(MessageContext msgContext);
+    void flowComplete(MessageContext msgContext);
 
     /**
      * Gets the HandlerDescription of a handler.
      *
      * @return Returns HandlerDescription.
      */
-    public HandlerDescription getHandlerDesc();
+    HandlerDescription getHandlerDesc();
 
     /**
      * Return the name of this Handler
      *
      * @return the handler's name as a String
      */
-    public String getName();
+    String getName();
 
     /**
      * Get a Parameter from this Handler
@@ -97,7 +97,7 @@ public interface Handler {
      * @param name the name of the desired value
      * @return the Parameter, or null.
      */
-    public Parameter getParameter(String name);
+    Parameter getParameter(String name);
 
     /**
      * This type encapsulates an enumeration of possible message processing

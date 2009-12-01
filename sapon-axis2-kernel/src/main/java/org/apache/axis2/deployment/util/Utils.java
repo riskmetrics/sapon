@@ -581,7 +581,7 @@ public class Utils {
             if (operation.getMessageReceiver() == null) {
                 operation.setMessageReceiver(mr);
             }
-            pinfo.setOperationPhases(operation);
+            operation.setPhases(pinfo);
             axisService.addOperation(operation);
             if (operation.getSoapAction() == null) {
                 operation.setSoapAction("urn:" + opName);
@@ -718,7 +718,7 @@ public class Utils {
                             AxisService service = servicesitr
                                     .next();
                             for(final AxisOperation axisOperation: service.getOperations()) {
-                                phasesInfo.setOperationPhases(axisOperation);
+                                axisOperation.setPhases(phasesInfo);
                             }
                         }
                     }

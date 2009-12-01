@@ -32,23 +32,17 @@ import org.apache.axis2.i18n.Messages;
  */
 public class HandlerDescription implements ParameterInclude {
 
-    /**
-     * Field className
-     */
-    private String className;
+	private final ParameterInclude parameterInclude;
+	private ParameterInclude parent;
 
+	private String name;
+	private String className;
     private Handler handler;
-    private String name;
-    private final ParameterInclude parameterInclude;
-    private ParameterInclude parent;
+
     private PhaseRule rules;
 
-    /**
-     * Constructor HandlerDescription.
-     */
     public HandlerDescription() {
-        this.parameterInclude = new ParameterIncludeImpl();
-        this.rules = new PhaseRule();
+    	this(null);
     }
 
     /**
@@ -57,7 +51,8 @@ public class HandlerDescription implements ParameterInclude {
      * @param name name of handler
      */
     public HandlerDescription(String name) {
-        this();
+        this.parameterInclude = new ParameterIncludeImpl();
+        this.rules = new PhaseRule();
         this.name = name;
     }
 
@@ -66,7 +61,9 @@ public class HandlerDescription implements ParameterInclude {
      *
      * @param param the Parameter to associate with this HandlerDescription
      */
-    public void addParameter(Parameter param) throws AxisFault {
+    public void addParameter(Parameter param)
+    	throws AxisFault
+    {
         if (isParameterLocked(param.getName())) {
             throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
         } else {
@@ -74,7 +71,9 @@ public class HandlerDescription implements ParameterInclude {
         }
     }
 
-    public void removeParameter(Parameter param) throws AxisFault {
+    public void removeParameter(Parameter param)
+    	throws AxisFault
+    {
         if (isParameterLocked(param.getName())) {
             throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
         } else {
@@ -82,8 +81,10 @@ public class HandlerDescription implements ParameterInclude {
         }
     }
 
-    public void deserializeParameters(OMElement parameterElement) throws AxisFault {
-        this.parameterInclude.deserializeParameters(parameterElement);
+    public void deserializeParameters(OMElement parameterElement)
+    	throws AxisFault
+    {
+        parameterInclude.deserializeParameters(parameterElement);
     }
 
     /**
@@ -153,7 +154,8 @@ public class HandlerDescription implements ParameterInclude {
     }
 
     /**
-     * Method setClassName.
+     * Method setClassName.  This should only be called if the Handler instance
+     * is not yet available
      *
      * @param className the class name of the Handler class
      */

@@ -68,7 +68,7 @@ public class ServiceDeployer implements Deployer {
             if (wsdlservice != null) {
                 for(final AxisService service: wsdlservice.values()) {
                     for(final AxisOperation axisOperation: service.getOperations()) {
-                        axisConfig.getPhasesInfo().setOperationPhases(axisOperation);
+                        axisOperation.setPhases(axisConfig.getPhasesInfo());
                     }
                 }
             }

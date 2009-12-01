@@ -20,24 +20,24 @@
 
 package org.apache.axis2.phaseresolver;
 
+import java.util.List;
+
 import org.apache.axis2.deployment.DeploymentErrorMsgs;
 import org.apache.axis2.description.HandlerDescription;
 import org.apache.axis2.description.PhaseRule;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.i18n.Messages;
 
-import java.util.List;
-
 /**
  * This class hold all the phases found in the services.xml and server.xml
  */
 public class PhaseHolder {
-    private List phaseList;
+    private List<Phase> phaseList;
 
     public PhaseHolder() {
     }
 
-    public PhaseHolder(List phases) {
+    public PhaseHolder(List<Phase> phases) {
         this.phaseList = phases;
     }
 
@@ -65,7 +65,7 @@ public class PhaseHolder {
             handlerDesc.getRules().setBefore("");
             handlerDesc.getRules().setAfter("");
             for (int i = 0; i < phaseList.size(); i++) {
-                Phase phase = (Phase) phaseList.get(i);
+                Phase phase = phaseList.get(i);
                 phase.addHandler(handlerDesc);
             }
         } else {
@@ -86,7 +86,7 @@ public class PhaseHolder {
      */
     private Phase getPhase(String phaseName) {
         for (int i = 0; i < phaseList.size(); i++) {
-            Phase phase = (Phase) phaseList.get(i);
+            Phase phase = phaseList.get(i);
 
             if (phase.getPhaseName().equals(phaseName)) {
                 return phase;
@@ -103,9 +103,7 @@ public class PhaseHolder {
      * @return true if a Phase matching the name was found, false otherwise
      */
     private boolean phaseExists(String phaseName) {
-        for (int i = 0; i < phaseList.size(); i++) {
-            Phase phase = (Phase) phaseList.get(i);
-
+        for(Phase phase: phaseList) {
             if (phase.getPhaseName().equals(phaseName)) {
                 return true;
             }

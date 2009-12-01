@@ -56,7 +56,7 @@ public class DeploymentTotalTest extends TestCase {
     }
 
     public void testDynamicPhase() {
-        List<Phase> phases = axisConfig.getPhasesInfo().getINPhases();
+        List<Phase> phases = axisConfig.getPhasesInfo().getAllInPhases();
         assertTrue("NewPhase wasn't found in InFlow", isPhaseInFlow(phases, "NewPhase"));
         Phase phase = phases.get(3);
         assertEquals("NewPhase not added at correct index!", "NewPhase", phase.getName());
@@ -77,10 +77,10 @@ public class DeploymentTotalTest extends TestCase {
         assertEquals("Wrong # of handlers in NewPhase", 3, newPhaseHandlerCount);
         assertTrue("Wrong type for handler", newPhaseFirst instanceof Handler3);
 
-        phases = axisConfig.getPhasesInfo().getIN_FaultPhases();
+        phases = axisConfig.getPhasesInfo().getAllInFaultPhases();
         assertTrue("NewPhase wasn't found in InFaultFlow", isPhaseInFlow(phases, "NewPhase"));
 
-        phases = axisConfig.getPhasesInfo().getOUTPhases();
+        phases = axisConfig.getPhasesInfo().getAllOutPhases();
         assertTrue("NewPhase wasn't found in OutFlow", isPhaseInFlow(phases, "NewPhase"));
     }
 

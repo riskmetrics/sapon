@@ -35,7 +35,6 @@ import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.dataretrieval.DRConstants;
-import org.apache.axis2.deployment.util.PhasesInfo;
 import org.apache.axis2.deployment.util.Utils;
 import org.apache.axis2.description.AxisMessage;
 import org.apache.axis2.description.AxisOperation;
@@ -670,61 +669,61 @@ public class ServiceBuilder extends DescriptionBuilder {
 	private List<AxisOperation> processOperations(Iterable<OMElement> operationsIter)
 			throws AxisFault {
 		List<AxisOperation> operations = new ArrayList<AxisOperation>();
-		for(OMElement operation: operationsIter) {
+		for(OMElement operationElem: operationsIter) {
 			// getting operation name
-			OMAttribute op_name_att = operation.getAttribute(new QName(
-					ATTRIBUTE_NAME));
-			if (op_name_att == null) {
+			OMAttribute operationNameAttr
+				= operationElem.getAttribute(new QName(ATTRIBUTE_NAME));
+			if (operationNameAttr == null) {
 				throw new DeploymentException(Messages.getMessage(Messages
 						.getMessage(DeploymentErrorMsgs.INVALID_OP,
 								"operation name missing")));
 			}
 
 			// setting the MEP of the operation
-			OMAttribute op_mep_att = operation.getAttribute(new QName(TAG_MEP));
+			OMAttribute operationMEPAttr = operationElem.getAttribute(new QName(TAG_MEP));
 			String mepurl = null;
 
-			if (op_mep_att != null) {
-				mepurl = op_mep_att.getAttributeValue();
+			if (operationMEPAttr != null) {
+				mepurl = operationMEPAttr.getAttributeValue();
 			}
 
-			String opname = op_name_att.getAttributeValue();
-			AxisOperation op_descrip = null;
+			String opname = operationNameAttr.getAttributeValue();
+			AxisOperation operation = null;
 
 			// getting the namesapce from the attribute.
-			OMAttribute operationNamespace = operation.getAttribute(new QName(
+			OMAttribute operationNamespace = operationElem.getAttribute(new QName(
 					ATTRIBUTE_NAMESPACE));
 			if (operationNamespace != null) {
 				String namespace = operationNamespace.getAttributeValue();
-				op_descrip = service.getOperation(new QName(namespace, opname));
+				operation = service.getOperation(new QName(namespace, opname));
 			}
-			if (op_descrip == null) {
-				op_descrip = service.getOperation(new QName(opname));
+			if (operation == null) {
+				operation = service.getOperation(new QName(opname));
 			}
 
-			if (op_descrip == null) {
-				op_descrip = service.getOperation(new QName(service
+			if (operation == null) {
+				operation = service.getOperation(new QName(service
 						.getTargetNamespace(), opname));
 			}
-			if (op_descrip == null) {
+			if (operation == null) {
 				if (mepurl == null) {
 					// assumed MEP is in-out
-					op_descrip = new InOutAxisOperation();
-					op_descrip.setParent(service);
+					operation = new InOutAxisOperation();
+					operation.setParent(service);
 
 				} else {
-					op_descrip = AxisOperationFactory
+					operation = AxisOperationFactory
 							.getOperationDescription(mepurl);
 				}
-				op_descrip.setName(new QName(opname));
-				String MEP = op_descrip.getMessageExchangePattern();
+				operation.setName(new QName(opname));
+				String MEP = operation.getMessageExchangePattern();
 				if (WSDL2Constants.MEP_URI_IN_ONLY.equals(MEP)
 						|| WSDL2Constants.MEP_URI_IN_OPTIONAL_OUT.equals(MEP)
 						|| WSDL2Constants.MEP_URI_OUT_OPTIONAL_IN.equals(MEP)
 						|| WSDL2Constants.MEP_URI_ROBUST_OUT_ONLY.equals(MEP)
 						|| WSDL2Constants.MEP_URI_ROBUST_IN_ONLY.equals(MEP)
 						|| WSDL2Constants.MEP_URI_IN_OUT.equals(MEP)) {
-					AxisMessage inaxisMessage = op_descrip
+					AxisMessage inaxisMessage = operation
 							.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
 					if (inaxisMessage != null) {
 						inaxisMessage.setName(opname
@@ -737,7 +736,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 						|| WSDL2Constants.MEP_URI_IN_OPTIONAL_OUT.equals(MEP)
 						|| WSDL2Constants.MEP_URI_ROBUST_OUT_ONLY.equals(MEP)
 						|| WSDL2Constants.MEP_URI_IN_OUT.equals(MEP)) {
-					AxisMessage outAxisMessage = op_descrip
+					AxisMessage outAxisMessage = operation
 							.getMessage(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
 					if (outAxisMessage != null) {
 						outAxisMessage.setName(opname
@@ -749,68 +748,66 @@ public class ServiceBuilder extends DescriptionBuilder {
 			// setting the PolicyInclude
 
 			// processing <wsp:Policy> .. </..> elements
-			Iterable<OMElement> policyElements = operation.getChildrenWithName(new QName(
+			Iterable<OMElement> policyElements = operationElem.getChildrenWithName(new QName(
 					POLICY_NS_URI, TAG_POLICY));
 
 			if (policyElements != null) {
-				processPolicyElements(policyElements, op_descrip.getPolicySubject());
+				processPolicyElements(policyElements, operation.getPolicySubject());
 			}
 
 			// processing <wsp:PolicyReference> .. </..> elements
-			Iterable<OMElement> policyRefElements = operation
+			Iterable<OMElement> policyRefElements = operationElem
 					.getChildrenWithName(new QName(POLICY_NS_URI,
 							TAG_POLICY_REF));
 
 			if (policyRefElements != null) {
-				processPolicyRefElements(policyRefElements, op_descrip.getPolicySubject());
+				processPolicyRefElements(policyRefElements, operation.getPolicySubject());
 			}
 
 			// Operation Parameters
-			Iterable<OMElement> parameters = operation.getChildrenWithName(new QName(
+			Iterable<OMElement> parameters = operationElem.getChildrenWithName(new QName(
 					TAG_PARAMETER));
-			processParameters(parameters, op_descrip, service);
+			processParameters(parameters, operation, service);
 			// To process wsamapping;
-			processActionMappings(operation, op_descrip);
+			processActionMappings(operationElem, operation);
 
 			// loading the message receivers
-			OMElement receiverElement = operation
+			OMElement receiverElement = operationElem
 					.getFirstChildWithName(new QName(TAG_MESSAGE_RECEIVER));
 
 			if (receiverElement != null) {
 				MessageReceiver messageReceiver = loadMessageReceiver(service
 						.getClassLoader(), receiverElement);
 
-				op_descrip.setMessageReceiver(messageReceiver);
+				operation.setMessageReceiver(messageReceiver);
 			} else {
 				// setting default message receiver
 				MessageReceiver msgReceiver = loadDefaultMessageReceiver(
-						op_descrip.getMessageExchangePattern(), service);
-				op_descrip.setMessageReceiver(msgReceiver);
+						operation.getMessageExchangePattern(), service);
+				operation.setMessageReceiver(msgReceiver);
 			}
 
 			// Process Module Refs
-			Iterable<OMElement> modules = operation.getChildrenWithName(new QName(
+			Iterable<OMElement> modules = operationElem.getChildrenWithName(new QName(
 					TAG_MODULE));
 
-			processOperationModuleRefs(modules, op_descrip);
+			processOperationModuleRefs(modules, operation);
 
 			// processing Messages
-			Iterable<OMElement> messages = operation.getChildrenWithName(new QName(
+			Iterable<OMElement> messages = operationElem.getChildrenWithName(new QName(
 					TAG_MESSAGE));
 
-			processMessages(messages, op_descrip);
+			processMessages(messages, operation);
 
 			// setting Operation phase
 			if (axisConfig != null) {
-				PhasesInfo info = axisConfig.getPhasesInfo();
-
-				info.setOperationPhases(op_descrip);
+				operation.setPhases(axisConfig.getPhasesInfo());
 			}
-			Iterable<OMElement> moduleConfigs = operation.getChildrenWithName(new QName(
+			Iterable<OMElement> moduleConfigs = operationElem.getChildrenWithName(new QName(
 					TAG_MODULE_CONFIG));
-			processOperationModuleConfig(moduleConfigs, op_descrip, op_descrip);
+			processOperationModuleConfig(moduleConfigs, operation, operation);
 			// adding the operation
-			operations.add(op_descrip);
+			operations.add(operation);
 		}
 		return operations;
 	}

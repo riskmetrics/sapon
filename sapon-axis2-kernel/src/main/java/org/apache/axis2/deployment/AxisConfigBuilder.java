@@ -529,13 +529,13 @@ public class AxisConfigBuilder extends DescriptionBuilder {
             String flowType = phaseOrder.getAttribute(new QName(TAG_TYPE)).getAttributeValue();
 
             if (TAG_FLOW_IN.equals(flowType)) {
-                info.setINPhases(processPhaseList(phaseOrder));
+                info.setInPhases(processPhaseList(phaseOrder));
             } else if (TAG_FLOW_IN_FAULT.equals(flowType)) {
-                info.setIN_FaultPhases(processPhaseList(phaseOrder));
+                info.setInFaultPhases(processPhaseList(phaseOrder));
             } else if (TAG_FLOW_OUT.equals(flowType)) {
-                info.setOUTPhases(processPhaseList(phaseOrder));
+                info.setOutPhases(processPhaseList(phaseOrder));
             } else if (TAG_FLOW_OUT_FAULT.equals(flowType)) {
-                info.setOUT_FaultPhases(processPhaseList(phaseOrder));
+                info.setOutFaultPhases(processPhaseList(phaseOrder));
             }
         }
     }

@@ -311,7 +311,7 @@ public class AxisConfiguration extends AxisDescription
         for(final AxisService axisService: axisServiceGroup.getServices()) {
             if (axisService.isUseDefaultChains()) {
                 for(final AxisOperation operation: axisService.getOperations()) {
-                    phasesinfo.setOperationPhases(operation);
+                    operation.setPhases(phasesinfo);
                 }
             }
         }
@@ -1127,17 +1127,18 @@ public class AxisConfiguration extends AxisDescription
 
     /**
      * Checks whether the system pre-defined phases
-     * for all the flows, have been changed. If they have been changed, throws a DeploymentException.
+     * for all the flows, have been changed. If they have been changed, throws
+     * a DeploymentException.
      *
      * @throws org.apache.axis2.deployment.DeploymentException
      *
      */
     public void validateSystemPredefinedPhases() throws DeploymentException {
         PhasesInfo phasesInfo = getPhasesInfo();
-        setInPhasesUptoAndIncludingPostDispatch(phasesInfo.getGlobalInflow());
+        setInPhasesUptoAndIncludingPostDispatch(phasesInfo.getGlobalInPhases());
         setInFaultPhases(phasesInfo.getGlobalInFaultPhases());
-        setGlobalOutPhase(phasesInfo.getGlobalOutPhaseList());
-        setOutFaultPhases(phasesInfo.getOUT_FaultPhases());
+        setGlobalOutPhase(phasesInfo.getGlobalOutPhases());
+        setOutFaultPhases(phasesInfo.getGlobalOutFaultPhases());
     }
 
     public AxisConfigurator getConfigurator() {
@@ -1176,34 +1177,34 @@ public class AxisConfiguration extends AxisDescription
 
         switch (flow) {
             case PhaseMetadata.IN_FLOW : {
-                List<Phase> phaseList = phasesinfo.getINPhases();
+                List<Phase> phaseList = phasesinfo.getAllInPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {
-                    phasesinfo.setINPhases(phaseList);
+                    phasesinfo.setInPhases(phaseList);
                 }
                 break;
             }
             case PhaseMetadata.OUT_FLOW : {
-            	List<Phase> phaseList = phasesinfo.getOUTPhases();
+            	List<Phase> phaseList = phasesinfo.getAllOutPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {
-                    phasesinfo.setOUTPhases(phaseList);
+                    phasesinfo.setOutPhases(phaseList);
                 }
                 break;
             }
             case PhaseMetadata.FAULT_OUT_FLOW : {
-            	List<Phase> phaseList = phasesinfo.getOutFaultPhaseList();
+            	List<Phase> phaseList = phasesinfo.getAllOutFaultPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {
-                    phasesinfo.setOUT_FaultPhases(phaseList);
+                    phasesinfo.setOutFaultPhases(phaseList);
                 }
                 break;
             }
             case PhaseMetadata.FAULT_IN_FLOW : {
-            	List<Phase> phaseList = phasesinfo.getIN_FaultPhases();
+            	List<Phase> phaseList = phasesinfo.getAllInFaultPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {
-                    phasesinfo.setIN_FaultPhases(phaseList);
+                    phasesinfo.setInFaultPhases(phaseList);
                 }
                 break;
             }

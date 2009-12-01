@@ -20,91 +20,46 @@
 
 package org.apache.axis2.description;
 
-import org.apache.axis2.phaseresolver.PhaseException;
-
 import java.io.Serializable;
 
-/**
- * Class PhaseRule
- */
-public class PhaseRule implements Serializable {
+import org.apache.axis2.phaseresolver.PhaseException;
 
-    /**
-     * Field after
-     */
+public class PhaseRule implements Serializable
+{
+	private static final long serialVersionUID = 20091201L;
+
     private String after;
-
-    /**
-     * Field before
-     */
     private String before;
 
-    /**
-     * Field phaseFirst
-     */
     private boolean phaseFirst;
-
-    /**
-     * Field phaseLast
-     */
     private boolean phaseLast;
 
-    /**
-     * Field phaseName
-     */
     private String phaseName;
 
-    /**
-     * Constructor PhaseRule.
-     */
     public PhaseRule() {
+    	this(null);
     }
 
     public PhaseRule(String phaseName) {
         this.phaseName = phaseName;
     }
 
-    /**
-     * Method getAfter.
-     *
-     * @return Returns String.
-     */
     public String getAfter() {
         return after;
     }
 
-    /**
-     * Method getBefore.
-     *
-     * @return Returns String.
-     */
     public String getBefore() {
         return before;
     }
 
-    /**
-     * Method getPhaseName.
-     *
-     * @return Returns String.
-     */
     public String getPhaseName() {
         return phaseName;
     }
 
-    /**
-     * Method isPhaseFirst.
-     *
-     * @return Returns boolean.
-     */
     public boolean isPhaseFirst() {
         return phaseFirst;
     }
 
-    /**
-     * Method isPhaseLast.
-     *
-     * @return Returns boolean.
-     */
     public boolean isPhaseLast() {
         return phaseLast;
     }
@@ -115,7 +70,9 @@ public class PhaseRule implements Serializable {
      * @param after the name of the "after" handler
      */
     public void setAfter(String after) {
-        if ("".equals(after)) after = null;
+        if ("".equals(after)) {
+			after = null;
+		}
         this.after = after;
     }
 
@@ -125,7 +82,9 @@ public class PhaseRule implements Serializable {
      * @param before the name of the "before" handler
      */
     public void setBefore(String before) {
-        if ("".equals(before)) before = null;
+        if ("".equals(before)) {
+			before = null;
+		}
         this.before = before;
     }
 

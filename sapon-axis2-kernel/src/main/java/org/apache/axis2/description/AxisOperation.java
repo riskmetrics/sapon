@@ -37,6 +37,8 @@ import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
 import org.apache.axis2.context.ServiceContext;
+import org.apache.axis2.deployment.DeploymentException;
+import org.apache.axis2.deployment.util.PhasesInfo;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.AxisError;
 import org.apache.axis2.engine.MessageReceiver;
@@ -441,6 +443,17 @@ public abstract class AxisOperation extends AxisDescription
     public abstract void setPhasesOutFlow(List<Phase> list);
 
     public abstract void setRemainingPhasesInFlow(List<Phase> list);
+
+    public void setPhases(PhasesInfo phasesInfo) throws AxisFault {
+    	try {
+    		setRemainingPhasesInFlow(phasesInfo.getOperationInPhases());
+    		setPhasesOutFlow(phasesInfo.getOperationOutPhases());
+    		setPhasesInFaultFlow(phasesInfo.getOperationInFaultPhases());
+    		setPhasesOutFaultFlow(phasesInfo.getOperationOutFaultPhases());
+    	} catch (DeploymentException e) {
+    		throw AxisFault.makeFault(e);
+    	}
+    }
 
     public void setStyle(String style) {
         if (!"".equals(style)) {

@@ -2283,7 +2283,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 						.getMessageExchangePattern());
 				operation.setMessageReceiver(mr);
 			}
-			pinfo.setOperationPhases(operation);
+			operation.setPhases(pinfo);
 			axisService.addOperation(operation);
 		}
 

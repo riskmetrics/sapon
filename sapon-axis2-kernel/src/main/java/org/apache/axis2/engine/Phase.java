@@ -20,6 +20,9 @@
 
 package org.apache.axis2.engine;
 
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.HandlerDescription;
@@ -30,10 +33,6 @@ import org.apache.axis2.util.LoggingControl;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-
 /**
  * A Phase is an ordered collection of Handlers.
  */
@@ -41,10 +40,8 @@ public class Phase implements Handler {
 
     public static final String ALL_PHASES = "*";
 
-    /**
-     * Field log
-     */
     private static final Log log = LogFactory.getLog(Phase.class);
+
     private static boolean isDebugEnabled = LoggingControl.debugLoggingAllowed && log.isDebugEnabled();
 
     /**
@@ -116,11 +113,9 @@ public class Phase implements Handler {
      * @throws PhaseException if there is a problem
      */
     public void addHandler(HandlerDescription handlerDesc) throws PhaseException {
-        Iterator<Handler> handlers_itr = getHandlers().iterator();
 
-        while (handlers_itr.hasNext()) {
-            Handler hand = (Handler) handlers_itr.next();
-            HandlerDescription thisDesc = hand.getHandlerDesc();
+        for(Handler handler: getHandlers()) {
+            HandlerDescription thisDesc = handler.getHandlerDesc();
             if (handlerDesc.getName().equals(thisDesc.getName())) {
                 return;
             }
@@ -216,7 +211,7 @@ public class Phase implements Handler {
         int beforeIndex = -1, afterIndex = -1;
 
         for (int i = 0; i < handlers.size(); i++) {
-            Handler tempHandler = (Handler) handlers.get(i);
+            Handler tempHandler = handlers.get(i);
 
             if ((beforeName != null) && (beforeIndex == -1)) {
                 if (tempHandler.getName().equals(beforeName)) {
@@ -288,7 +283,7 @@ public class Phase implements Handler {
      * @throws org.apache.axis2.AxisFault
      */
     public final InvocationResponse invoke(MessageContext msgctx) throws AxisFault {
-        
+
         if (isDebugEnabled) {
             log.debug(msgctx.getLogCorrelationID() + " Checking pre-condition for Phase \"" + phaseName +
                     "\"");
@@ -307,9 +302,9 @@ public class Phase implements Handler {
         }
 
         int handlersSize = handlers.size();
-        
+
         while (currentIndex < handlersSize) {
-            Handler handler = (Handler) handlers.get(currentIndex);
+            Handler handler = handlers.get(currentIndex);
 
             if (isDebugEnabled) {
                 log.debug(msgctx.getLogCorrelationID() + " Invoking Handler '" + handler.getName() +
@@ -353,7 +348,7 @@ public class Phase implements Handler {
         }
 
         for (; currentHandlerIndex > 0; currentHandlerIndex--) {
-            Handler handler = (Handler) handlers.get(currentHandlerIndex - 1);
+            Handler handler = handlers.get(currentHandlerIndex - 1);
 
             if (isDebugEnabled) {
                 log.debug(msgContext.getLogCorrelationID() + " Invoking flowComplete() for Handler '" +
@@ -364,7 +359,8 @@ public class Phase implements Handler {
         }
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         return this.getPhaseName();
     }
 

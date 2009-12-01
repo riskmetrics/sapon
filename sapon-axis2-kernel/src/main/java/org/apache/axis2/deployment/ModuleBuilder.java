@@ -222,11 +222,11 @@ public class ModuleBuilder extends DescriptionBuilder {
             throws DeploymentException {
         List<AxisOperation> operations = new ArrayList<AxisOperation>();
 
-        for(OMElement operation: operationsIter) {
-            AxisOperation op_descrip;
+        for(OMElement operationElem: operationsIter) {
+            AxisOperation operation;
 
             //getting operation name
-            String opname = operation.getAttributeValue(new QName(ATTRIBUTE_NAME));
+            String opname = operationElem.getAttributeValue(new QName(ATTRIBUTE_NAME));
 
             if (opname == null) {
                 throw new DeploymentException(
@@ -235,13 +235,13 @@ public class ModuleBuilder extends DescriptionBuilder {
                                         DeploymentErrorMsgs.INVALID_OP, "operation name missing")));
             }
 
-            String mepURL = operation.getAttributeValue(new QName(TAG_MEP));
+            String mepURL = operationElem.getAttributeValue(new QName(TAG_MEP));
 
             if (mepURL == null) {
-                op_descrip = new InOnlyAxisOperation();
+                operation = new InOnlyAxisOperation();
             } else {
                 try {
-                    op_descrip = AxisOperationFactory.getOperationDescription(mepURL);
+                    operation = AxisOperationFactory.getOperationDescription(mepURL);
                 } catch (AxisFault axisFault) {
                     throw new DeploymentException(
                             Messages.getMessage(
@@ -251,45 +251,45 @@ public class ModuleBuilder extends DescriptionBuilder {
                 }
             }
 
-            op_descrip.setName(new QName(opname));
+            operation.setName(new QName(opname));
 
             // Operation Parameters
-            Iterable<OMElement> parameters = operation.getChildrenWithName(new QName(TAG_PARAMETER));
-            processParameters(parameters, op_descrip, module);
+            Iterable<OMElement> parameters = operationElem.getChildrenWithName(new QName(TAG_PARAMETER));
+            processParameters(parameters, operation, module);
 
             //To process wsamapping;
-            processActionMappings(operation, op_descrip);
+            processActionMappings(operationElem, operation);
 
             // setting the MEP of the operation
             // loading the message receivers
             OMElement receiverElement =
-                    operation.getFirstChildWithName(new QName(TAG_MESSAGE_RECEIVER));
+                    operationElem.getFirstChildWithName(new QName(TAG_MESSAGE_RECEIVER));
 
             if (receiverElement != null) {
                 MessageReceiver messageReceiver =
                         loadMessageReceiver(module.getModuleClassLoader(), receiverElement);
-                op_descrip.setMessageReceiver(messageReceiver);
+                operation.setMessageReceiver(messageReceiver);
             } else {
                 // setting default message receiver
                 MessageReceiver msgReceiver = loadDefaultMessageReceiver(mepURL, null);
-                op_descrip.setMessageReceiver(msgReceiver);
+                operation.setMessageReceiver(msgReceiver);
             }
 
             // Process Module Refs
-            Iterable<OMElement> modules = operation.getChildrenWithName(new QName(TAG_MODULE));
-            processOperationModuleRefs(modules, op_descrip);
+            Iterable<OMElement> modules = operationElem.getChildrenWithName(new QName(TAG_MODULE));
+            processOperationModuleRefs(modules, operation);
 
 //          processing <wsp:Policy> .. </..> elements
             Iterable<OMElement> policyElements =
-                    operation.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY));
+                    operationElem.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY));
 
             if (policyElements != null) {
-                processPolicyElements(policyElements, op_descrip.getPolicySubject());
+                processPolicyElements(policyElements, operation.getPolicySubject());
             }
 
             // processing <wsp:PolicyReference> .. </..> elements
             Iterable<OMElement> policyRefElements =
-                    operation.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY_REF));
+                    operationElem.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY_REF));
 
             if (policyRefElements != null) {
                 processPolicyRefElements(policyRefElements, module.getPolicySubject());
@@ -298,14 +298,14 @@ public class ModuleBuilder extends DescriptionBuilder {
             // setting Operation phase
             PhasesInfo info = axisConfig.getPhasesInfo();
             try {
-                info.setOperationPhases(op_descrip);
+                operation.setPhases(info);
             } catch (AxisFault axisFault) {
                 throw new DeploymentException(axisFault);
             }
 
 
             // adding the operation
-            operations.add(op_descrip);
+            operations.add(operation);
         }
 
         return operations;
