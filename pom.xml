@@ -132,10 +132,33 @@
                 <scope>provided</scope>
             </dependency> 
             <dependency>
-                <!-- Can we work to get rid of this? -->
                 <groupId>jaxen</groupId>
                 <artifactId>jaxen</artifactId>
                 <version>1.1.1</version>
+                <!-- Sapon uses jaxen in the axiom, rampart, and synapse 
+                     subprojects.  The axiom use case is to define how to use 
+                     axiom itself as a jaxen target object model, and rampart
+                     and synapse use that axiom object model implementation, 
+                     so the following aren't used, and are excluded to 
+                     eliminate dependencies. -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>dom4j</groupId>
+                        <artifactId>dom4j</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>jdom</groupId>
+                        <artifactId>jdom</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xerces</groupId>
+                        <artifactId>xercesImpl</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>xom</groupId>
+                        <artifactId>xom</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>              
             <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
