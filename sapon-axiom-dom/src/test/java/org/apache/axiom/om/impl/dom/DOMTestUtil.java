@@ -24,7 +24,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import junit.framework.Assert;
 
 import org.apache.axiom.om.impl.dom.jaxp.DOOMDocumentBuilderFactory;
-import org.apache.xerces.jaxp.DocumentBuilderFactoryImpl;
 
 /**
  * Utility to execute DOM tests.
@@ -36,12 +35,12 @@ public class DOMTestUtil {
     public interface Test {
         void execute(DocumentBuilderFactory dbf) throws Exception;
     }
-    
+
     private DOMTestUtil() {}
-    
+
     public static void execute(Test test) throws Exception {
         try {
-            test.execute(new DocumentBuilderFactoryImpl());
+            test.execute(DocumentBuilderFactory.newInstance());
         } catch (Throwable ex) {
             Assert.fail("Invalid test case; execution failed with standard DOM implementation: "
                     + ex.getMessage());
