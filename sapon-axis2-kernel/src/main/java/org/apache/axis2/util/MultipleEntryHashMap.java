@@ -21,56 +21,48 @@ package org.apache.axis2.util;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 /**
  * This will make a hash map which can contain multiple entries for the same hash value.
  */
-public class MultipleEntryHashMap {
+public class MultipleEntryHashMap<K, V> {
 
-    private Map table;
+    private Map<K, List<V>> table;
 
     public MultipleEntryHashMap() {
-        this.table = new Hashtable(1);
+        this.table = new Hashtable<K, List<V>>(1);
     }
 
     /**
-     * If you call get once in this, it will remove that item from the map
+     * Removes and returns the first value associated with the given key.
      *
      * @param key
      * @return
      */
-    public Object get(Object key) {
-        ArrayList list = (ArrayList) table.get(key);
+    public V get(K key) {
+        List<V> list = table.get(key);
         if (list != null && list.size() > 0) {
-            Object o = list.get(0);
+            V value = list.get(0);
             list.remove(0);
-//            if (list.size() == 0) {
-//                table.remove(key);
-//            }
-            return o;
+            return value;
         }
-
         return null;
-
     }
 
-    public Object put(Object key, Object value) {
-        ArrayList list = (ArrayList) table.get(key);
+    public V put(K key, V value) {
+        List<V> list = table.get(key);
         if (list == null) {
-            ArrayList listToBeAdded = new ArrayList();
-            table.put(key, listToBeAdded);
-            listToBeAdded.add(value);
-        } else {
-            list.add(value);
+        	list = new ArrayList<V>();
+            table.put(key, list);
         }
-
+        list.add(value);
         return value;
     }
 
-    public Set keySet() {
-
+    public Set<K> keySet() {
         return table.keySet();
     }
 }

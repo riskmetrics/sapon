@@ -57,11 +57,13 @@ public class XFormURLEncodedBuilder implements Builder {
     /**
      * @return Returns the document element.
      */
-    public OMElement getDocumentElement(InputStream inputStream, String contentType,
-                                     MessageContext messageContext)
-            throws AxisFault {
-
-        MultipleEntryHashMap parameterMap = new MultipleEntryHashMap();
+    public OMElement getDocumentElement(InputStream inputStream,
+    									String contentType,
+    									MessageContext messageContext)
+    	throws AxisFault
+    {
+        MultipleEntryHashMap<String, String> parameterMap
+        	= new MultipleEntryHashMap<String, String>();
         SOAPFactory soapFactory;
         AxisBindingOperation axisBindingOperation =
                 (AxisBindingOperation) messageContext.getProperty(
@@ -119,7 +121,7 @@ public class XFormURLEncodedBuilder implements Builder {
                                             soapFactory);
     }
 
-    protected void extractParametersFromRequest(MultipleEntryHashMap parameterMap,
+    protected void extractParametersFromRequest(MultipleEntryHashMap<String, String> parameterMap,
                                                 String query,
                                                 String queryParamSeparator,
                                                 final String charsetEncoding,
@@ -185,28 +187,30 @@ public class XFormURLEncodedBuilder implements Builder {
     }
 
     /**
-     * Here is what I will try to do here. I will first try to identify the location of the first
-     * template element in the request URI. I am trying to deduce the location of that location
-     * using the httpLocation element of the binding (it is passed in to this
-     * method).
-     * If there is a contant part in the httpLocation, then I will identify it. For this, I get
-     * the index of {, from httpLocation param, and whatever to the left of it is the contant part.
-     * Then I search for this constant part inside the url. This will give us the access to the first
-     * template parameter.
-     * To find the end of this parameter, we need to get the index of the next constant, from
-     * httpLocation attribute. Likewise we keep on discovering parameters.
+     * First try to identify the location of the first template element in the
+     * request URI. Attempt to deduce the location of that location using the
+     * httpLocation element of the binding (passed as a parameter).
+     *
+     * If there is a constant part in the httpLocation, identify it.  Get
+     * the index of '{' from the httpLocation param; the contents to the left
+     * of it is the constant part.  Then search for this constant part inside
+     * the url. This will give access to the first template parameter.
+     *
+     * To find the end of this parameter, get the index of the next constant,
+     * from the httpLocation attribute. Keep discovering parameters in the same
+     * manner
      * <p/>
      * Assumptions :
-     * 1. User will always append the value of httpLocation to the address given in the
-     * endpoint.
-     * 2. I was talking about the constants in the httpLocation. Those constants will not occur,
+     * 1. The user will always append the value of httpLocation to the address
+     *    given in the endpoint.
+     * 2. The constants will not occur in the
      * to a reasonable extend, before the constant we are looking for.
      *
      * @param templatedPath
      * @param parameterMap
      */
     protected String extractParametersUsingHttpLocation(String templatedPath,
-                                                        MultipleEntryHashMap parameterMap,
+                                                        MultipleEntryHashMap<String, String> parameterMap,
                                                         String requestURL,
                                                         String queryParameterSeparator)
             throws AxisFault, UnsupportedEncodingException {
@@ -323,7 +327,7 @@ public class XFormURLEncodedBuilder implements Builder {
         return requestURL;
     }
 
-    private void addParameterToMap(MultipleEntryHashMap parameterMap, String paramName,
+    private void addParameterToMap(MultipleEntryHashMap<String, String> parameterMap, String paramName,
                                    String paramValue)
             throws UnsupportedEncodingException, AxisFault {
         try {
