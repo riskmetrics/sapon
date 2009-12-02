@@ -20,6 +20,10 @@
 
 package org.apache.axis2.phaseresolver;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.description.AxisMessage;
 import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.AxisOperation;
@@ -29,42 +33,19 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.wsdl.WSDLConstants;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
-/**
- * Class PhaseResolver
- */
-public class PhaseResolver {
-
-    private static final int IN_FLOW = 1;
-    private static final int OUT_FAULT_FLOW = 5;
-
-    /**
-     * Field axisConfig
-     */
-    private AxisConfiguration axisConfig;
-
-    /**
-     * Field phaseHolder
-     */
+public class PhaseResolver
+{
+	private AxisConfiguration axisConfig;
     private PhaseHolder phaseHolder;
 
-    /**
-     * default constructor , to obuild chains for GlobalDescription
-     *
-     * @param axisconfig
-     */
     public PhaseResolver(AxisConfiguration axisconfig) {
         this.axisConfig = axisconfig;
     }
 
-    private void engageModuleToFlow(Flow flow, List handlerChain) throws PhaseException {
+    private void engageModuleToFlow(Flow flow, List<Phase> handlerChain) throws PhaseException {
         phaseHolder = new PhaseHolder(handlerChain);
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription metadata = flow.getHandler(j);
+            for(HandlerDescription metadata: flow.handlers()) {
                 phaseHolder.addHandler(metadata);
             }
         }
@@ -72,29 +53,29 @@ public class PhaseResolver {
 
     private void engageModuleToOperation(AxisOperation axisOperation,
                                          AxisModule axisModule,
-                                         int flowType) throws PhaseException {
-        List phases = new ArrayList();
+                                         Flows flowType) throws PhaseException {
+        List<Phase> phases = new ArrayList<Phase>();
         Flow flow = null;
         switch (flowType) {
-            case PhaseMetadata.IN_FLOW : {
+            case IN : {
                 phases.addAll(axisConfig.getInFlowPhases());
                 phases.addAll(axisOperation.getRemainingPhasesInFlow());
                 flow = axisModule.getInFlow();
                 break;
             }
-            case PhaseMetadata.OUT_FLOW : {
+            case OUT: {
                 phases.addAll(axisOperation.getPhasesOutFlow());
                 phases.addAll(axisConfig.getOutFlowPhases());
                 flow = axisModule.getOutFlow();
                 break;
             }
-            case PhaseMetadata.FAULT_OUT_FLOW : {
+            case OUT_FAULT: {
                 phases.addAll(axisOperation.getPhasesOutFaultFlow());
                 phases.addAll(axisConfig.getOutFaultFlowPhases());
                 flow = axisModule.getFaultOutFlow();
                 break;
             }
-            case PhaseMetadata.FAULT_IN_FLOW : {
+            case IN_FAULT: {
                 phases.addAll(axisOperation.getPhasesInFaultFlow());
                 phases.addAll(axisConfig.getInFaultFlowPhases());
                 flow = axisModule.getFaultInFlow();
@@ -105,51 +86,46 @@ public class PhaseResolver {
     }
 
     public void engageModuleToOperation(AxisOperation axisOperation, AxisModule module)
-            throws PhaseException {
-        for (int type = IN_FLOW; type < OUT_FAULT_FLOW; type++) {
+            throws PhaseException
+    {
+        for (Flows type: Flows.values()) {
             engageModuleToOperation(axisOperation, module, type);
         }
     }
 
     /**
-     * To remove handlers from global chians this method can be used , first it take inflow
-     * of the module and then take handler one by one and then remove those handlers from
-     * global inchain ,
-     * the same procedure will be carry out for all the other flows as well.
+     * Remove the handlers associated with the given module from the
+     * AxisConfiguration's global handler chains.
      *
      * @param module
      */
-    public void disengageModuleFromGlobalChains(AxisModule module) {
-        //INFLOW
+    public void disengageModuleFromGlobalChains(AxisModule module)
+    {
         Flow flow = module.getInFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, axisConfig.getInFlowPhases());
+            for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, axisConfig.getInFlowPhases());
             }
         }
-        //OUTFLOW
+
         flow = module.getOutFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, axisConfig.getOutFlowPhases());
+            for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, axisConfig.getOutFlowPhases());
             }
         }
-        //INFAULTFLOW
+
         flow = module.getFaultInFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, axisConfig.getInFaultFlowPhases());
+            for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, axisConfig.getInFaultFlowPhases());
             }
         }
-        //OUTFAULTFLOW
+
         flow = module.getFaultOutFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, axisConfig.getOutFaultFlowPhases());
+        	for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, axisConfig.getOutFaultFlowPhases());
             }
         }
     }
@@ -163,36 +139,32 @@ public class PhaseResolver {
      * @param module
      */
     public void disengageModuleFromOperationChain(AxisModule module, AxisOperation operation) {
-        //INFLOW
+
         Flow flow = module.getInFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, operation.getRemainingPhasesInFlow());
+            for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, operation.getRemainingPhasesInFlow());
             }
         }
-        //OUTFLOW
+
         flow = module.getOutFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, operation.getPhasesOutFlow());
+            for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, operation.getPhasesOutFlow());
             }
         }
-        //INFAULTFLOW
+
         flow = module.getFaultInFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, operation.getPhasesInFaultFlow());
+            for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, operation.getPhasesInFaultFlow());
             }
         }
-        //OUTFAULTFLOW
+
         flow = module.getFaultOutFlow();
         if (flow != null) {
-            for (int j = 0; j < flow.getHandlerCount(); j++) {
-                HandlerDescription handler = flow.getHandler(j);
-                removeHandlerfromaPhase(handler, operation.getPhasesOutFaultFlow());
+            for(HandlerDescription handler: flow.handlers()) {
+                removeHandlerFromPhases(handler, operation.getPhasesOutFaultFlow());
             }
         }
     }
@@ -203,11 +175,9 @@ public class PhaseResolver {
      * @param handler
      * @param phaseList
      */
-    private void removeHandlerfromaPhase(HandlerDescription handler, List<Phase> phaseList) {
+    private void removeHandlerFromPhases(HandlerDescription handler, List<Phase> phaseList) {
         String phaseName = handler.getRules().getPhaseName();
-        Iterator<Phase> phaseItr = phaseList.iterator();
-        while (phaseItr.hasNext()) {
-            Phase phase = (Phase) phaseItr.next();
+        for(Phase phase: phaseList) {
             if (phase.getPhaseName().equals(phaseName)) {
                 phase.removeHandler(handler);
                 break;
@@ -216,13 +186,14 @@ public class PhaseResolver {
     }
 
     public void engageModuleToMessage(AxisMessage axisMessage, AxisModule axisModule)
-            throws PhaseException {
+            throws PhaseException
+    {
         String direction = axisMessage.getDirection();
         AxisOperation axisOperation = axisMessage.getAxisOperation();
         if (WSDLConstants.MESSAGE_LABEL_OUT_VALUE.equalsIgnoreCase(direction)) {
-            engageModuleToOperation(axisOperation, axisModule, PhaseMetadata.OUT_FLOW);
+            engageModuleToOperation(axisOperation, axisModule, Flows.OUT);
         } else if (WSDLConstants.MESSAGE_LABEL_IN_VALUE.equalsIgnoreCase(direction)) {
-            engageModuleToOperation(axisOperation, axisModule, PhaseMetadata.IN_FLOW);
+            engageModuleToOperation(axisOperation, axisModule, Flows.IN);
         } else if (WSDLConstants.MESSAGE_LABEL_FAULT_VALUE.equals(direction)) {
             //TODO : Need to handle fault correctly
         }

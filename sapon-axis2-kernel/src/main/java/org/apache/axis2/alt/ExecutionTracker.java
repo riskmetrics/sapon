@@ -8,8 +8,8 @@ import org.apache.axis2.engine.Handler;
 
 public interface ExecutionTracker {
 
-	Flow getFlow();
-	void setFlow(Flow flow);
+	Flows getFlow();
+	void setFlow(Flows flow);
 
 	int getCurrentHandlerIndex();
 	void setCurrentHandlerIndex(int currentHandlerIndex);

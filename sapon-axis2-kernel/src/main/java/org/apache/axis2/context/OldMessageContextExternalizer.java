@@ -17,7 +17,7 @@ import org.apache.axiom.attachments.Attachments;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axis2.Constants.Configuration;
-import org.apache.axis2.alt.Flow;
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.context.externalize.ActivateUtils;
 import org.apache.axis2.context.externalize.ExternalizeConstants;
@@ -172,7 +172,7 @@ public class OldMessageContextExternalizer {
         //---------------------------------------------------------
 
         // the type of execution flow for the message context
-        context.setFlow((Flow)in.readObject());
+        context.setFlow((Flows)in.readObject());
 
         // various flags
         context.setProcessingFault(in.readBoolean());

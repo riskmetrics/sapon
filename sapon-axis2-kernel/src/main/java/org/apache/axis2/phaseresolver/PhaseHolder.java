@@ -35,6 +35,7 @@ public class PhaseHolder {
     private List<Phase> phaseList;
 
     public PhaseHolder() {
+    	this(null);
     }
 
     public PhaseHolder(List<Phase> phases) {
@@ -64,8 +65,7 @@ public class PhaseHolder {
         if (Phase.ALL_PHASES.equals(phaseName)) {
             handlerDesc.getRules().setBefore("");
             handlerDesc.getRules().setAfter("");
-            for (int i = 0; i < phaseList.size(); i++) {
-                Phase phase = phaseList.get(i);
+            for(Phase phase: phaseList) {
                 phase.addHandler(handlerDesc);
             }
         } else {
@@ -79,25 +79,22 @@ public class PhaseHolder {
     }
 
     /**
-     * this method is used to get the actual phase object given in the phase array list
+     * Get the Phase with the given name.
      *
      * @param phaseName the name of the desired Phase
      * @return the matching Phase, or null
      */
     private Phase getPhase(String phaseName) {
-        for (int i = 0; i < phaseList.size(); i++) {
-            Phase phase = phaseList.get(i);
-
+        for(Phase phase: phaseList) {
             if (phase.getPhaseName().equals(phaseName)) {
                 return phase;
             }
         }
-
         return null;
     }
 
     /**
-     * Check if a named Phase exists in this holder.
+     * Check if a Phase with the given name exists.
      *
      * @param phaseName name to check
      * @return true if a Phase matching the name was found, false otherwise
@@ -108,7 +105,6 @@ public class PhaseHolder {
                 return true;
             }
         }
-
         return false;
     }
 }

@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.alt.Flow;
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.client.async.AxisCallback;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
@@ -143,10 +143,10 @@ public class AxisEngine {
         List<Phase> preCalculatedPhases;
         if (msgContext.isFault() || msgContext.isProcessingFault()) {
             preCalculatedPhases = confContext.getAxisConfiguration().getInFaultFlowPhases();
-            msgContext.setFlow(Flow.IN_FAULT);
+            msgContext.setFlow(Flows.IN_FAULT);
         } else {
             preCalculatedPhases = confContext.getAxisConfiguration().getInFlowPhases();
-            msgContext.setFlow(Flow.IN);
+            msgContext.setFlow(Flows.IN);
         }
         // Set the initial execution chain in the MessageContext to a *copy* of what
         // we got above.  This allows individual message processing to change the chain without
@@ -307,7 +307,7 @@ public class AxisEngine {
         }
 
         msgctx.setPaused(false);
-        if (msgctx.getFlow() == Flow.IN) {
+        if (msgctx.getFlow() == Flows.IN) {
             return resumeReceive(msgctx);
         } else {
             return resumeSend(msgctx);
@@ -337,7 +337,7 @@ public class AxisEngine {
         outPhases.addAll(executionChain);
         outPhases.addAll(msgContext.getConfigurationContext().getAxisConfiguration().getOutFlowPhases());
         msgContext.setExecutionChain(outPhases);
-        msgContext.setFlow(Flow.OUT);
+        msgContext.setFlow(Flows.OUT);
         try {
             InvocationResponse pi = invoke(msgContext, NOT_RESUMING_EXECUTION);
 
@@ -407,7 +407,7 @@ public class AxisEngine {
             	= new ArrayList<Phase>(faultExecutionChain.size());
             outFaultPhases.addAll(faultExecutionChain);
             msgContext.setExecutionChain(outFaultPhases);
-            msgContext.setFlow(Flow.OUT_FAULT);
+            msgContext.setFlow(Flows.OUT_FAULT);
             try {
                 InvocationResponse pi = invoke(msgContext, NOT_RESUMING_EXECUTION);
                 if(shouldReturn(pi, msgContext)) {
@@ -455,7 +455,7 @@ public class AxisEngine {
         ArrayList<Handler> executionChain = new ArrayList<Handler>(msgContext.getConfigurationContext()
                 .getAxisConfiguration().getOutFaultFlowPhases());
         msgContext.setExecutionChain(executionChain);
-        msgContext.setFlow(Flow.OUT_FAULT);
+        msgContext.setFlow(Flows.OUT_FAULT);
         InvocationResponse pi = invoke(msgContext, NOT_RESUMING_EXECUTION);
 
         switch(pi) {

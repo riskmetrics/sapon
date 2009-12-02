@@ -17,7 +17,7 @@ public class DefaultExecutionTracker implements ExecutionTracker
 	private static final Log log
 		= LogFactory.getLog(DefaultExecutionTracker.class);
 
-	private Flow flow = Flow.IN;
+	private Flows flow = Flows.IN;
 
 	/**
      * @serial The chain of Handlers/Phases for processing this message
@@ -78,7 +78,7 @@ public class DefaultExecutionTracker implements ExecutionTracker
 	}
 
 	@Override
-	public Flow getFlow() {
+	public Flows getFlow() {
 		return this.flow;
 	}
 
@@ -124,7 +124,7 @@ public class DefaultExecutionTracker implements ExecutionTracker
 	}
 
 	@Override
-	public void setFlow(Flow flow) {
+	public void setFlow(Flows flow) {
 		this.flow = flow;
 	}
 

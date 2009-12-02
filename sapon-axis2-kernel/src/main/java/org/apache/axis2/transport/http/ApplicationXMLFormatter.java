@@ -34,7 +34,7 @@ import org.apache.axiom.soap.SOAPFault;
 import org.apache.axiom.soap.SOAPFaultDetail;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
-import org.apache.axis2.alt.Flow;
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.MessageFormatter;
 import org.apache.axis2.util.JavaUtils;
@@ -68,7 +68,7 @@ public class ApplicationXMLFormatter implements MessageFormatter {
         if (log.isDebugEnabled()) {
             log.debug("start getBytes()");
             log.debug("  fault flow=" +
-                      (messageContext.getFlow() == Flow.OUT_FAULT));
+                      (messageContext.getFlow() == Flows.OUT_FAULT));
         }
         try {
             OMElement omElement;
@@ -76,7 +76,7 @@ public class ApplicationXMLFormatter implements MessageFormatter {
             // Find the correct element to serialize.  Normally it is the first element
             // in the body.  But if this is a fault, use the detail entry element or the
             // fault reason.
-            if (messageContext.getFlow() == Flow.OUT_FAULT) {
+            if (messageContext.getFlow() == Flows.OUT_FAULT) {
                 SOAPFault fault = messageContext.getEnvelope().getBody().getFault();
                 SOAPFaultDetail soapFaultDetail = fault.getDetail();
                 omElement = soapFaultDetail.getFirstElement();
@@ -123,7 +123,7 @@ public class ApplicationXMLFormatter implements MessageFormatter {
         try {
             OMElement omElement = null;
 
-            if (messageContext.getFlow() == Flow.OUT_FAULT) {
+            if (messageContext.getFlow() == Flows.OUT_FAULT) {
                 SOAPFault fault = messageContext.getEnvelope().getBody().getFault();
                 SOAPFaultDetail soapFaultDetail = fault.getDetail();
                 if (soapFaultDetail != null) {

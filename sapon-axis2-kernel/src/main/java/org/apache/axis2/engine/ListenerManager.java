@@ -19,6 +19,10 @@
 
 package org.apache.axis2.engine;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
@@ -33,25 +37,24 @@ import org.apache.axis2.transport.TransportSender;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-
-public class ListenerManager {
-
+public class ListenerManager
+{
     private static final Log log = LogFactory.getLog(ListenerManager.class);
 
     public static ConfigurationContext defaultConfigurationContext;
-    protected ListenerManagerShutdownThread shutdownHookThread = null;
 
     public static ListenerManager getDefaultListenerManager() {
-        if (defaultConfigurationContext == null) return null;
+        if (defaultConfigurationContext == null) {
+			return null;
+		}
         return defaultConfigurationContext.getListenerManager();
     }
 
+    protected ListenerManagerShutdownThread shutdownHookThread = null;
+
     private ConfigurationContext configctx;
-    private HashMap<String, TransportListener> startedTransports =
-            new HashMap<String, TransportListener>();
+    private Map<String, TransportListener> startedTransports
+    	= new HashMap<String, TransportListener>();
 
     // We're stopped at first.
     private boolean stopped = true;
@@ -60,21 +63,23 @@ public class ListenerManager {
     private boolean shutdownHookRequired = true;
 
     public void init(ConfigurationContext configCtx) {
-        if (this.configctx != null) return;
+        if (this.configctx != null) {
+			return;
+		}
 
         configCtx.setTransportManager(this);
         this.configctx = configCtx;
 
         // initialize all the transport listeners
-        for (Object o : configctx.getAxisConfiguration().getTransportsIn().values()) {
-            try {
-                TransportInDescription transportIn = (TransportInDescription)o;
-                TransportListener listener = transportIn.getReceiver();
-                if (listener != null && startedTransports.get(transportIn.getName()) == null) {
+        for (TransportInDescription transportIn: configctx.getAxisConfiguration().getTransportsIn().values()) {
+            TransportListener listener = transportIn.getReceiver();
+            if (listener != null && startedTransports.get(transportIn.getName()) == null) {
+            	try {
                     listener.init(configctx, transportIn);
                 }
-            } catch (Exception e) {
-                log.info(e.getMessage(), e);
+            	catch (Exception e) {
+            		log.info(e.getMessage(), e);
+            	}
             }
         }
     }
@@ -91,24 +96,24 @@ public class ListenerManager {
      * @param transportName the name of the transport, or null.
      * @return String
      */
-    public synchronized EndpointReference getEPRforService(String serviceName, String opName,
-                                                           String transportName) throws AxisFault {
+    public synchronized EndpointReference getEPRforService(	String serviceName,
+    														String opName,
+    														String transportName )
+    	throws AxisFault
+    {
         if (transportName == null || "".equals(transportName)) {
             AxisService service = configctx.getAxisConfiguration().getService(serviceName);
             if (service == null) {
                 throw new AxisFault(Messages.getMessage("servicenotfoundinthesystem", serviceName));
             }
             if (service.isEnableAllTransports()) {
-                Iterator<TransportListener> itr_st = startedTransports.values().iterator();
-                while (itr_st.hasNext()) {
-                    TransportListener transportListener = itr_st.next();
+                for(TransportListener transportListener: startedTransports.values()) {
                     EndpointReference[] epRsForService =
                             transportListener.getEPRsForService(serviceName, null);
                     if (epRsForService != null) {
                         return epRsForService[0];
                     }
                 }
-
                 // if nothing can be found return null
                 return null;
 
@@ -116,8 +121,8 @@ public class ListenerManager {
                 List<String> exposeTransport = service.getExposedTransports();
                 TransportListener listener = startedTransports.get(exposeTransport.get(0));
 
-                EndpointReference[] eprsForService;
-                eprsForService = listener.getEPRsForService(serviceName, null);
+                EndpointReference[] eprsForService
+                	= listener.getEPRsForService(serviceName, null);
                 return eprsForService != null ? eprsForService[0] : null;
             }
 
@@ -125,25 +130,26 @@ public class ListenerManager {
             TransportInDescription trsIN = configctx.getAxisConfiguration()
                     .getTransportIn(transportName);
             TransportListener listener = trsIN.getReceiver();
-            EndpointReference[] eprsForService;
-            eprsForService = listener.getEPRsForService(serviceName, null);
+            EndpointReference[] eprsForService
+            	= listener.getEPRsForService(serviceName, null);
             return eprsForService != null ? eprsForService[0] : null;
         }
     }
 
     /** To start all the transports */
     public synchronized void start() {
-        if (!stopped) return;
+        if (!stopped) {
+			return;
+		}
 
         if (configctx == null) {
             log.error("Can't start uninitialized ListenerManager!");
             return;
         }
 
-        for (Object o : configctx.getAxisConfiguration().getTransportsIn().values()) {
+        for(TransportInDescription transportIn: configctx.getAxisConfiguration().getTransportsIn().values()) {
+            TransportListener listener = transportIn.getReceiver();
             try {
-                TransportInDescription transportIn = (TransportInDescription)o;
-                TransportListener listener = transportIn.getReceiver();
                 if (listener != null && startedTransports.get(transportIn.getName()) == null) {
                     listener.start();
                     startedTransports.put(transportIn.getName(), listener);
@@ -157,7 +163,7 @@ public class ListenerManager {
             shutdownHookThread = new ListenerManagerShutdownThread(this);
             Runtime.getRuntime().addShutdownHook(shutdownHookThread);
         }
-        
+
         stopped = false;
     }
 
@@ -178,48 +184,41 @@ public class ListenerManager {
             shutdownHookThread = null;
         }
 
-        for (Object o : startedTransports.values()) {
-            TransportListener transportListener = (TransportListener)o;
+        for(TransportListener transportListener: startedTransports.values()) {
             transportListener.stop();
         }
 
         // Stop the transport senders
-        HashMap<String, TransportOutDescription> outTransports =
-                configctx.getAxisConfiguration().getTransportsOut();
-        if (outTransports.size() > 0) {
-            Iterator<TransportOutDescription> trsItr = outTransports.values().iterator();
-            while (trsItr.hasNext()) {
-                TransportOutDescription outDescription = trsItr.next();
-                TransportSender sender = outDescription.getSender();
-                if (sender != null) {
-                    sender.stop();
-                }
+        Map<String, TransportOutDescription> outTransports
+        	= configctx.getAxisConfiguration().getTransportsOut();
+        for(TransportOutDescription outDescription: outTransports.values()) {
+        	TransportSender sender = outDescription.getSender();
+        	if (sender != null) {
+        		sender.stop();
             }
         }
 
         // Shut down the services
-        for (Object o : configctx.getAxisConfiguration().getServices().values()) {
-            AxisService axisService = (AxisService)o;
+        Map<String, AxisService> services
+        	= configctx.getAxisConfiguration().getServices();
+        for (AxisService axisService: services.values()) {
             ServiceLifeCycle serviceLifeCycle = axisService.getServiceLifeCycle();
             if (serviceLifeCycle != null) {
                 serviceLifeCycle.shutDown(configctx, axisService);
             }
         }
-        
+
         // Shut down the modules
-        HashMap<String, AxisModule> modules = configctx.getAxisConfiguration().getModules();
-        if (modules != null) {
-            Iterator<AxisModule> moduleitr = modules.values().iterator();
-            while (moduleitr.hasNext()) {
-                AxisModule axisModule = moduleitr.next();
-                Module module = axisModule.getModule();
-                if (module != null) {
-                    module.shutdown(configctx);
-                }
+        Map<String, AxisModule> modules
+        	= configctx.getAxisConfiguration().getModules();
+        for(AxisModule axisModule: modules.values()) {
+        	Module module = axisModule.getModule();
+        	if (module != null) {
+        		module.shutdown(configctx);
             }
         }
-        configctx.cleanupContexts();
 
+        configctx.cleanupContexts();
         stopped = true;
     }
 
@@ -229,7 +228,9 @@ public class ListenerManager {
      * @throws AxisFault : will throw AxisFault if something goes wrong
      */
     public synchronized void addListener(TransportInDescription trsIn,
-                                         boolean started) throws AxisFault {
+                                         boolean started)
+    	throws AxisFault
+    {
         configctx.getAxisConfiguration().addTransportIn(trsIn);
         TransportListener transportListener = trsIn.getReceiver();
         if (transportListener != null) {
@@ -282,7 +283,8 @@ public class ListenerManager {
             this.listenerManager = listenerManager;
         }
 
-        public void run() {
+        @Override
+		public void run() {
             try {
                 if (!listenerManager.stopped) {
                     listenerManager.stop();

@@ -56,7 +56,7 @@ public class Flow {
      * @return Returns HandlerDescription.
      */
     public HandlerDescription getHandler(int index) {
-        return (HandlerDescription) list.get(index);
+        return list.get(index);
     }
 
     /**
@@ -66,5 +66,9 @@ public class Flow {
      */
     public int getHandlerCount() {
         return list.size();
+    }
+
+    public Iterable<HandlerDescription> handlers() {
+    	return list;
     }
 }

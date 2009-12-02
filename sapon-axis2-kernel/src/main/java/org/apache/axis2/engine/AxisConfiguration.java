@@ -34,6 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import javax.xml.namespace.QName;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.alt.ModuleConfigAccessor;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.builder.unknowncontent.UnknownContentBuilder;
@@ -56,7 +57,6 @@ import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.i18n.Messages;
-import org.apache.axis2.phaseresolver.PhaseMetadata;
 import org.apache.axis2.phaseresolver.PhaseResolver;
 import org.apache.axis2.transport.MessageFormatter;
 import org.apache.axis2.util.TargetResolver;
@@ -70,35 +70,26 @@ import org.apache.commons.logging.LogFactory;
 public class AxisConfiguration extends AxisDescription
 	implements ModuleConfigAccessor
 {
-
     private static final Log log = LogFactory.getLog(AxisConfiguration.class);
 
-    //To store configured data locators
-    private final HashMap<String, AxisDataLocator> dataLocators = new HashMap<String, AxisDataLocator>();
-    private final HashMap<String, String> dataLocatorClassNames = new HashMap<String, String>();
+    private final Map<String, AxisDataLocator> dataLocators = new HashMap<String, AxisDataLocator>();
+    private final Map<String, String> dataLocatorClassNames = new HashMap<String, String>();
 
-    /**
-     * This is a Map of String name -> AxisModule for all available Modules.
-     */
-    private final HashMap<String, AxisModule> allModules = new HashMap<String, AxisModule>();
+    private final Map<String, AxisModule> allModules = new HashMap<String, AxisModule>();
 
     // To store mapping between default version and module name
-    private final HashMap<String, String> nameToversionMap = new HashMap<String, String>();
+    private final Map<String, String> nameToVersionMap = new HashMap<String, String>();
 
     // private final HashMap serviceGroups = new HashMap();
-    private final HashMap<String, TransportInDescription> transportsIn = new HashMap<String, TransportInDescription>();
+    private final Map<String, TransportInDescription> transportsIn = new HashMap<String, TransportInDescription>();
 
-    private final HashMap<String, TransportOutDescription> transportsOut = new HashMap<String, TransportOutDescription>();
+    private final Map<String, TransportOutDescription> transportsOut = new HashMap<String, TransportOutDescription>();
 
-    private final HashMap<String, List<AxisModule>> policySupportedModules = new HashMap<String, List<AxisModule>>();
+    private final Map<String, List<AxisModule>> policySupportedModules = new HashMap<String, List<AxisModule>>();
 
-    /**
-     * Stores the QNames of local policy assertions
-     */
-    private final ArrayList<QName> localPolicyAssertions = new ArrayList<QName>();
+    private final List<QName> localPolicyAssertions = new ArrayList<QName>();
 
-    // to store AxisObserver Objects
-    private ArrayList<AxisObserver> observersList = null;
+    private List<AxisObserver> observersList = null;
 
     private URL axis2Repository = null;
 
@@ -110,26 +101,26 @@ public class AxisConfiguration extends AxisDescription
      */
     private final List<String> globalModuleList;
 
-    private final Hashtable<String, String> faultyModules;
+    private final Map<String, String> faultyModules;
 
     /**
      * To store faulty services
      */
-    private final Hashtable<String, String> faultyServices;
+    private final Map<String, String> faultyServices;
 
     private List<Phase> inFaultPhases;
 
     private List<Phase> inPhasesUptoAndIncludingPostDispatch;
 
-    private final HashMap<String, MessageReceiver> messageReceivers;
+    private final Map<String, MessageReceiver> messageReceivers;
 
-    private final HashMap<String, Builder> messageBuilders;
+    private final Map<String, Builder> messageBuilders;
 
-    private final HashMap<String, MessageFormatter> messageFormatters;
+    private final Map<String, MessageFormatter> messageFormatters;
 
     private ClassLoader moduleClassLoader;
 
-    private final HashMap<String, ModuleConfiguration> moduleConfigmap;
+    private final Map<String, ModuleConfiguration> moduleConfigmap;
 
     private List<Phase> outFaultPhases;
 
@@ -144,7 +135,7 @@ public class AxisConfiguration extends AxisDescription
     //To keep track of whether the system has started or not
     private boolean start;
 
-    private final ArrayList<TargetResolver> targetResolvers;
+    private final List<TargetResolver> targetResolvers;
 
     private ClusterManager clusterManager;
 
@@ -596,11 +587,11 @@ public class AxisConfiguration extends AxisDescription
         }
     }
 
-    public Hashtable<String, String> getFaultyModules() {
+    public Map<String, String> getFaultyModules() {
         return faultyModules;
     }
 
-    public Hashtable<String, String> getFaultyServices() {
+    public Map<String, String> getFaultyServices() {
         return faultyServices;
     }
 
@@ -752,7 +743,7 @@ public class AxisConfiguration extends AxisDescription
     /**
      * @return Returns HashMap.
      */
-    public HashMap<String, AxisModule> getModules() {
+    public Map<String, AxisModule> getModules() {
         return allModules;
     }
 
@@ -835,14 +826,8 @@ public class AxisConfiguration extends AxisDescription
     }
 
     // To get all the services in the system
-    public HashMap<String, AxisService> getServices() {
-        HashMap<String, AxisService> hashMap = new HashMap<String, AxisService>(this.allServices.size());
-        String key;
-        for (Iterator<String> iter = this.allServices.keySet().iterator(); iter.hasNext();){
-            key = iter.next();
-            hashMap.put(key, this.allServices.get(key));
-        }
-        return hashMap;
+    public Map<String, AxisService> getServices() {
+        return new HashMap<String, AxisService>(allServices);
     }
 
     // The class loader which become the top most parent of all the modules and
@@ -859,11 +844,11 @@ public class AxisConfiguration extends AxisDescription
         return transportsOut.get(name);
     }
 
-    public HashMap<String, TransportInDescription> getTransportsIn() {
+    public Map<String, TransportInDescription> getTransportsIn() {
         return transportsIn;
     }
 
-    public HashMap<String, TransportOutDescription> getTransportsOut() {
+    public Map<String, TransportOutDescription> getTransportsOut() {
         return transportsOut;
     }
 
@@ -944,13 +929,13 @@ public class AxisConfiguration extends AxisDescription
      * @param moduleVersion
      */
     public void addDefaultModuleVersion(String moduleName, String moduleVersion) {
-        if (nameToversionMap.get(moduleName) == null) {
-            nameToversionMap.put(moduleName, moduleVersion);
+        if (nameToVersionMap.get(moduleName) == null) {
+            nameToVersionMap.put(moduleName, moduleVersion);
         }
     }
 
     public String getDefaultModuleVersion(String moduleName) {
-        return nameToversionMap.get(moduleName);
+        return nameToVersionMap.get(moduleName);
     }
 
     public AxisModule getDefaultModule(String moduleName) {
@@ -1033,7 +1018,7 @@ public class AxisConfiguration extends AxisDescription
         }
     }
 
-    public ArrayList<AxisObserver> getObserversList() {
+    public List<AxisObserver> getObserversList() {
         return observersList;
     }
 
@@ -1173,10 +1158,10 @@ public class AxisConfiguration extends AxisDescription
      * @param flow the type of the flow
      * @throws org.apache.axis2.AxisFault : If something went wrong
      */
-    public void insertPhase(Deployable d, int flow) throws AxisFault {
+    public void insertPhase(Deployable d, Flows flow) throws AxisFault {
 
         switch (flow) {
-            case PhaseMetadata.IN_FLOW : {
+            case IN: {
                 List<Phase> phaseList = phasesinfo.getAllInPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {
@@ -1184,7 +1169,7 @@ public class AxisConfiguration extends AxisDescription
                 }
                 break;
             }
-            case PhaseMetadata.OUT_FLOW : {
+            case OUT: {
             	List<Phase> phaseList = phasesinfo.getAllOutPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {
@@ -1192,7 +1177,7 @@ public class AxisConfiguration extends AxisDescription
                 }
                 break;
             }
-            case PhaseMetadata.FAULT_OUT_FLOW : {
+            case OUT_FAULT: {
             	List<Phase> phaseList = phasesinfo.getAllOutFaultPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {
@@ -1200,7 +1185,7 @@ public class AxisConfiguration extends AxisDescription
                 }
                 break;
             }
-            case PhaseMetadata.FAULT_IN_FLOW : {
+            case IN_FAULT: {
             	List<Phase> phaseList = phasesinfo.getAllInFaultPhases();
                 phaseList = findAndInsertPhase(d, phaseList);
                 if (phaseList != null) {

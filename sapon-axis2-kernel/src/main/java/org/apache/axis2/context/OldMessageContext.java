@@ -48,7 +48,7 @@ import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.RelatesTo;
 import org.apache.axis2.alt.DefaultExecutionTracker;
 import org.apache.axis2.alt.ExecutionTracker;
-import org.apache.axis2.alt.Flow;
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.alt.MessageContextFlags;
 import org.apache.axis2.alt.MessageContextFlagsEnumSet;
 import org.apache.axis2.alt.ModuleConfigAccessor;
@@ -1775,12 +1775,12 @@ public class OldMessageContext extends AbstractContext<OperationContext>
 	}
 
 	@Override
-	public Flow getFlow() {
+	public Flows getFlow() {
 		return execTracker.getFlow();
 	}
 
 	@Override
-	public void setFlow(Flow flow) {
+	public void setFlow(Flows flow) {
 		execTracker.setFlow(flow);
 	}
 

@@ -33,6 +33,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.deployment.util.PhasesInfo;
 import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.AxisOperation;
@@ -44,7 +45,6 @@ import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.java.security.AccessController;
 import org.apache.axis2.modules.Module;
-import org.apache.axis2.phaseresolver.PhaseMetadata;
 import org.apache.axis2.util.Loader;
 
 /**
@@ -351,21 +351,21 @@ public class ModuleBuilder extends DescriptionBuilder {
                 throw new DeploymentException("Flow can not be null for the phase name " +
                                               phaseName);
             }
-            String[] flows = flowName.split(",");
-            for (String flow : flows) {
-                int flowIndex;
-                if (TAG_FLOW_IN.equalsIgnoreCase(flow)) {
-                    flowIndex = PhaseMetadata.IN_FLOW;
-                } else if (TAG_FLOW_OUT.equalsIgnoreCase(flow)) {
-                    flowIndex = PhaseMetadata.OUT_FLOW;
-                } else if (TAG_FLOW_OUT_FAULT.equalsIgnoreCase(flow)) {
-                    flowIndex = PhaseMetadata.FAULT_OUT_FLOW;
-                } else if (TAG_FLOW_IN_FAULT.equalsIgnoreCase(flow)) {
-                    flowIndex = PhaseMetadata.FAULT_IN_FLOW;
+            String[] flowTags = flowName.split(",");
+            for (String flowTag : flowTags) {
+                Flows flow;
+                if (TAG_FLOW_IN.equalsIgnoreCase(flowTag)) {
+                    flow = Flows.IN;
+                } else if (TAG_FLOW_OUT.equalsIgnoreCase(flowTag)) {
+                    flow = Flows.OUT;
+                } else if (TAG_FLOW_OUT_FAULT.equalsIgnoreCase(flowTag)) {
+                    flow = Flows.OUT_FAULT;
+                } else if (TAG_FLOW_IN_FAULT.equalsIgnoreCase(flowTag)) {
+                    flow = Flows.IN_FAULT;
                 } else {
-                    throw new DeploymentException("Unknown flow name '" + flow + "'");
+                    throw new DeploymentException("Unknown flow name '" + flowTag + "'");
                 }
-                axisConfig.insertPhase(d, flowIndex);
+                axisConfig.insertPhase(d, flow);
             }
         }
     }

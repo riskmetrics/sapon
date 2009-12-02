@@ -20,15 +20,7 @@
 
 package org.apache.axis2.phaseresolver;
 
-/**
- * Class PhaseMetadata
- */
 public class PhaseMetadata {
-    public static final int IN_FLOW = 1;
-    public static final int OUT_FLOW = 2;
-    public static final int FAULT_OUT_FLOW = 4;
-    public static final int FAULT_IN_FLOW = 3;
-
     // INFLOW
     public static final String PHASE_TRANSPORTIN = "TransportIn";
     public static final String PHASE_PRE_DISPATCH = "PreDispatch";
