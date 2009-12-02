@@ -88,119 +88,138 @@ public class BuilderUtil {
 
     public static final int BOM_SIZE = 4;
 
-    public static SOAPEnvelope buildsoapMessage(MessageContext messageContext,
-                                                MultipleEntryHashMap requestParameterMap,
+    public static SOAPEnvelope buildSoapMessage(AxisOperation operation,
+                                                MultipleEntryHashMap<String, Object> requestParameterMap,
                                                 SOAPFactory soapFactory)
     	throws AxisFault
     {
+    	final SOAPEnvelope soapEnvelope = soapFactory.getDefaultEnvelope();
+        if (operation == null) {
+        	return soapEnvelope;
+        }
 
-        SOAPEnvelope soapEnvelope = soapFactory.getDefaultEnvelope();
-        SOAPBody body = soapEnvelope.getBody();
-        XmlSchemaElement xmlSchemaElement;
-        AxisOperation axisOperation = messageContext.getAxisOperation();
-        if (axisOperation != null) {
-            AxisMessage axisMessage =
-                    axisOperation.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
-            xmlSchemaElement = axisMessage.getSchemaElement();
+        final SOAPBody body = soapEnvelope.getBody();
+        final AxisMessage axisMessage
+        	= operation.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+        final XmlSchemaElement xmlSchemaElement
+        	= axisMessage.getSchemaElement();
 
-            if (xmlSchemaElement == null) {
-                OMElement bodyFirstChild =
-                        soapFactory
-                                .createOMElement(messageContext.getAxisOperation().getName(), body);
+        if (xmlSchemaElement == null) {
+            OMElement bodyFirstChild =
+                    soapFactory.createOMElement(operation.getName(), body);
 
-                // if there is no schema its piece of cake !! add these to the soap body in any order you like.
-                // Note : if there are parameters in the path of the URL, there is no way this can add them
-                // to the message.
-                createSOAPMessageWithoutSchema(soapFactory, bodyFirstChild, requestParameterMap);
-            } else {
+            // If there is no schema, add these to the soap body in any order
+            // you like.  If there are parameters in the path of the URL, there
+            // is no way this can add them to the message.
+            createSOAPMessageWithoutSchema(soapFactory, bodyFirstChild, requestParameterMap);
+            return soapEnvelope;
+        }
 
-                // first get the target namespace from the schema and the wrapping element.
-                // create an OMElement out of those information. We are going to extract parameters from
-                // url, create OMElements and add them as children to this wrapping element.
-                String targetNamespace = xmlSchemaElement.getQName().getNamespaceURI();
-                QName bodyFirstChildQName;
-                if (targetNamespace != null && !"".equals(targetNamespace)) {
-                    bodyFirstChildQName = new QName(targetNamespace, xmlSchemaElement.getName());
+        // Create an OMElement which we can use as a wrapping element for
+        // OMElements created from parameters of the url.
+        String targetNamespace = xmlSchemaElement.getQName().getNamespaceURI();
+        QName bodyFirstChildQName;
+        if (targetNamespace != null && !"".equals(targetNamespace)) {
+            bodyFirstChildQName = new QName(targetNamespace, xmlSchemaElement.getName());
+        } else {
+            bodyFirstChildQName = new QName(xmlSchemaElement.getName());
+        }
+        OMElement bodyFirstChild = soapFactory.createOMElement(bodyFirstChildQName, body);
+
+        XmlSchemaType schemaType = xmlSchemaElement.getSchemaType();
+        if (!(schemaType instanceof XmlSchemaComplexType)) {
+        	return soapEnvelope;
+        }
+
+        XmlSchemaComplexType complexType = ((XmlSchemaComplexType)schemaType);
+        XmlSchemaParticle particle = complexType.getParticle();
+        if (!(particle instanceof XmlSchemaSequence ||
+              particle instanceof XmlSchemaAll)) {
+        	return soapEnvelope;
+        }
+
+        createSOAPMessageWithSchema((XmlSchemaGroupBase)particle,
+        							soapFactory,
+        							bodyFirstChild,
+        							requestParameterMap);
+
+        return soapEnvelope;
+    }
+
+    private static Iterable<XmlSchemaElement> xmlSchemaElements(final XmlSchemaGroupBase xmlSchemaGroupBase) {
+    	return new Iterable<XmlSchemaElement>() {
+			@SuppressWarnings("unchecked")
+			@Override public Iterator<XmlSchemaElement> iterator() {
+				return xmlSchemaGroupBase.getItems().getIterator();
+			}
+    	};
+    }
+
+    private static boolean isAnyType(XmlSchemaElement xmlSchemaElement) {
+    	return org.apache.ws.commons.schema.constants.Constants.XSD_ANYTYPE.equals(
+    			xmlSchemaElement.getSchemaTypeName());
+    }
+
+    private static boolean isNamespaced(QName qName) {
+    	return !(qName == null ||
+                 qName.getNamespaceURI() == null  ||
+                 qName.getNamespaceURI().length() == 0);
+    }
+
+    private static void createSOAPMessageWithSchema(XmlSchemaGroupBase xmlSchemaGroupBase,
+    												SOAPFactory soapFactory,
+    												OMElement parentElem,
+    												MultipleEntryHashMap<String, Object> requestParameterMap)
+    	throws AxisFault
+    {
+        for(XmlSchemaElement innerElement: xmlSchemaElements(xmlSchemaGroupBase)) {
+            QName qName = innerElement.getQName();
+            if (qName == null && isAnyType(innerElement)) {
+                createSOAPMessageWithoutSchema(soapFactory, parentElem,
+                                               requestParameterMap);
+                break;
+            }
+            long minOccurs = innerElement.getMinOccurs();
+            boolean nillable = innerElement.isNillable();
+            String name = (qName != null) ? qName.getLocalPart()
+            		                      : innerElement.getName();
+
+            OMNamespace ns = isNamespaced(qName) ? soapFactory.createOMNamespace(qName.getNamespaceURI(), null)
+            									 : null;
+
+            Object value;
+            while ((value = requestParameterMap.get(name)) != null) {
+                addRequestParameter(soapFactory, parentElem, ns, name, value);
+                minOccurs--;
+            }
+            if (minOccurs > 0) {
+                if (nillable) {
+                    OMNamespace xsi = soapFactory.createOMNamespace(
+                            Constants.URI_DEFAULT_SCHEMA_XSI,
+                            Constants.NS_PREFIX_SCHEMA_XSI);
+                    OMAttribute omAttribute =
+                            soapFactory.createOMAttribute("nil", xsi, "true");
+                    soapFactory.createOMElement(name, ns, parentElem)
+                               .addAttribute(omAttribute);
                 } else {
-                    bodyFirstChildQName = new QName(xmlSchemaElement.getName());
-                }
-                OMElement bodyFirstChild = soapFactory.createOMElement(bodyFirstChildQName, body);
-
-                // Schema should adhere to the IRI style in this. So assume IRI style and dive in to
-                // schema
-                XmlSchemaType schemaType = xmlSchemaElement.getSchemaType();
-                if (schemaType instanceof XmlSchemaComplexType) {
-                    XmlSchemaComplexType complexType = ((XmlSchemaComplexType)schemaType);
-                    XmlSchemaParticle particle = complexType.getParticle();
-                    if (particle instanceof XmlSchemaSequence || particle instanceof XmlSchemaAll) {
-                        XmlSchemaGroupBase xmlSchemaGroupBase = (XmlSchemaGroupBase)particle;
-                        Iterator<XmlSchemaElement> iterator = xmlSchemaGroupBase.getItems().getIterator();
-
-                        // now we need to know some information from the binding operation.
-
-                        while (iterator.hasNext()) {
-                            XmlSchemaElement innerElement = iterator.next();
-                            QName qName = innerElement.getQName();
-                            if (qName == null && innerElement.getSchemaTypeName()
-                                    .equals(org.apache.ws.commons.schema.constants.Constants.XSD_ANYTYPE)) {
-                                createSOAPMessageWithoutSchema(soapFactory, bodyFirstChild,
-                                                               requestParameterMap);
-                                break;
-                            }
-                            long minOccurs = innerElement.getMinOccurs();
-                            boolean nillable = innerElement.isNillable();
-                            String name =
-                                    qName != null ? qName.getLocalPart() : innerElement.getName();
-                            Object value;
-                            OMNamespace ns = (qName == null ||
-                                              qName.getNamespaceURI() == null
-                                              || qName.getNamespaceURI().length() == 0) ?
-                                    null : soapFactory.createOMNamespace(
-                                    qName.getNamespaceURI(), null);
-
-                            // FIXME changed
-                            while ((value = requestParameterMap.get(name)) != null) {
-                                addRequestParameter(soapFactory,
-                                                    bodyFirstChild, ns, name, value);
-                                minOccurs--;
-                            }
-                            if (minOccurs > 0) {
-                                if (nillable) {
-
-                                    OMNamespace xsi = soapFactory.createOMNamespace(
-                                            Constants.URI_DEFAULT_SCHEMA_XSI,
-                                            Constants.NS_PREFIX_SCHEMA_XSI);
-                                    OMAttribute omAttribute =
-                                            soapFactory.createOMAttribute("nil", xsi, "true");
-                                    soapFactory.createOMElement(name, ns,
-                                                                bodyFirstChild)
-                                            .addAttribute(omAttribute);
-
-                                } else {
-                                    throw new AxisFault("Required element " + qName +
-                                                        " defined in the schema can not be" +
-                                                        " found in the request");
-                                }
-                            }
-                        }
-                    }
+                    throw new AxisFault("Required element " + qName +
+                                        " defined in the schema can not be" +
+                                        " found in the request");
                 }
             }
         }
-        return soapEnvelope;
     }
 
     private static void createSOAPMessageWithoutSchema(SOAPFactory soapFactory,
                                                        OMElement bodyFirstChild,
-                                                       MultipleEntryHashMap requestParameterMap) {
-
-        // first add the parameters in the URL
+                                                       MultipleEntryHashMap<String, Object> requestParameterMap)
+    {
         if (requestParameterMap != null) {
-            for(final Object key: requestParameterMap.keySet()) {
+            for(final String key: requestParameterMap.keySet()) {
                 Object value = requestParameterMap.get(key);
                 if (value != null) {
                     addRequestParameter(soapFactory, bodyFirstChild, null,
-                    					(String)key,
+                    					key,
                                         value);
                 }
             }
@@ -211,7 +230,8 @@ public class BuilderUtil {
                                             OMElement bodyFirstChild,
                                             OMNamespace ns,
                                             String key,
-                                            Object parameter) {
+                                            Object parameter)
+    {
         if (parameter instanceof DataHandler) {
             DataHandler dataHandler = (DataHandler)parameter;
             OMText dataText = bodyFirstChild.getOMFactory().createOMText(
@@ -226,11 +246,11 @@ public class BuilderUtil {
     }
 
     public static StAXBuilder getPOXBuilder(InputStream inStream, String charSetEnc)
-            throws XMLStreamException {
-        StAXBuilder builder;
+    	throws XMLStreamException
+    {
         XMLStreamReader xmlreader =
                 StAXUtils.createXMLStreamReader(inStream, charSetEnc);
-        builder = new StAXOMBuilder(xmlreader);
+        StAXBuilder builder = new StAXOMBuilder(xmlreader);
         return builder;
     }
 
@@ -244,7 +264,8 @@ public class BuilderUtil {
      * @throws java.io.IOException
      */
     public static Reader getReader(final InputStream is, final String charSetEncoding)
-            throws IOException {
+    	throws IOException
+    {
         final PushbackInputStream is2 = getPushbackInputStream(is);
         final String encoding = getCharSetEncoding(is2, charSetEncoding);
         InputStreamReader inputStreamReader;
@@ -273,8 +294,8 @@ public class BuilderUtil {
     }
 
     /**
-     * Use the BOM Mark to identify the encoding to be used. Fall back to default encoding
-     * specified
+     * Use the BOM Mark to identify the encoding to be used. Fall back to
+     * default encoding specified
      *
      * @param is2             PushBackInputStream (it must be a pushback input stream so that we can
      *                        unread the BOM)
@@ -283,7 +304,8 @@ public class BuilderUtil {
      * @throws java.io.IOException
      */
     public static String getCharSetEncoding(PushbackInputStream is2, String defaultEncoding)
-            throws IOException {
+    	throws IOException
+    {
         String encoding;
         byte bom[] = new byte[BOM_SIZE];
         int n, unread;
@@ -292,44 +314,32 @@ public class BuilderUtil {
 
         if ((bom[0] == (byte)0xEF) && (bom[1] == (byte)0xBB) && (bom[2] == (byte)0xBF)) {
             encoding = "UTF-8";
-            if (log.isDebugEnabled()) {
-                log.debug("char set encoding set from BOM =" + encoding);
-            }
             unread = n - 3;
         } else if ((bom[0] == (byte)0xFE) && (bom[1] == (byte)0xFF)) {
             encoding = "UTF-16BE";
-            if (log.isDebugEnabled()) {
-                log.debug("char set encoding set from BOM =" + encoding);
-            }
             unread = n - 2;
         } else if ((bom[0] == (byte)0xFF) && (bom[1] == (byte)0xFE)) {
             encoding = "UTF-16LE";
-            if (log.isDebugEnabled()) {
-                log.debug("char set encoding set from BOM =" + encoding);
-            }
             unread = n - 2;
         } else if ((bom[0] == (byte)0x00) && (bom[1] == (byte)0x00) && (bom[2] == (byte)0xFE)
                    && (bom[3] == (byte)0xFF)) {
             encoding = "UTF-32BE";
-            if (log.isDebugEnabled()) {
-                log.debug("char set encoding set from BOM =" + encoding);
-            }
             unread = n - 4;
         } else if ((bom[0] == (byte)0xFF) && (bom[1] == (byte)0xFE) && (bom[2] == (byte)0x00)
                    && (bom[3] == (byte)0x00)) {
             encoding = "UTF-32LE";
-            if (log.isDebugEnabled()) {
-                log.debug("char set encoding set from BOM =" + encoding);
-            }
             unread = n - 4;
         } else {
-
             // Unicode BOM mark not found, unread all bytes
-            encoding = defaultEncoding;
             if (log.isDebugEnabled()) {
-                log.debug("char set encoding set from default =" + encoding);
+                log.debug("Unicode BOM mark not found, set encoding set from default");
             }
+            encoding = defaultEncoding;
             unread = n;
+        }
+
+        if (log.isDebugEnabled()) {
+            log.debug("char set encoding =" + encoding);
         }
 
         if (unread > 0) {
@@ -343,10 +353,8 @@ public class BuilderUtil {
         String soapNS = SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI;
         if (contentType != null) {
             if (contentType.indexOf(SOAP12Constants.SOAP_12_CONTENT_TYPE) > -1) {
-                // it is SOAP 1.2
                 soapNS = SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI;
             } else if (contentType.indexOf(SOAP11Constants.SOAP_11_CONTENT_TYPE) > -1) {
-                // SOAP 1.1
                 soapNS = SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI;
             }
         }
@@ -366,7 +374,6 @@ public class BuilderUtil {
             log.debug("Input contentType (" + contentType + ")");
         }
         if (contentType == null) {
-            // Using the default UTF-8
             if (log.isDebugEnabled()) {
                 log.debug("CharSetEncoding defaulted (" + MessageContext.DEFAULT_CHAR_SET_ENCODING +
                           ")");
@@ -375,9 +382,7 @@ public class BuilderUtil {
         }
 
         int index = contentType.indexOf(HTTPConstants.CHAR_SET_ENCODING);
-
         if (index == -1) {    // Charset encoding not found in the content-type header
-            // Using the default UTF-8
             if (log.isDebugEnabled()) {
                 log.debug("CharSetEncoding defaulted (" + MessageContext.DEFAULT_CHAR_SET_ENCODING +
                           ")");
@@ -410,12 +415,12 @@ public class BuilderUtil {
     }
 
     public static StAXBuilder getAttachmentsBuilder(MessageContext msgContext,
-                                                    InputStream inStream, String contentTypeString,
+                                                    InputStream inStream,
+                                                    String contentTypeString,
                                                     boolean isSOAP)
-            throws OMException, XMLStreamException, FactoryConfigurationError {
-        StAXBuilder builder = null;
-        XMLStreamReader streamReader;
-
+    	throws OMException, XMLStreamException, FactoryConfigurationError
+    {
+    	XMLStreamReader streamReader;
         Attachments attachments = createAttachmentsMap(msgContext, inStream, contentTypeString);
         String charSetEncoding = getCharSetEncoding(attachments.getSOAPPartContentType());
 
@@ -440,6 +445,7 @@ public class BuilderUtil {
 
         String soapEnvelopeNamespaceURI = getEnvelopeNamespace(contentTypeString);
 
+        StAXBuilder builder = null;
         if (isSOAP) {
             if (attachments.getAttachmentSpecType().equals(
                     MTOMConstants.MTOM_TYPE)) {
@@ -511,7 +517,7 @@ public class BuilderUtil {
 
         // Get the content-length if it is available
         int contentLength = 0;
-        Map<String, String> headers = (Map<String, String>)msgContext.getProperty(MessageContext.TRANSPORT_HEADERS);
+        Map<String, String> headers = getHeaders(msgContext);
         if (headers != null) {
             String contentLengthValue = headers.get(HTTPConstants.HEADER_CONTENT_LENGTH);
             if (contentLengthValue != null) {
@@ -540,6 +546,11 @@ public class BuilderUtil {
                                  attachmentRepoDir,
                                  attachmentSizeThreshold,
                                  contentLength);
+    }
+
+    @SuppressWarnings("unchecked")
+	private static Map<String, String> getHeaders(MessageContext msgContext) {
+    	return (Map<String, String>)msgContext.getProperty(MessageContext.TRANSPORT_HEADERS);
     }
 
     public static boolean isAttachmentsCacheEnabled(MessageContext msgContext) {
@@ -714,8 +725,7 @@ public class BuilderUtil {
             Object contentNegotiation = configuration
                     .getParameterValue(Constants.Configuration.ENABLE_HTTP_CONTENT_NEGOTIATION);
             if (JavaUtils.isTrueExplicitly(contentNegotiation)) {
-                Map<String, String> transportHeaders =
-                        (Map<String, String>)msgContext.getProperty(MessageContext.TRANSPORT_HEADERS);
+                Map<String, String> transportHeaders = getHeaders(msgContext);
                 if (transportHeaders != null) {
                     String acceptHeader = transportHeaders.get(HTTPConstants.HEADER_ACCEPT);
                     if (acceptHeader != null) {
@@ -726,8 +736,9 @@ public class BuilderUtil {
                         String[] strings = acceptHeader.split(",");
                         for (String string : strings) {
                             String accept = string.trim();
-                            // We dont want dynamic content negotoatin to work on text.xml as its
-                            // ambiguos as to whether the user requests SOAP 1.1 or POX response
+                            // We don't want dynamic content negotiation to
+                            // work on text.xml as its ambiguous as to whether
+                            // the user requests SOAP 1.1 or POX response
                             if (!HTTPConstants.MEDIA_TYPE_TEXT_XML.equals(accept) &&
                                 configuration.getMessageFormatter(accept) != null) {
                                 type = string;

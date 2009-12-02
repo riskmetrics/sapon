@@ -62,8 +62,8 @@ public class XFormURLEncodedBuilder implements Builder {
     									MessageContext messageContext)
     	throws AxisFault
     {
-        MultipleEntryHashMap<String, String> parameterMap
-        	= new MultipleEntryHashMap<String, String>();
+        MultipleEntryHashMap<String, Object> parameterMap
+        	= new MultipleEntryHashMap<String, Object>();
         SOAPFactory soapFactory;
         AxisBindingOperation axisBindingOperation =
                 (AxisBindingOperation) messageContext.getProperty(
@@ -117,11 +117,12 @@ public class XFormURLEncodedBuilder implements Builder {
                                      inputStream);
 
 
-        return BuilderUtil.buildsoapMessage(messageContext, parameterMap,
+        return BuilderUtil.buildSoapMessage(messageContext.getAxisOperation(),
+        									parameterMap,
                                             soapFactory);
     }
 
-    protected void extractParametersFromRequest(MultipleEntryHashMap<String, String> parameterMap,
+    protected void extractParametersFromRequest(MultipleEntryHashMap<String, Object> parameterMap,
                                                 String query,
                                                 String queryParamSeparator,
                                                 final String charsetEncoding,
@@ -210,7 +211,7 @@ public class XFormURLEncodedBuilder implements Builder {
      * @param parameterMap
      */
     protected String extractParametersUsingHttpLocation(String templatedPath,
-                                                        MultipleEntryHashMap<String, String> parameterMap,
+                                                        MultipleEntryHashMap<String, Object> parameterMap,
                                                         String requestURL,
                                                         String queryParameterSeparator)
             throws AxisFault, UnsupportedEncodingException {
@@ -327,7 +328,7 @@ public class XFormURLEncodedBuilder implements Builder {
         return requestURL;
     }
 
-    private void addParameterToMap(MultipleEntryHashMap<String, String> parameterMap, String paramName,
+    private void addParameterToMap(MultipleEntryHashMap<String, Object> parameterMap, String paramName,
                                    String paramValue)
             throws UnsupportedEncodingException, AxisFault {
         try {
