@@ -27,6 +27,7 @@ import java.net.URI;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
@@ -60,7 +61,6 @@ import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
 import javax.xml.namespace.QName;
 
-import org.apache.axis2.java.security.AccessController;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

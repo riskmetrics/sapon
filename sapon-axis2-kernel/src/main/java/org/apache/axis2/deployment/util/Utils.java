@@ -146,8 +146,8 @@ public class Utils {
         Handler handler;
         try {
             final Class<?> handlerClass = Loader.loadClass(loader1, handlername);
-            Package aPackage = org.apache.axis2.java.security.AccessController
-                    .doPrivileged(new PrivilegedAction<Package>() {
+            Package aPackage = AccessController.doPrivileged(
+            		new PrivilegedAction<Package>() {
                         public Package run() {
                             return handlerClass.getPackage();
                         }
@@ -164,8 +164,8 @@ public class Utils {
                             "Please edit axis2.xml and replace with the same class in org.apache.axis2.dispatchers package");
                 }
             }
-            handler = org.apache.axis2.java.security.AccessController
-                    .doPrivileged(new PrivilegedExceptionAction<Handler>() {
+            handler = AccessController.doPrivileged(
+            		new PrivilegedExceptionAction<Handler>() {
                         public Handler run() throws InstantiationException,
                                 IllegalAccessException {
                             return (Handler)handlerClass.newInstance();
@@ -199,9 +199,9 @@ public class Utils {
             }
             final File f = createTempFile(fileName, in, tmpDir);
 
-            fin = (FileInputStream)org.apache.axis2.java.security.AccessController
-                    .doPrivileged(new PrivilegedExceptionAction<InputStream>() {
-                        public InputStream run() throws FileNotFoundException {
+            fin = AccessController.doPrivileged(
+            		new PrivilegedExceptionAction<FileInputStream>() {
+                        public FileInputStream run() throws FileNotFoundException {
                             return new FileInputStream(f);
                         }
                     });
@@ -323,8 +323,8 @@ public class Utils {
         OutputStream out;
         final File f2 = f;
         try {
-            out = org.apache.axis2.java.security.AccessController
-                    .doPrivileged(new PrivilegedExceptionAction<OutputStream>() {
+            out = AccessController.doPrivileged(
+            		new PrivilegedExceptionAction<OutputStream>() {
                         public OutputStream run() throws FileNotFoundException {
                             return new FileOutputStream(f2);
                         }
@@ -409,20 +409,20 @@ public class Utils {
 
     private static boolean addFiles(List<URL> urls, final File libfiles)
             throws MalformedURLException {
-        Boolean exists = org.apache.axis2.java.security.AccessController
-                .doPrivileged(new PrivilegedAction<Boolean>() {
+        Boolean exists = AccessController.doPrivileged(
+        		new PrivilegedAction<Boolean>() {
                     public Boolean run() {
                         return libfiles.exists();
                     }
                 });
         if (exists) {
             urls.add(libfiles.toURI().toURL());
-            File jarfiles[] = org.apache.axis2.java.security.AccessController
-					        .doPrivileged(new PrivilegedAction<File[]>() {
-					            public File[] run() {
-					                return libfiles.listFiles();
-					            }
-					        });
+            File jarfiles[] = AccessController.doPrivileged(
+            		new PrivilegedAction<File[]>() {
+            			public File[] run() {
+            				return libfiles.listFiles();
+            			}
+            		});
             int i = 0;
             while (i < jarfiles.length) {
                 File jarfile = jarfiles[i];
@@ -495,8 +495,8 @@ public class Utils {
                         });
                 Object obj = null;
                 if (method != null) {
-                    obj = org.apache.axis2.java.security.AccessController
-                            .doPrivileged(new PrivilegedExceptionAction<Object>() {
+                    obj = AccessController.doPrivileged(
+                    		new PrivilegedExceptionAction<Object>() {
                                 public Object run()
                                         throws InstantiationException,
                                         IllegalAccessException,
@@ -647,8 +647,8 @@ public class Utils {
             PhasesInfo phasesInfo = axisConfig.getPhasesInfo();
             final ClassLoader moduleClassLoader = module.getModuleClassLoader();
             List<String> services = new ArrayList<String>();
-            final InputStream in = org.apache.axis2.java.security.AccessController
-                    .doPrivileged(new PrivilegedAction<InputStream>() {
+            final InputStream in = AccessController.doPrivileged(
+            		new PrivilegedAction<InputStream>() {
                         public InputStream run() {
                             return moduleClassLoader
                                     .getResourceAsStream("aars/aars.list");
@@ -657,13 +657,12 @@ public class Utils {
             if (in != null) {
                 BufferedReader input;
                 try {
-                    input = new BufferedReader(
-                            org.apache.axis2.java.security.AccessController
-                                    .doPrivileged(new PrivilegedAction<InputStreamReader>() {
-                                        public InputStreamReader run() {
-                                            return new InputStreamReader(in);
-                                        }
-                                    }));
+                    input = new BufferedReader(AccessController.doPrivileged(
+                    			new PrivilegedAction<InputStreamReader>() {
+                    				public InputStreamReader run() {
+                    					return new InputStreamReader(in);
+                                    }
+                    			}));
                     String line;
                     while ((line = input.readLine()) != null) {
                         line = line.trim();
@@ -682,8 +681,8 @@ public class Utils {
                     if (servicename == null || "".equals(servicename)) {
                         continue;
                     }
-                    InputStream fin = org.apache.axis2.java.security.AccessController
-                            .doPrivileged(new PrivilegedAction<InputStream>() {
+                    InputStream fin = AccessController.doPrivileged(
+                    		new PrivilegedAction<InputStream>() {
                                 public InputStream run() {
                                     return moduleClassLoader
                                             .getResourceAsStream("aars/"
@@ -882,9 +881,8 @@ public class Utils {
 
     public static DeploymentClassLoader createClassLoader(File serviceFile)
             throws MalformedURLException {
-        ClassLoader contextClassLoader =
-                org.apache.axis2.java.security.AccessController
-		        .doPrivileged(new PrivilegedAction<ClassLoader>() {
+        ClassLoader contextClassLoader = AccessController.doPrivileged(
+        		new PrivilegedAction<ClassLoader>() {
 		            public ClassLoader run() {
 		                return Thread.currentThread().getContextClassLoader();
 		            }

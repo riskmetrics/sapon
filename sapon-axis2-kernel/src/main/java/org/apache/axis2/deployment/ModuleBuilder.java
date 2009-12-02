@@ -22,6 +22,7 @@ package org.apache.axis2.deployment;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -43,7 +44,6 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.Deployable;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.i18n.Messages;
-import org.apache.axis2.java.security.AccessController;
 import org.apache.axis2.modules.Module;
 import org.apache.axis2.util.Loader;
 

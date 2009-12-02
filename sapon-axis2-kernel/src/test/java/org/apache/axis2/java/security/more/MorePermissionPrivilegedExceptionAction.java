@@ -19,10 +19,10 @@
 
 package org.apache.axis2.java.security.more;
 
-import org.apache.axis2.java.security.AccessController;
-import org.apache.axis2.java.security.interf.Actor;
-
+import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
+
+import org.apache.axis2.java.security.interf.Actor;
 
 /**
  * MorePermission has read permission to both public.txt and private.txt
@@ -46,7 +46,7 @@ public class MorePermissionPrivilegedExceptionAction implements Actor {
             if (_usingDoPrivilege) {
                 // Demostrate the usage of AccessController.doPrivileged(PrivilegedExceptionAction action)
                 AccessController.doPrivileged(
-                        new PrivilegedExceptionAction() {
+                        new PrivilegedExceptionAction<Object>() {
                             public Object run() {
                                 _actor.takeAction();
                                 return null;

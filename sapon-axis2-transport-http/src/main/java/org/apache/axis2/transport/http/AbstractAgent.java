@@ -19,19 +19,21 @@
 
 package org.apache.axis2.transport.http;
 
-import org.apache.axis2.Constants;
-import org.apache.axis2.context.ConfigurationContext;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.axis2.Constants;
+import org.apache.axis2.context.ConfigurationContext;
+import org.apache.axis2.description.AxisService;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * The AbstractAgent acts as a simple dispatcher for http requests.
@@ -44,7 +46,7 @@ public class AbstractAgent {
     private static final String METHOD_PREFIX = "process";
     private static final Log log = LogFactory.getLog(AbstractAgent.class);
 
-    protected transient Map operationCache = new HashMap();
+    protected transient Map<String, Method> operationCache = new HashMap<String, Method>();
     protected transient ConfigurationContext configContext;
 
     public AbstractAgent(ConfigurationContext aConfigContext) {
@@ -72,7 +74,7 @@ public class AbstractAgent {
         }
 
 
-        Method method = (Method) operationCache.get(operation.toLowerCase());
+        Method method = operationCache.get(operation.toLowerCase());
         if (method != null) {
             try {
                 method.invoke(this, new Object[]{httpServletRequest, httpServletResponse});
@@ -126,7 +128,7 @@ public class AbstractAgent {
     }
 
     private void preloadMethods() {
-        Class clazz = getClass();
+        Class<?> clazz = getClass();
         while (clazz != null && !clazz.equals(Object.class)) {
             examineMethods(clazz.getDeclaredMethods());
             clazz = clazz.getSuperclass();
@@ -134,10 +136,8 @@ public class AbstractAgent {
     }
 
     private void examineMethods(Method[] aDeclaredMethods) {
-        for (int i = 0; i < aDeclaredMethods.length; i++) {
-            Method method = aDeclaredMethods[i];
-
-            Class[] parameterTypes = method.getParameterTypes();
+        for (Method method : aDeclaredMethods) {
+            Class<?>[] parameterTypes = method.getParameterTypes();
             if (
                     (Modifier.isProtected(method.getModifiers()) ||
                             Modifier.isPublic(method.getModifiers())) &&
@@ -157,12 +157,12 @@ public class AbstractAgent {
     }
 
     protected void populateSessionInformation(HttpServletRequest req) {
-        HashMap services = configContext.getAxisConfiguration().getServices();
+        Map<String, AxisService> services = configContext.getAxisConfiguration().getServices();
         try {
             req.getSession().setAttribute(Constants.SERVICE_MAP, services);
             req.getSession().setAttribute(Constants.SERVICE_PATH, configContext.getServicePath());
         } catch (Throwable t){
-            log.info("Old Servlet API :" + t);    
+            log.info("Old Servlet API :" + t);
         }
     }
 }

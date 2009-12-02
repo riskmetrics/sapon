@@ -20,6 +20,7 @@
 
 package org.apache.axis2.util.threadpool;
 
+import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.Executor;
@@ -30,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.i18n.Messages;
-import org.apache.axis2.java.security.AccessController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

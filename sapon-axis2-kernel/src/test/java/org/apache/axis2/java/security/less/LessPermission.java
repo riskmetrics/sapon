@@ -19,9 +19,9 @@
 
 package org.apache.axis2.java.security.less;
 
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.apache.axis2.java.security.AccessController;
 import org.apache.axis2.java.security.interf.Actor;
 
 

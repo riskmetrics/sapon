@@ -22,9 +22,9 @@ package org.apache.axis2.util;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.apache.axis2.java.security.AccessController;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

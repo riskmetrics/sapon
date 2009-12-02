@@ -122,7 +122,7 @@ public class Utils {
     }
 
     private static ClassLoader getContextClassLoader_DoPriv() {
-        return org.apache.axis2.java.security.AccessController.doPrivileged(
+        return AccessController.doPrivileged(
                 new PrivilegedAction<ClassLoader>() {
                     public ClassLoader run() {
                         return Thread.currentThread().getContextClassLoader();
@@ -270,7 +270,7 @@ public class Utils {
         if (exists(axis2xml)) {
             axis2xmlString = axis2xml.getName();
         }
-        String path = org.apache.axis2.java.security.AccessController.doPrivileged(
+        String path = AccessController.doPrivileged(
                 new PrivilegedAction<String>() {
                     public String run() {
                         return file.getAbsolutePath();
@@ -282,7 +282,7 @@ public class Utils {
     }
 
     private static boolean exists(final File file) {
-        Boolean exists = org.apache.axis2.java.security.AccessController.doPrivileged(
+        Boolean exists = AccessController.doPrivileged(
                 new PrivilegedAction<Boolean>() {
                     public Boolean run() {
                         return new Boolean(file.exists());

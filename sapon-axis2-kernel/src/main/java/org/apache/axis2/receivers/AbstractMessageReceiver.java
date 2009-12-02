@@ -157,7 +157,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                                 });
                     }
                 });
-                org.apache.axis2.java.security.AccessController.doPrivileged(
+                AccessController.doPrivileged(
                         new PrivilegedAction<Object>() {
                             public Object run() {
                                 Thread.currentThread().setContextClassLoader(
@@ -167,7 +167,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                         }
                 );
             } else if (serviceTCCL.equals(Constants.TCCL_SERVICE)) {
-                org.apache.axis2.java.security.AccessController.doPrivileged(
+                AccessController.doPrivileged(
                         new PrivilegedAction<Object>() {
                             public Object run() {
                                 Thread.currentThread().setContextClassLoader(
@@ -184,7 +184,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
     }
 
     private ClassLoader getContextClassLoader_doPriv() {
-        return org.apache.axis2.java.security.AccessController.doPrivileged(
+        return AccessController.doPrivileged(
                 new PrivilegedAction<ClassLoader>() {
                     public ClassLoader run() {
                         return Thread.currentThread().getContextClassLoader();
@@ -194,7 +194,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
     }
 
     protected void restoreThreadContext(final ThreadContextDescriptor tc) {
-        org.apache.axis2.java.security.AccessController.doPrivileged(
+        AccessController.doPrivileged(
                 new PrivilegedAction<Object>() {
                     public Object run() {
                         Thread.currentThread().setContextClassLoader(tc.oldClassLoader);
@@ -227,7 +227,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                 						((String)serviceObjectParam.getValue()).trim());
 
                 // Find static getServiceObject() method, call it if there
-                final Method method = org.apache.axis2.java.security.AccessController.doPrivileged(
+                final Method method = AccessController.doPrivileged(
                         new PrivilegedExceptionAction<Method>() {
                             public Method run() throws NoSuchMethodException {
                                 return serviceObjectMaker.getMethod("getServiceObject",
@@ -236,7 +236,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                         }
                 );
                 if (method != null) {
-                    return org.apache.axis2.java.security.AccessController.doPrivileged(
+                    return AccessController.doPrivileged(
                             new PrivilegedExceptionAction<Object>() {
                                 public Object run() throws InvocationTargetException, IllegalAccessException, InstantiationException {
                                     return method.invoke(serviceObjectMaker.newInstance(), new Object[]{service});
@@ -251,7 +251,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                 final Class<?> implClass = Loader.loadClass(
                         classLoader,
                         ((String) implInfoParam.getValue()).trim());
-                return org.apache.axis2.java.security.AccessController.doPrivileged(
+                return AccessController.doPrivileged(
                         new PrivilegedExceptionAction<Object>() {
                             public Object run() throws InstantiationException, IllegalAccessException {
                                 return implClass.newInstance();

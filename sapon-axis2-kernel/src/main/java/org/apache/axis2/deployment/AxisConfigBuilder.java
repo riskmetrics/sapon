@@ -21,6 +21,7 @@
 package org.apache.axis2.deployment;
 
 import java.io.InputStream;
+import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -448,7 +449,7 @@ public class AxisConfigBuilder extends DescriptionBuilder {
 
                 Class<?> observerclass;
                 try {
-                    observerclass = org.apache.axis2.java.security.AccessController
+                    observerclass = AccessController
                             .doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
                                 public Class<?> run() throws ClassNotFoundException {
                                     return Loader.loadClass(clasName);

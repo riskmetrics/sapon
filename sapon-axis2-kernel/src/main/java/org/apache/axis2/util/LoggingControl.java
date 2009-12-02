@@ -19,9 +19,8 @@
 
 package org.apache.axis2.util;
 
+import java.security.AccessController;
 import java.security.PrivilegedAction;
-
-import org.apache.axis2.java.security.AccessController;
 
 /**
  * This class provides a more efficient means of control over logging than

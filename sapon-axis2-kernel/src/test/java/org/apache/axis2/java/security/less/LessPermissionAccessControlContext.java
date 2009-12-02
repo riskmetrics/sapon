@@ -19,11 +19,11 @@
 
 package org.apache.axis2.java.security.less;
 
-import org.apache.axis2.java.security.AccessController;
-import org.apache.axis2.java.security.interf.Actor;
-
 import java.security.AccessControlContext;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
+
+import org.apache.axis2.java.security.interf.Actor;
 
 
 /**
@@ -48,7 +48,7 @@ public class LessPermissionAccessControlContext implements Actor {
                 final AccessControlContext acc = AccessController.getContext();
                 // Demostrate the usage of AccessController.doPrivileged(PrivilegeAction action, AccessContext ctx)
                 AccessController.doPrivileged(
-                        new PrivilegedAction() {
+                        new PrivilegedAction<Object>() {
                             public Object run() {
                                 _actor.takeAction();
                                 return null;

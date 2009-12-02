@@ -198,7 +198,7 @@ public class ObjectInputStreamWithCL extends java.io.ObjectInputStream
             }
         } catch (ClassNotFoundException cnf) {
             try {
-                return org.apache.axis2.java.security.AccessController.doPrivileged(
+                return AccessController.doPrivileged(
                         new PrivilegedExceptionAction<Class<?>>() {
                             public Class<?> run() throws ClassNotFoundException {
                                 return Class.forName(name);
@@ -261,7 +261,7 @@ public class ObjectInputStreamWithCL extends java.io.ObjectInputStream
         // IllegalArgumentException."
         try
         {
-            return org.apache.axis2.java.security.AccessController.doPrivileged(
+            return AccessController.doPrivileged(
                     new PrivilegedAction<Class<?>>() {
                         public Class<?> run() {
                             return Proxy.getProxyClass(loader, classes);

@@ -22,6 +22,7 @@ package org.apache.axis2.context;
 
 import java.io.File;
 import java.net.URL;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Date;
@@ -45,7 +46,6 @@ import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.DependencyManager;
 import org.apache.axis2.engine.ListenerManager;
 import org.apache.axis2.i18n.Messages;
-import org.apache.axis2.java.security.AccessController;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.threadpool.ThreadFactory;
 import org.apache.axis2.util.threadpool.ThreadPool;

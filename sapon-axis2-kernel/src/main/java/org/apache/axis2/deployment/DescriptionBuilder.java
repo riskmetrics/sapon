@@ -20,6 +20,7 @@
 package org.apache.axis2.deployment;
 
 import java.io.InputStream;
+import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.ArrayList;
@@ -138,7 +139,7 @@ public class DescriptionBuilder implements DeploymentConstants {
             final OMElement tempMsgReceiver = msgReceiver;
             MessageReceiver receiver = null;
             try {
-                receiver = org.apache.axis2.java.security.AccessController
+                receiver = AccessController
                         .doPrivileged(new PrivilegedExceptionAction<MessageReceiver>() {
                             public MessageReceiver run()
                                     throws org.apache.axis2.deployment.DeploymentException {
@@ -281,8 +282,7 @@ public class DescriptionBuilder implements DeploymentConstants {
 
     protected Class<?> findAndValidateSelectorClass(final String className, final String errorMsg)
             throws PrivilegedActionException {
-        return org.apache.axis2.java.security.AccessController
-                .doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
+        return AccessController.doPrivileged(new PrivilegedExceptionAction<Class<?>>() {
                     public Class<?> run()
                             throws org.apache.axis2.deployment.DeploymentException {
                         Class<?> selectorClass;

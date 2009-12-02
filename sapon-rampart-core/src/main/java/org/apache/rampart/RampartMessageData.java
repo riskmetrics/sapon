@@ -22,7 +22,7 @@ import java.util.Vector;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.alt.Flow;
+import org.apache.axis2.alt.Flows;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
 import org.apache.axis2.description.AxisService;
@@ -201,12 +201,12 @@ public class RampartMessageData {
 
 
             // Checking which flow we are in
-            Flow flow = msgCtx.getFlow();
+            Flows flow = msgCtx.getFlow();
 
             // If we are IN flow or IN_FAULT flow and the KEY_RAMPART_IN_POLICY is set , we set the
             // merge that policy to the KEY_RAMPART_POLICY if it is present. Else we set
             // KEY_RAMPART_IN_POLICY as the service policy
-            if ( (flow == Flow.IN || flow == Flow.IN_FAULT )
+            if ( (flow == Flows.IN || flow == Flows.IN_FAULT )
                     &&  msgCtx.getProperty(KEY_RAMPART_IN_POLICY) != null) {
                 if ( this.servicePolicy == null ) {
                     this.servicePolicy = (Policy)msgCtx.getProperty(KEY_RAMPART_IN_POLICY);
@@ -218,7 +218,7 @@ public class RampartMessageData {
             // If we are OUT flow or OUT_FAULT flow and the KEY_RAMPART_OUT_POLICY is set , we set
             // the merge that policy to the KEY_RAMPART_POLICY if it is present. Else we set
             // KEY_RAMPART_OUT_POLICY as the service policy
-            } else if ( (flow == Flow.OUT || flow == Flow.OUT_FAULT )
+            } else if ( (flow == Flows.OUT || flow == Flows.OUT_FAULT )
                     &&  msgCtx.getProperty(KEY_RAMPART_OUT_POLICY) != null) {
                 if (this.servicePolicy == null) {
                     this.servicePolicy = (Policy)msgCtx.getProperty(KEY_RAMPART_OUT_POLICY);
@@ -248,7 +248,7 @@ public class RampartMessageData {
             }
 
             if(this.servicePolicy != null){
-                List it = (List)this.servicePolicy.getAlternatives().next();
+                List it = this.servicePolicy.getAlternatives().next();
 
                 //Process policy and build policy data
                 this.policyData = RampartPolicyBuilder.build(it);
@@ -292,7 +292,7 @@ public class RampartMessageData {
                         this.servicePolicy.addAssertion(rc);
                     }
 
-                    List it = (List)this.servicePolicy.getAlternatives().next();
+                    List it = this.servicePolicy.getAlternatives().next();
 
                     //Process policy and build policy data
                     this.policyData = RampartPolicyBuilder.build(it);

@@ -179,7 +179,7 @@ public class AnonymousServiceFactory {
             axisAnonymousService.addOperation(dynamicOperation);
             axisAnonymousService.addOperation(asyncOperation);
             axisCfg.addService(axisAnonymousService);
-            axisCfg.getPhasesInfo().setOperationPhases(dynamicOperation);
+            dynamicOperation.setPhases(axisCfg.getPhasesInfo());
             return axisAnonymousService;
 
         } catch (AxisFault e) {

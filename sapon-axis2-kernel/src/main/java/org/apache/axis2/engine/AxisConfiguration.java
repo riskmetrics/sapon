@@ -21,6 +21,7 @@ package org.apache.axis2.engine;
 
 import java.io.File;
 import java.net.URL;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -157,8 +158,8 @@ public class AxisConfiguration extends AxisDescription
         faultyModules = new Hashtable<String, String>();
         observersList = new ArrayList<AxisObserver>();
         inPhasesUptoAndIncludingPostDispatch = new ArrayList<Phase>();
-        systemClassLoader = org.apache.axis2.java.security.AccessController
-                .doPrivileged(new PrivilegedAction<ClassLoader>() {
+        systemClassLoader = AccessController.doPrivileged(
+        		new PrivilegedAction<ClassLoader>() {
                     public ClassLoader run() {
                         return Thread.currentThread().getContextClassLoader();
                     }

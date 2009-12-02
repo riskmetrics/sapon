@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.security.AccessController;
 import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 
@@ -42,7 +43,6 @@ import org.apache.axis2.description.AxisEndpoint;
 import org.apache.axis2.description.WSDL20DefaultValueHolder;
 import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.i18n.Messages;
-import org.apache.axis2.java.security.AccessController;
 import org.apache.axis2.transport.http.util.URIEncoderDecoder;
 import org.apache.axis2.util.MultipleEntryHashMap;
 import org.apache.commons.logging.Log;

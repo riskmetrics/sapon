@@ -20,12 +20,11 @@
 
 package org.apache.axis2.deployment.scheduler;
 
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import org.apache.axis2.java.security.AccessController;
 
 public class Scheduler {
     private final Timer timer = AccessController.doPrivileged(new PrivilegedAction<Timer>() {

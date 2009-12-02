@@ -28,6 +28,7 @@ import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.SocketException;
 import java.net.URL;
+import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -376,12 +377,12 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		messageReceivers = new HashMap<String, MessageReceiver>();
 		moduleRefs = new ArrayList<String>();
 		schemaList = new ArrayList<XmlSchema>();
-		serviceClassLoader = org.apache.axis2.java.security.AccessController
-		.doPrivileged(new PrivilegedAction<ClassLoader>() {
-			public ClassLoader run() {
-				return Thread.currentThread().getContextClassLoader();
-			}
-		});
+		serviceClassLoader = AccessController.doPrivileged(
+				new PrivilegedAction<ClassLoader>() {
+					public ClassLoader run() {
+						return Thread.currentThread().getContextClassLoader();
+					}
+				});
 		objectSupplier = new DefaultObjectSupplier();
 		dataLocators = new HashMap<String, AxisDataLocator>();
 		dataLocatorClassNames = new HashMap<String, String>();
