@@ -21,11 +21,12 @@ package org.apache.axis2.i18n;
 
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
 public class Messages {
-    private static final Class thisClass = Messages.class;
+    //private static final Class<?> thisClass = Messages.class;
 
     private static final String projectName = MessagesConstants.projectName;
 
@@ -35,15 +36,16 @@ public class Messages {
     public static final String DEFAULT_MESSAGE_BUNDLE_KEY = "default";
     private static final String NO_MESSAGE_BUNDLE = "Message Bundle is not available";
 
-    private static final String packageName = getPackage(thisClass.getName());
-    private static final ClassLoader classLoader = thisClass.getClassLoader();
+    private static final String packageName = getPackage(Messages.class.getName());
+    private static final ClassLoader classLoader = Messages.class.getClassLoader();
 
     private static final ResourceBundle parent =
             (MessagesConstants.rootPackageName.equals(packageName))
                     ? null
                     : MessagesConstants.rootBundle;
 
-    private static HashMap messageBundleMap = new HashMap();
+    private static Map<String, MessageBundle> messageBundleMap
+    	= new HashMap<String, MessageBundle>();
 
     static {
         MessageBundle defaultMessageBundle =
@@ -157,7 +159,7 @@ public class Messages {
      * @param args An array of objects to place in corresponding variables
      * @return The formatted message
      */
-    public static String getMessage(String key, String[] args)
+    public static String getMessage(String key, Object... args)
             throws MissingResourceException {
         MessageBundle messageBundle = getMessageBundle(DEFAULT_MESSAGE_BUNDLE_KEY);
         return messageBundle.getMessage(key, args);
@@ -173,7 +175,7 @@ public class Messages {
     }
 
     public static MessageBundle getMessageBundle(String messageBundleKey) {
-        return (MessageBundle) messageBundleMap.get(messageBundleKey);
+        return messageBundleMap.get(messageBundleKey);
     }
 
     /**
