@@ -22,15 +22,12 @@ package org.apache.axis2.util;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.ListIterator;
 
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.util.UUIDGenerator;
-import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPConstants;
 import org.apache.axiom.soap.SOAPEnvelope;
@@ -101,7 +98,7 @@ public class MessageContextBuilder {
         newmsgCtx.setProperty(Constants.AXIS_BINDING_OPERATION,
                               inMessageContext.getProperty(Constants.AXIS_BINDING_OPERATION));
 
-        // Setting the charater set encoding
+        // Setting the character set encoding
         newmsgCtx.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING,
                               inMessageContext.getProperty(
                                       Constants.Configuration.CHARACTER_SET_ENCODING));
@@ -461,9 +458,7 @@ public class MessageContextBuilder {
         }
 
         if (axisFault != null) {
-            ListIterator iter = axisFault.headerIterator();
-            while (iter.hasNext()) {
-                SOAPHeaderBlock header = (SOAPHeaderBlock) iter.next();
+            for(SOAPHeaderBlock header: axisFault.headers()) {
                 envelope.getHeader().addChild(header);
             }
         }
@@ -528,15 +523,8 @@ public class MessageContextBuilder {
 
         if (axisFault != null && !context.isSOAP11()) {
             if (axisFault.getFaultSubCodes() != null) {
-
-                List faultSubCodes = axisFault.getFaultSubCodes();
-
-                QName faultSubCodeQName;
-
-                for (Object faultSubCode : faultSubCodes) {
-
-                    faultSubCodeQName = (QName)faultSubCode;
-
+                List<QName> faultSubCodes = axisFault.getFaultSubCodes();
+                for (QName faultSubCodeQName: faultSubCodes) {
                     SOAPFactory sf = (SOAPFactory)envelope.getOMFactory();
                     SOAPFaultSubCode soapFaultSubCode = sf.createSOAPFaultSubCode(fault.getCode());
                     SOAPFaultValue saopFaultValue = sf.createSOAPFaultValue(fault.getCode());
@@ -544,7 +532,6 @@ public class MessageContextBuilder {
                     soapFaultSubCode.setValue(saopFaultValue);
                     fault.getCode().setSubCode(soapFaultSubCode);
                 }
-
             }
         }
 
@@ -666,11 +653,11 @@ public class MessageContextBuilder {
         return throwable.getMessage();
     }
 
-    private static String getSenderFaultCode(OMNamespace soapNamespace) {
-        return SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(soapNamespace.getNamespaceURI())
-                ? SOAP12Constants.SOAP_DEFAULT_NAMESPACE_PREFIX + ":"
-                + SOAP12Constants.FAULT_CODE_SENDER
-                : SOAP12Constants.SOAP_DEFAULT_NAMESPACE_PREFIX + ":"
-                + SOAP11Constants.FAULT_CODE_SENDER;
-    }
+//    private static String getSenderFaultCode(OMNamespace soapNamespace) {
+//        return SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(soapNamespace.getNamespaceURI())
+//                ? SOAP12Constants.SOAP_DEFAULT_NAMESPACE_PREFIX + ":"
+//                + SOAP12Constants.FAULT_CODE_SENDER
+//                : SOAP12Constants.SOAP_DEFAULT_NAMESPACE_PREFIX + ":"
+//                + SOAP11Constants.FAULT_CODE_SENDER;
+//    }
 }
