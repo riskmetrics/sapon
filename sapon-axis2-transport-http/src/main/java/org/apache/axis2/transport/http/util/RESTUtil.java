@@ -19,6 +19,12 @@
 
 package org.apache.axis2.transport.http.util;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
+import javax.xml.stream.XMLStreamException;
+
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
@@ -37,11 +43,6 @@ import org.apache.axis2.engine.Handler;
 import org.apache.axis2.transport.TransportUtils;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.axis2.transport.http.HTTPTransportUtils;
-
-import javax.xml.stream.XMLStreamException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 
 /**
  *
@@ -95,7 +96,7 @@ public class RESTUtil {
             }
 
             // set the required properties so that even if there is an error during the dispatch
-            // phase the response message will be passed to the client well. 
+            // phase the response message will be passed to the client well.
             msgContext.setDoingREST(true);
             msgContext.setProperty(MessageContext.TRANSPORT_OUT, out);
             String charSetEncoding = BuilderUtil.getCharSetEncoding(contentType);
@@ -116,9 +117,7 @@ public class RESTUtil {
         } catch (AxisFault axisFault) {
             throw axisFault;
         }
-        catch (IOException e) {
-            throw AxisFault.makeFault(e);
-        } finally {
+        finally {
             String messageType =
                     (String) msgContext.getProperty(Constants.Configuration.MESSAGE_TYPE);
             if (HTTPConstants.MEDIA_TYPE_X_WWW_FORM.equals(messageType) ||
