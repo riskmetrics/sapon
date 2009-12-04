@@ -19,6 +19,16 @@
 
 package org.apache.axis2.util;
 
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import org.apache.axis2.context.externalize.ActivateUtils;
 import org.apache.axis2.context.externalize.ExternalizeConstants;
 import org.apache.axis2.context.externalize.SafeObjectInputStream;
@@ -32,23 +42,13 @@ import org.apache.axis2.transport.TransportListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.xml.namespace.QName;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Map;
-
 /**
  * Utility to write, read and activate externalized Objects
  */
 public class ObjectStateUtils implements ExternalizeConstants {
-    /*
-     * setup for logging
-     */
-    private static final Log log = LogFactory.getLog(ObjectStateUtils.class);
+
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(ObjectStateUtils.class);
 
     // used to indicate an valid "null" object,
     // typically used in key-value pairs where a non-null key refers to a null
@@ -66,7 +66,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Write a string to the specified output stream.
-     * 
+     *
      * @param o The output stream
      * @param str The string to write
      * @param desc A text description to use for logging
@@ -80,7 +80,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Read a string from the specified input stream. Returns null if no string is available.
-     * 
+     *
      * @param i The input stream
      * @param desc A text description to use for logging
      * @return The string or null, if not available
@@ -100,7 +100,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Write an object to the specified output stream.
-     * 
+     *
      * @param o The output stream
      * @param obj The object to write
      * @param desc A text description to use for logging
@@ -114,7 +114,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Read an object from the specified input stream. Returns null if no object is available.
-     * 
+     *
      * @param i The input stream
      * @param desc A text description to use for logging
      * @return The object or null, if not available
@@ -131,13 +131,13 @@ public class ObjectStateUtils implements ExternalizeConstants {
     /**
      * Write an array of objects to the specified output stream. NOTE: each object in the array
      * should implement either java.io.Serializable or java.io.Externalizable in order to be saved
-     * 
+     *
      * @param o The output stream
      * @param al The ArrayList to write
      * @param desc A text description to use for logging
      * @throws IOException Exception
      */
-    public static void writeArrayList(ObjectOutput o, ArrayList al, String desc) 
+    public static void writeArrayList(ObjectOutput o, ArrayList al, String desc)
       throws IOException {
         SafeObjectOutputStream out = SafeObjectOutputStream.install(o);
         out.writeUTF(desc);
@@ -148,7 +148,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
      * Reads an array of objects from the specified input stream. Returns null if no array is
      * available. NOTE: each object in the array should implement either java.io.Serializable or
      * java.io.Externalizable in order to be saved
-     * 
+     *
      * @param i The input stream
      * @param desc A text description to use for logging
      * @return The ArrayList or null, if not available
@@ -164,7 +164,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
     /**
      * Write a hashmap of objects to the specified output stream. NOTE: each object in the map
      * should implement either java.io.Serializable or java.io.Externalizable in order to be saved
-     * 
+     *
      * @param o The output stream
      * @param map The HashMap to write
      * @param desc A text description to use for logging
@@ -179,7 +179,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
     /**
      * Read a hashmap of objects from the specified input stream. Returns null if no hashmap is
      * available.
-     * 
+     *
      * @param in The input stream
      * @param desc A text description to use for logging
      * @return The HashMap or null, if not available
@@ -196,7 +196,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
      * Write a linked list of objects to the specified output stream. <NOTE: each object in the
      * array should implement either java.io.Serializable or java.io.Externalizable in order to be
      * saved
-     * 
+     *
      * @param o The output stream
      * @param list The LinkedList to write
      * @param desc A text description to use for logging
@@ -213,7 +213,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
     /**
      * Reads a linked list of objects from the specified input stream. Returns null if no array is
      * available.
-     * 
+     *
      * @param in The input stream
      * @param desc A text description to use for logging
      * @return The linked list or null, if not available
@@ -232,7 +232,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Find the AxisOperation object that matches the criteria
-     * 
+     *
      * @param axisConfig The AxisConfiguration object
      * @param opClassName the class name string for the target object (could be a derived class)
      * @param opQName the name associated with the operation
@@ -245,21 +245,21 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Find the AxisOperation object that matches the criteria
-     * 
+     *
      * @param service The AxisService object
      * @param opClassName The class name string for the target object (could be a derived class)
      * @param opQName the name associated with the operation
      * @return the AxisOperation object that matches the given criteria
      */
-    public static AxisOperation findOperation(AxisService service, 
-                                              String opClassName, 
+    public static AxisOperation findOperation(AxisService service,
+                                              String opClassName,
                                               QName opQName) {
         return ActivateUtils.findOperation(service, opClassName, opQName);
     }
 
     /**
      * Find the AxisService object that matches the criteria
-     * 
+     *
      * @param axisConfig The AxisConfiguration object
      * @param serviceClassName the class name string for the target object (could be a derived
      * class)
@@ -272,10 +272,10 @@ public class ObjectStateUtils implements ExternalizeConstants {
     }
 
     /**
-     * Find the AxisServiceGroup object that matches the criteria <p/> <B>Note<B> the saved 
-     * service group meta information may not match up with any of the serviceGroups that 
+     * Find the AxisServiceGroup object that matches the criteria <p/> <B>Note<B> the saved
+     * service group meta information may not match up with any of the serviceGroups that
      * are in the current AxisConfiguration object.
-     * 
+     *
      * @param axisConfig The AxisConfiguration object
      * @param serviceGrpClassName the class name string for the target object (could be a derived
      * class)
@@ -290,28 +290,28 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Find the AxisMessage object that matches the criteria
-     * 
+     *
      * @param op The AxisOperation object
      * @param msgName The name associated with the message
      * @param msgElementName The name associated with the message element
      * @return the AxisMessage object that matches the given criteria
      */
-    public static AxisMessage findMessage(AxisOperation op, 
-                                          String msgName, 
+    public static AxisMessage findMessage(AxisOperation op,
+                                          String msgName,
                                           String msgElementName) {
         return ActivateUtils.findMessage(op, msgName, msgElementName);
     }
 
     /**
      * Find the Handler object that matches the criteria
-     * 
+     *
      * @param existingHandlers The list of existing handlers and phases
      * @param handlerClassName the class name string for the target object (could be a derived
      * class)
      * @return the Handler object that matches the criteria
      */
-    public static Object findHandler(ArrayList existingHandlers, 
-                                     MetaDataEntry metaDataEntry) 
+    public static Object findHandler(ArrayList existingHandlers,
+                                     MetaDataEntry metaDataEntry)
     {
         return ActivateUtils.findHandler(existingHandlers, metaDataEntry);
     }
@@ -320,7 +320,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
      * Find the TransportListener object that matches the criteria <p/> <B>Note<B> the saved meta
      * information may not match up with any of the objects that are in the current
      * AxisConfiguration object.
-     * 
+     *
      * @param axisConfig The AxisConfiguration object
      * @param listenerClassName the class name string for the target object (could be a derived
      * class)
@@ -333,12 +333,12 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Compares the two collections to see if they are equivalent.
-     * 
+     *
      * @param a1 The first collection
      * @param a2 The second collection
      * @param strict Indicates whether strict checking is required. Strict checking means that the
-     * two collections must have the same elements in the same order. 
-     * Non-strict checking means that the two collections must have the same elements, 
+     * two collections must have the same elements in the same order.
+     * Non-strict checking means that the two collections must have the same elements,
      * but the order is not significant.
      * @return TRUE if the two collections are equivalent FALSE, otherwise
      */
@@ -348,7 +348,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Compares the two collections to see if they are equivalent.
-     * 
+     *
      * @param m1 The first collection
      * @param m2 The second collection
      * @param strict Indicates whether strict checking is required. Strict checking means that the
@@ -362,7 +362,7 @@ public class ObjectStateUtils implements ExternalizeConstants {
 
     /**
      * Compares the two collections to see if they are equivalent.
-     * 
+     *
      * @param l1
      *            The first collection
      * @param l2

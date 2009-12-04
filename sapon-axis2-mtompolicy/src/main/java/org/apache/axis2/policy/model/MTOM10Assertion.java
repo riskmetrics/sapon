@@ -34,8 +34,8 @@ import org.apache.neethi.PolicyComponent;
  */
 public class MTOM10Assertion extends MTOMAssertion {
 
-    // creating a logger instance
-    private static Log log = LogFactory.getLog(MTOM10Assertion.class);
+	@SuppressWarnings("unused")
+	private static Log log = LogFactory.getLog(MTOM10Assertion.class);
 
     public final static String NS = "http://schemas.xmlsoap.org/ws/2004/09/policy/optimizedmimeserialization";
 

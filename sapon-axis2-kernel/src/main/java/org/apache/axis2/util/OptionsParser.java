@@ -25,15 +25,16 @@ package org.apache.axis2.util;
  * If this is used outside of Axis just remove the Axis specific sections.
  */
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Vector;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 public class OptionsParser {
-    private static final Log log = LogFactory.getLog(OptionsParser.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(OptionsParser.class);
     String args[] = null;
     Vector usedArgs = null;
 

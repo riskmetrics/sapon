@@ -19,6 +19,8 @@
 
 package org.apache.axis2.phaserule;
 
+import java.util.List;
+
 import org.apache.axis2.AbstractTestCase;
 import org.apache.axis2.description.HandlerDescription;
 import org.apache.axis2.engine.AxisConfiguration;
@@ -26,9 +28,6 @@ import org.apache.axis2.engine.DispatchPhase;
 import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.phaseresolver.PhaseHolder;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class AddingHandlerToEachPhaseTest extends AbstractTestCase {
     AxisConfiguration axisConfig;
@@ -40,11 +39,11 @@ public class AddingHandlerToEachPhaseTest extends AbstractTestCase {
     public void testPhaseRules() throws Exception {
         //TODO fix me
         axisConfig = new AxisConfiguration();
-        List inPhase = axisConfig.getInFlowPhases();
+        List<Phase> inPhase = axisConfig.getInFlowPhases();
         Phase transportIN = new Phase("TransportIn");
         Phase preDispatch = new Phase("PreDispatch");
         DispatchPhase dispatchPhase = new DispatchPhase();
-//
+
         dispatchPhase.setName("Dispatch");
         inPhase.add(transportIN);
         inPhase.add(preDispatch);
@@ -58,13 +57,9 @@ public class AddingHandlerToEachPhaseTest extends AbstractTestCase {
 
         PhaseHolder ph = new PhaseHolder(inPhase);
         ph.addHandler(hm);
-        boolean found;
-        for (int i = 0; i < inPhase.size(); i++) {
-            found = false;
-            Phase phase = (Phase) inPhase.get(i);
-            List handlers = phase.getHandlers();
-            for (int j = 0; j < handlers.size(); j++) {
-                Handler handler = (Handler) handlers.get(j);
+        boolean found = false;
+        for(Phase phase: inPhase) {
+            for(Handler handler: phase.getHandlers()) {
                 if (h1.equals(handler)) {
                     found = true;
                 }
@@ -80,11 +75,11 @@ public class AddingHandlerToEachPhaseTest extends AbstractTestCase {
         super.setUp();
         //TODO fix me
         axisConfig = new AxisConfiguration();
-        List inPhase = axisConfig.getInFlowPhases();
+        List<Phase> inPhase = axisConfig.getInFlowPhases();
         Phase transportIN = new Phase("TransportIn");
         Phase preDispatch = new Phase("PreDispatch");
         DispatchPhase dispatchPhase = new DispatchPhase();
-//
+
         dispatchPhase.setName("Dispatch");
         inPhase.add(transportIN);
         inPhase.add(preDispatch);
@@ -99,10 +94,9 @@ public class AddingHandlerToEachPhaseTest extends AbstractTestCase {
 
         PhaseHolder ph = new PhaseHolder(inPhase);
         ph.addHandler(hm);
-        for (int i = 0; i < inPhase.size(); i++) {
-            Phase phase = (Phase) inPhase.get(i);
-            List handlers = phase.getHandlers();
-            Handler handler = (Handler) handlers.get(0);
+        for(Phase phase: inPhase) {
+            List<Handler> handlers = phase.getHandlers();
+            Handler handler = handlers.get(0);
             if (!h1.equals(handler)) {
                 fail("Some thing has gone wrong hnadler does not exit as phase " +
                         "first handler the phase :"
@@ -114,11 +108,11 @@ public class AddingHandlerToEachPhaseTest extends AbstractTestCase {
     public void testPhaseRulesWithAfter() throws Exception {
         //TODO fix me
         axisConfig = new AxisConfiguration();
-        List inPhase = axisConfig.getInFlowPhases();
+        List<Phase> inPhase = axisConfig.getInFlowPhases();
         Phase transportIN = new Phase("TransportIn");
         Phase preDispatch = new Phase("PreDispatch");
         DispatchPhase dispatchPhase = new DispatchPhase();
-//
+
         dispatchPhase.setName("Dispatch");
         inPhase.add(transportIN);
         inPhase.add(preDispatch);
@@ -133,10 +127,9 @@ public class AddingHandlerToEachPhaseTest extends AbstractTestCase {
 
         PhaseHolder ph = new PhaseHolder(inPhase);
         ph.addHandler(hm);
-        for (int i = 0; i < inPhase.size(); i++) {
-            Phase phase = (Phase) inPhase.get(i);
-            List handlers = phase.getHandlers();
-            Handler handler = (Handler) handlers.get(0);
+        for(Phase phase: inPhase) {
+            List<Handler> handlers = phase.getHandlers();
+            Handler handler = handlers.get(0);
             assertNull(handler.getHandlerDesc().getRules().getAfter());
         }
     }

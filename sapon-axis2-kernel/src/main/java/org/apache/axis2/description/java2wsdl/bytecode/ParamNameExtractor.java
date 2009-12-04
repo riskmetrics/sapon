@@ -19,12 +19,12 @@
 
 package org.apache.axis2.description.java2wsdl.bytecode;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * This class retrieves function parameter names from bytecode built with
@@ -32,21 +32,23 @@ import java.lang.reflect.Proxy;
  */
 public class ParamNameExtractor {
 
+	@SuppressWarnings("unused")
 	private static final Log log = LogFactory.getLog(ParamNameExtractor.class);
 
     /**
-     * Retrieves a list of function parameter names from a method. 
+     * Retrieves a list of function parameter names from a method.
      * Returns null if unable to read parameter names (i.e. bytecode not
      * built with debug).
      */
     public static String[] getParameterNamesFromDebugInfo(Method method) {
         // Don't worry about it if there are no params.
         int numParams = method.getParameterTypes().length;
-        if (numParams == 0)
-            return null;
+        if (numParams == 0) {
+			return null;
+		}
 
         // get declaring class
-        Class c = method.getDeclaringClass();
+        Class<?> c = method.getDeclaringClass();
 
         // Don't worry about it if the class is a Java dynamic proxy
         if (Proxy.isProxyClass(c)) {

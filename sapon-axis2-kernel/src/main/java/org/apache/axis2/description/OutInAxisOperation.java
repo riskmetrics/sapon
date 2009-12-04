@@ -49,6 +49,7 @@ import org.apache.commons.logging.LogFactory;
 
 public class OutInAxisOperation extends TwoChannelAxisOperation {
 
+	@SuppressWarnings("unused")
 	private static final Log log = LogFactory.getLog(OutInAxisOperation.class);
 
     public OutInAxisOperation() {

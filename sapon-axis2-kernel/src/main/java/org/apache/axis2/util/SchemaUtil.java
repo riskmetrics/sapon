@@ -19,6 +19,10 @@
 
 package org.apache.axis2.util;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.ws.commons.schema.XmlSchema;
@@ -26,23 +30,17 @@ import org.apache.ws.commons.schema.XmlSchemaImport;
 import org.apache.ws.commons.schema.XmlSchemaInclude;
 import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 
-import java.util.HashMap;
-import java.util.Iterator;
-
-/**
- * 
- */
 public class SchemaUtil {
-    private static final Log log = LogFactory.getLog(SchemaUtil.class);
-
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(SchemaUtil.class);
 
     public static XmlSchema[] getAllSchemas(XmlSchema schema) {
-        HashMap map = new HashMap();
+        Map<String, XmlSchema> map = new HashMap<String, XmlSchema>();
         traverseSchemas(schema, map);
-        return (XmlSchema[]) map.values().toArray(new XmlSchema[map.values().size()]);
+        return map.values().toArray(new XmlSchema[map.values().size()]);
     }
 
-    private static void traverseSchemas(XmlSchema schema, HashMap map) {
+    private static void traverseSchemas(XmlSchema schema, Map<String, XmlSchema> map) {
         String key = schema.getTargetNamespace() + ":" + schema.getSourceURI();
         if (map.containsKey(key)) {
             return;
@@ -51,7 +49,7 @@ public class SchemaUtil {
 
         XmlSchemaObjectCollection includes = schema.getIncludes();
         if (includes != null) {
-            Iterator tempIterator = includes.getIterator();
+            Iterator<?> tempIterator = includes.getIterator();
             while (tempIterator.hasNext()) {
                 Object o = tempIterator.next();
                 if (o instanceof XmlSchemaImport) {

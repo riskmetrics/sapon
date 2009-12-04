@@ -18,12 +18,12 @@
  */
 package org.apache.synapse.commons.security.secret;
 
+import java.util.Properties;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.synapse.commons.util.MiscellaneousUtil;
 import org.apache.synapse.commons.security.SecurityConstants;
-
-import java.util.Properties;
+import org.apache.synapse.commons.util.MiscellaneousUtil;
 
 /**
  * Factory to create a DataSourceInformation based on given properties
@@ -31,7 +31,8 @@ import java.util.Properties;
 
 public class SecretInformationFactory {
 
-    private static final Log log = LogFactory.getLog(SecretInformationFactory.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(SecretInformationFactory.class);
 
     private SecretInformationFactory() {
     }

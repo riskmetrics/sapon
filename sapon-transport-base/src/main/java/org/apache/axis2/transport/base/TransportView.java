@@ -28,7 +28,8 @@ import org.apache.commons.logging.LogFactory;
 
 public class TransportView implements TransportViewMBean {
 
-    private static final Log log = LogFactory.getLog(TransportView.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(TransportView.class);
 
     public static final int STOPPED = 0;
     public static final int RUNNING = 1;

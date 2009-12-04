@@ -35,8 +35,8 @@ import org.apache.neethi.PolicyComponent;
 
 public class MTOM11Assertion extends MTOMAssertion {
 
-    // creating a logger instance
-    private static Log log = LogFactory.getLog(MTOM11Assertion.class);
+    @SuppressWarnings("unused")
+	private static Log log = LogFactory.getLog(MTOM11Assertion.class);
 
     public final static String NS = "http://www.w3.org/2007/08/soap12-mtom-policy";
 
