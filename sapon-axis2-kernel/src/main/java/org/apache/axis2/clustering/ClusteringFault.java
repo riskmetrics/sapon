@@ -22,15 +22,16 @@ package org.apache.axis2.clustering;
 import org.apache.axis2.AxisFault;
 
 public class ClusteringFault extends AxisFault {
+	private static final long serialVersionUID = 20091204L;
 
 	public ClusteringFault (String message) {
 		super (message);
 	}
-	
+
 	public ClusteringFault (String message, Exception e) {
 		super (message, e);
 	}
-	
+
 	public ClusteringFault (Exception e) {
 		super (e);
 	}

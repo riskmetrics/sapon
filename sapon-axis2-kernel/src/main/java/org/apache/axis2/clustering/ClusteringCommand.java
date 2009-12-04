@@ -22,5 +22,5 @@ package org.apache.axis2.clustering;
 import java.io.Serializable;
 
 public abstract class ClusteringCommand implements Serializable {
-
+	private static final long serialVersionUID = 20091204L;
 }

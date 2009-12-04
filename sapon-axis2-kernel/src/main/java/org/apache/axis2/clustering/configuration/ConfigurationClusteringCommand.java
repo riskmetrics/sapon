@@ -29,8 +29,9 @@ import org.apache.axis2.context.ConfigurationContext;
  * As can be seen, this is a 3-step process.
  */
 public abstract class ConfigurationClusteringCommand extends ClusteringCommand {
+	private static final long serialVersionUID = 20091204L;
 
-    public static final int RELOAD_CONFIGURATION = 0;
+	public static final int RELOAD_CONFIGURATION = 0;
     public static final int LOAD_SERVICE_GROUPS = 1;
     public static final int UNLOAD_SERVICE_GROUPS = 2;
     public static final int APPLY_SERVICE_POLICY = 3;
@@ -41,7 +42,7 @@ public abstract class ConfigurationClusteringCommand extends ClusteringCommand {
 
     /**
      * Get the command type
-     * 
+     *
      * @return The command type
      */
     public abstract int getCommandType();
