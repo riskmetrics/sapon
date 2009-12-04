@@ -19,16 +19,16 @@
 
 package org.apache.axis2.description;
 
-import org.apache.axis2.AxisFault;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.wsdl.Definition;
 import javax.wsdl.Service;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+
+import org.apache.axis2.AxisFault;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Extends the WSDL11ToAxisServiceBuilder class to provide functionality to return
@@ -91,14 +91,12 @@ public class WSDL11ToAllAxisServicesBuilder extends WSDL11ToAxisServiceBuilder {
             }
 
             if (wsdl4jDefinition.getServices().size() > 0) {
-                Iterator wsdlServIter = wsdl4jDefinition.getServices().values().iterator();
                 if (wsdl4jDefinition.getServices().size() > 1){
                      // let the wsdlToservice builder to decide the port to generate binding
                      portName = null;
-                } 
+                }
 
-                while (wsdlServIter.hasNext()) {
-                    Service service = (Service) wsdlServIter.next();
+                for(Service service: wsdl4jDefinition.getServices().values()) {
                     // set the serviceName on the parent to setup call to populateService
                     serviceName = service.getQName();
                     this.axisService = new AxisService();

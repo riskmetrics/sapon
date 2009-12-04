@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.wsdl.Definition;
@@ -993,27 +992,21 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	}
 
 	/**
-	 * find the defintion object for given name
+	 * Find the definition object for given name
 	 *
 	 * @param parentDefinition
 	 * @param name
 	 * @return wsdl definition
 	 */
-	private Definition getWSDLDefinition(Definition parentDefinition,
-			String name) {
-
+	private Definition getWSDLDefinition(Definition parentDefinition, String name)
+	{
 		if (name == null) {
 			return parentDefinition;
 		}
 
 		Definition importedDefinition = null;
-		Iterator<Vector<Import>> iter = parentDefinition.getImports().values().iterator();
-		Vector<Import> values = null;
-		Import wsdlImport = null;
-		for (; iter.hasNext();) {
-			values = iter.next();
-			for (Object element : values) {
-				wsdlImport = (Import) element;
+	    for(List<Import> values: parentDefinition.getImports().values()) {
+			for (Import wsdlImport: values) {
 				if (wsdlImport.getLocationURI().endsWith(name)) {
 					importedDefinition = wsdlImport.getDefinition();
 					break;
@@ -1052,9 +1045,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 			}
 		}
 
-		Iterator<Vector<Import>> iter = definition.getImports().values().iterator();
-		for (; iter.hasNext();) {
-			Vector<Import> values = iter.next();
+		for(List<Import> values: definition.getImports().values()) {
 			for (Import wsdlImport: values) {
 				String originalImportString = wsdlImport.getLocationURI();
 				if (originalImportString.indexOf("://") == -1 && originalImportString.indexOf("?wsdl=") == -1){
@@ -1301,8 +1292,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	private void setPortAddress(Definition definition, String requestIP)
 		throws AxisFault
 	{
-		for(final Service serviceElement: (Iterable<Service>)definition.getServices().values()) {
-			for(final Port port: (Iterable<Port>)serviceElement.getPorts().values()) {
+		for(final Service serviceElement: definition.getServices().values()) {
+			for(final Port port: serviceElement.getPorts().values()) {
 				AxisEndpoint endpoint = getAxisEndpoint(port.getName());
 				for(final Object extensibilityEle: port.getExtensibilityElements()) {
 					if (extensibilityEle instanceof SOAPAddress) {
@@ -2156,7 +2147,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 * @throws AxisFault
 	 */
 	public static AxisService createService(String implClass,
-			AxisConfiguration axisConfiguration, Map messageReceiverClassMap,
+			AxisConfiguration axisConfiguration, Map<String, MessageReceiver> messageReceiverClassMap,
 			String targetNamespace, String schemaNamespace, ClassLoader loader)
 	throws AxisFault {
 		int index = implClass.lastIndexOf(".");
@@ -2168,7 +2159,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		}
 
 		SchemaGenerator schemaGenerator;
-		ArrayList excludeOpeartion = new ArrayList();
+		List<String> excludeOperation = new ArrayList<String>();
 		AxisService service = new AxisService();
 		service.setParent(axisConfiguration);
 		service.setName(serviceName);
@@ -2187,8 +2178,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 			}
 			schemaGenerator
 			.setElementFormDefault(Java2WSDLConstants.FORM_DEFAULT_UNQUALIFIED);
-			Utils.addExcludeMethods(excludeOpeartion);
-			schemaGenerator.setExcludeMethods(excludeOpeartion);
+			Utils.addExcludeMethods(excludeOperation);
+			schemaGenerator.setExcludeMethods(excludeOperation);
 		} catch (Exception e) {
 			throw AxisFault.makeFault(e);
 		}

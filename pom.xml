@@ -93,6 +93,11 @@
                 <version>SNAPSHOT</version>
             </dependency> 
             <dependency>
+                <groupId>com.riskmetrics.sapon</groupId>
+                <artifactId>wsdl4j</artifactId>
+                <version>SNAPSHOT</version>
+            </dependency>
+            <dependency>
                 <groupId>commons-codec</groupId>
                 <artifactId>commons-codec</artifactId>
                 <version>1.4</version>
@@ -185,11 +190,6 @@
                 <artifactId>opensaml</artifactId>
                 <!-- Can we upgrade to 2.2.3? -->
                 <version>1.1</version>
-            </dependency>
-            <dependency>
-                <groupId>wsdl4j</groupId>
-                <artifactId>wsdl4j</artifactId>
-                <version>1.6.2</version>
             </dependency>
             <dependency>
                 <groupId>xml-apis</groupId>

@@ -101,8 +101,8 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
     // performed to get the Type or DocumentationElement
 
     private static boolean USE_SOFT_REFERENCES = true;
-    private transient SoftReference softTypes = null;
-    private transient SoftReference softDocElement = null;
+    private transient SoftReference<Types> softTypes = null;
+    private transient SoftReference<Element> softDocElement = null;
 
     /**
      * Constructor
@@ -219,10 +219,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         if (USE_SOFT_REFERENCES) {
             if (softTypes == null || softTypes.get() == null) {
                 if (types != null) {
-                    softTypes = new SoftReference(types);
-                } else {
-                    // The wsdl has no types
-                    softTypes = new SoftReference(Boolean.FALSE);
+                    softTypes = new SoftReference<Types>(types);
                 }
             }
         }
@@ -241,7 +238,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
                 // The wsdl has no types
                 return null;
             } else {
-                return (Types) softTypes.get();
+                return softTypes.get();
             }
         } else {
             return null;
@@ -265,10 +262,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         if (USE_SOFT_REFERENCES) {
             if (softDocElement == null || softDocElement.get() == null) {
                 if (e != null) {
-                    softDocElement = new SoftReference(e);
-                } else {
-                    // The wsdl has no document element
-                    softDocElement = new SoftReference(Boolean.FALSE);
+                    softDocElement = new SoftReference<Element>(e);
                 }
             }
         }
@@ -287,7 +281,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
                 // The wsdl has no document element
                 return null;
             } else {
-                return (Element) softDocElement.get();
+                return softDocElement.get();
             }
         } else {
             return null;
@@ -519,7 +513,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getNamespaces() {
+    public Map<String, String> getNamespaces() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getNamespaces()");
         }
@@ -529,7 +523,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public List getNativeAttributeNames() {
+    public List<String> getNativeAttributeNames() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getNativeAttributeNames()");
         }
@@ -656,7 +650,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public List getImports(String namespaceURI) {
+    public List<Import> getImports(String namespaceURI) {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getImports(" + namespaceURI + ")");
         }
@@ -666,7 +660,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getImports() {
+    public Map<String, List<Import>> getImports() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getImports()");
         }
@@ -705,7 +699,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getMessages() {
+    public Map<QName, Message> getMessages() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getMessages()");
         }
@@ -744,7 +738,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getBindings() {
+    public Map<QName, Binding> getBindings() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getBindings()");
         }
@@ -754,7 +748,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getAllBindings() {
+    public Map<QName, Binding> getAllBindings() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllBindings()");
         }
@@ -793,7 +787,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getPortTypes() {
+    public Map<QName, PortType> getPortTypes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getPortTypes()");
         }
@@ -803,7 +797,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getAllPortTypes() {
+    public Map<QName, PortType> getAllPortTypes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllPortTypes()");
         }
@@ -842,7 +836,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getServices() {
+    public Map<QName, Service> getServices() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getServices()");
         }
@@ -852,7 +846,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getAllServices() {
+    public Map<QName, Service> getAllServices() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllServices()");
         }
@@ -976,7 +970,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         }
     }
 
-    public List getExtensibilityElements() {
+    public List<ExtensibilityElement> getExtensibilityElements() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getExtensibilityElements()");
         }
@@ -1198,7 +1192,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getExtensionAttributes() {
+    public Map<QName, List<QName>> getExtensionAttributes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getExtensionAttributes()");
         }
@@ -1208,7 +1202,7 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public void setExtensionAttribute(QName name, java.lang.Object value) {
+    public void setExtensionAttribute(QName name, List<QName> value) {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".setExtensionAttribute(" + name + ",  " + value + ")");
         }
@@ -1231,12 +1225,12 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
 
         String explicitURI = null;
 
-        ClassLoader classLoader =
-                (ClassLoader) AccessController.doPrivileged(new PrivilegedAction() {
-                    public Object run() {
-                        return Thread.currentThread().getContextClassLoader();
-                    }
-                });
+        ClassLoader classLoader = AccessController.doPrivileged(
+        		new PrivilegedAction<ClassLoader>() {
+        			public ClassLoader run() {
+        				return Thread.currentThread().getContextClassLoader();
+        			}
+        		});
 
         try {
             URL url = wsdlURL;
@@ -1345,13 +1339,12 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
 
 
     private URL getAbsoluteURL(final ClassLoader classLoader, final String filePath) throws WSDLException {
-        URL url = (URL) AccessController.doPrivileged(
-                new PrivilegedAction() {
-                    public Object run() {
+        URL url = AccessController.doPrivileged(
+                new PrivilegedAction<URL>() {
+                    public URL run() {
                         return classLoader.getResource(filePath);
                     }
-                }
-        );
+                });
         if (url == null) {
             if (log.isDebugEnabled()) {
                 log.debug("Could not get URL from classloader. Looking in a jar.");
@@ -1377,12 +1370,13 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
 
         if (wsdlExplicitURI != null) {
             try {
-                def = (Definition) AccessController.doPrivileged(new PrivilegedExceptionAction() {
-                    public Object run() throws WSDLException {
-                        WSDLReader reader = getWSDLReader();
-                        return reader.readWSDL(wsdlExplicitURI);
-                    }
-                });
+                def = AccessController.doPrivileged(
+                		new PrivilegedExceptionAction<Definition>() {
+                			public Definition run() throws WSDLException {
+                				WSDLReader reader = getWSDLReader();
+                				return reader.readWSDL(wsdlExplicitURI);
+                			}
+                		});
             } catch (PrivilegedActionException e) {
                 if (isDebugEnabled) {
                     log.debug(getClass().getName() + ".loadDefinition(): "
@@ -1424,11 +1418,11 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
                 if (f.exists() && !f.isDirectory()) {
                     try {
                         JarFile jf = new JarFile(f);
-                        Enumeration entries = jf.entries();
+                        Enumeration<JarEntry> entries = jf.entries();
                         // read all entries in jar file and return the first
                         // wsdl file that matches the relative path
                         while (entries.hasMoreElements()) {
-                            JarEntry je = (JarEntry) entries.nextElement();
+                            JarEntry je = entries.nextElement();
                             String name = je.getName();
                             if (name.endsWith(".wsdl")) {
                                 String relativePath = relativeURL.getPath();
@@ -1471,16 +1465,17 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
     private WSDLReader getWSDLReader() throws WSDLException {
         WSDLReader reader;
         try {
-            reader = (WSDLReader) AccessController.doPrivileged(new PrivilegedExceptionAction() {
-                public Object run() throws WSDLException {
-                    WSDLFactory factory = WSDLFactory.newInstance();
-                    return factory.newWSDLReader();
-                }
-            });
+            reader = AccessController.doPrivileged(
+            		new PrivilegedExceptionAction<WSDLReader>() {
+            			public WSDLReader run() throws WSDLException {
+            				WSDLFactory factory = WSDLFactory.newInstance();
+            				return factory.newWSDLReader();
+            			}
+            		});
         } catch (PrivilegedActionException e) {
             throw (WSDLException) e.getException();
         }
-	// prevent system out from occurring
+        // prevent system out from occurring
         reader.setFeature(com.ibm.wsdl.Constants.FEATURE_VERBOSE, false);
         return reader;
     }
@@ -1496,9 +1491,9 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
     	final URLConnection finalURLCon = urlCon;
     	InputStream is = null;
     	try {
-    		is = (InputStream) AccessController.doPrivileged(
-        			new PrivilegedExceptionAction() {
-    					public Object run() throws IOException {
+    		is = AccessController.doPrivileged(
+        			new PrivilegedExceptionAction<InputStream>() {
+    					public InputStream run() throws IOException {
     						return finalURLCon.getInputStream();
     					}
         			});

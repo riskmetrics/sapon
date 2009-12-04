@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.xml.namespace.QName;
@@ -70,7 +71,7 @@ public abstract class AxisOperation extends AxisDescription
 
     private MessageReceiver messageReceiver;
 
-    private HashMap<String, ModuleConfiguration> moduleConfigmap;
+    private Map<String, ModuleConfiguration> moduleConfigmap;
 
     // To store deploy-time module refs
     private List<String> modulerefs;

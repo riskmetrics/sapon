@@ -19,6 +19,15 @@
 
 package org.apache.axis2.description;
 
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.namespace.Constants;
@@ -27,15 +36,6 @@ import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.apache.ws.commons.schema.resolver.URIResolver;
 import org.w3c.dom.Element;
-
-import javax.xml.namespace.QName;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 public abstract class WSDLToAxisServiceBuilder {
 
@@ -67,7 +67,8 @@ public abstract class WSDLToAxisServiceBuilder {
 
     protected static int nsCount = 0;
 
-    protected Map resolvedRpcWrappedElementMap = new HashMap();
+    protected Map<String, QName> resolvedRpcWrappedElementMap
+    	= new HashMap<String, QName>();
 
     protected static final String XSD_ELEMENT_FORM_DEFAULT = "elementFormDefault";
 
@@ -78,7 +79,7 @@ public abstract class WSDLToAxisServiceBuilder {
     protected AxisService axisService;
 
     protected PolicyRegistry registry;
-    
+
     protected AxisConfiguration axisConfig;
 
     protected QName serviceName;
@@ -150,21 +151,13 @@ public abstract class WSDLToAxisServiceBuilder {
      * @return the active schema prefix, or the default schema prefix if not declared
      */
     protected String findSchemaPrefix() {
-        String xsdPrefix = null;
-        Map declaredNameSpaces = axisService.getNamespaceMap();
-        if (declaredNameSpaces.containsValue(XMLSCHEMA_NAMESPACE_URI)) {
-            //loop and find the prefix
-            Iterator it = declaredNameSpaces.keySet().iterator();
-            String key;
-            while (it.hasNext()) {
-                key = (String) it.next();
-                if (XMLSCHEMA_NAMESPACE_URI.equals(declaredNameSpaces.get(key))) {
-                    xsdPrefix = key;
-                    break;
-                }
-            }
-        } else {
-            xsdPrefix = XMLSCHEMA_NAMESPACE_PREFIX; //default prefix
+        String xsdPrefix = XMLSCHEMA_NAMESPACE_PREFIX;
+        Map<String, String> declaredNamespaces = axisService.getNamespaceMap();
+        for(Map.Entry<String, String> e: declaredNamespaces.entrySet()) {
+        	if (XMLSCHEMA_NAMESPACE_URI.equals(e.getValue())) {
+        		xsdPrefix = e.getKey();
+        		break;
+        	}
         }
         return xsdPrefix;
     }
@@ -202,7 +195,7 @@ public abstract class WSDLToAxisServiceBuilder {
      * Gets the URI associated with the base document
      * for the WSDL definition.  Note that this URI
      * is for the base document, not the imports.
-     * 
+     *
      * @return The URI as a String
      */
     public String getBaseUri() {
@@ -213,7 +206,7 @@ public abstract class WSDLToAxisServiceBuilder {
      * Sets the URI associated with the base document
      * for the WSDL definition.  Note that this URI
      * is for the base document, not the imports.
-     * 
+     *
      * @param baseUri  The URI as a String
      */
     public void setBaseUri(String baseUri) {
@@ -235,7 +228,7 @@ public abstract class WSDLToAxisServiceBuilder {
     public void setServiceName(QName serviceName) {
         this.serviceName = serviceName;
     }
-    
+
     /**
      * Get a string containing the stack of the current location
      *
@@ -263,7 +256,7 @@ public abstract class WSDLToAxisServiceBuilder {
         text = replace(text, "at ", "DEBUG_FRAME = ");
         return text;
     }
-    
+
     /**
      * replace: Like String.replace except that the old new items are strings.
      *
@@ -275,7 +268,9 @@ public abstract class WSDLToAxisServiceBuilder {
     protected static final String replace(String name,
                                        String oldT, String newT) {
 
-        if (name == null) return "";
+        if (name == null) {
+			return "";
+		}
 
         // Create a string buffer that is twice initial length.
         // This is a good starting point.
@@ -292,14 +287,15 @@ public abstract class WSDLToAxisServiceBuilder {
                 start = i + len;
                 i = name.indexOf(oldT, start);
             }
-            if (start < name.length())
-                sb.append(name.substring(start));
+            if (start < name.length()) {
+				sb.append(name.substring(start));
+			}
         } catch (NullPointerException e) {
         }
 
         return new String(sb);
     }
-    
+
     public void useAxisConfiguration(AxisConfiguration axisConfig) {
         this.axisConfig = axisConfig;
     }

@@ -22,10 +22,6 @@
             <artifactId>rampart-policy</artifactId>
         </dependency>
         <dependency>
-            <groupId>wsdl4j</groupId>
-            <artifactId>wsdl4j</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.riskmetrics.sapon</groupId>
             <artifactId>axiom-api</artifactId>
         </dependency>
@@ -37,6 +33,10 @@
             <groupId>com.riskmetrics.sapon</groupId>
             <artifactId>axis2-kernel</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>wsdl4j</artifactId>
+        </dependency>        
         <dependency>
             <groupId>org.apache.santuario</groupId>
             <artifactId>xmlsec</artifactId>

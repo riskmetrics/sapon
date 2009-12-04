@@ -23,6 +23,8 @@ package org.apache.axis2.description;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.alt.ModuleConfigAccessor;
@@ -37,10 +39,10 @@ public class AxisServiceGroup extends AxisDescription
     //to check whether user has put WWW dir or not
     private boolean foundWebResources;
     // to store module ref at deploy time parsing
-    private final ArrayList<String> modulesList = new ArrayList<String>();
+    private final List<String> modulesList = new ArrayList<String>();
 
     // to store modeule configuration info
-    private HashMap<String, ModuleConfiguration> moduleConfigmap;
+    private Map<String, ModuleConfiguration> moduleConfigmap;
 
     // class loader
     private ClassLoader serviceGroupClassLoader;
@@ -115,17 +117,6 @@ public class AxisServiceGroup extends AxisDescription
     }
 
     /**
-     *
-     * @param service
-     * @throws Exception
-     * @deprecated please use addService() instead
-     */
-    @Deprecated
-	public void addToGroup(AxisService service) throws Exception {
-        addService(service);
-    }
-
-    /**
      * When a module gets engaged on a ServiceGroup, we have to engage it for each Service.
      *
      * @param module the newly-engaged AxisModule
@@ -160,7 +151,7 @@ public class AxisServiceGroup extends AxisDescription
         return moduleConfigmap.get(moduleName);
     }
 
-    public ArrayList<String> getModuleRefs() {
+    public List<String> getModuleRefs() {
         return modulesList;
     }
 

@@ -26,7 +26,7 @@
 			<artifactId>axiom-impl</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>wsdl4j</groupId>
+			<groupId>com.riskmetrics.sapon</groupId>
 			<artifactId>wsdl4j</artifactId>
 		</dependency>
 	</dependencies>

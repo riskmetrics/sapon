@@ -23,47 +23,22 @@ package org.apache.axis2.description;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Class FlowImpl
- */
 public class Flow {
 
-    /**
-     * Field list
-     */
     protected final List<HandlerDescription> list;
 
-    /**
-     * Constructor FlowImpl
-     */
     public Flow() {
         list = new ArrayList<HandlerDescription>();
     }
 
-    /**
-     * Method addHandler.
-     *
-     * @param handler
-     */
     public void addHandler(HandlerDescription handler) {
         list.add(handler);
     }
 
-    /**
-     * Method getHandler.
-     *
-     * @param index
-     * @return Returns HandlerDescription.
-     */
     public HandlerDescription getHandler(int index) {
         return list.get(index);
     }
 
-    /**
-     * Method getHandlerCount.
-     *
-     * @return Returns int.
-     */
     public int getHandlerCount() {
         return list.size();
     }

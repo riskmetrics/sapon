@@ -33,7 +33,7 @@ public interface WSDLWrapperImpl extends Definition {
     /**
      * Returns the WSDL4J Definition object that is being wrapped
      */
-    public Definition getUnwrappedDefinition();
+    Definition getUnwrappedDefinition();
 
 
     /**
@@ -41,32 +41,32 @@ public interface WSDLWrapperImpl extends Definition {
      *
      * @param d  the WSDL4J Definition object
      */
-    public void setDefinitionToWrap(Definition d);
+    void setDefinitionToWrap(Definition d);
 
 
     /**
      * Sets the location for the WSDL4J Definition object that is being wrapped
      */
-    public void setWSDLLocation(String uriLocation);
+    void setWSDLLocation(String uriLocation);
 
 
     /**
      * Gets the location for the WSDL4J Definition object that is being wrapped
      */
-    public String getWSDLLocation();
-
-
-    /*
-     * Release resources associated with the WSDL4J Definition object that is
-     * being wrapped.
-     */
-    public void releaseResources();
+    String getWSDLLocation();
 
 
     /**
-     * Closes the use of the wrapper implementation and allows 
+     * Release resources associated with the WSDL4J Definition object that is
+     * being wrapped.
+     */
+    void releaseResources();
+
+
+    /**
+     * Closes the use of the wrapper implementation and allows
      * internal resources to be released.
      */
-    public void close();
+    void close();
 
 }

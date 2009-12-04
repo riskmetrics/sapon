@@ -18,7 +18,6 @@ package org.apache.rahas.client;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -45,8 +44,8 @@ import org.apache.axis2.description.OutInAxisOperation;
 import org.apache.axis2.description.Parameter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyComponent;
 import org.apache.rahas.RahasConstants;
 import org.apache.rahas.Token;
 import org.apache.rahas.TokenStorage;
@@ -87,7 +86,7 @@ public class STSClient {
 
     private AlgorithmSuite algorithmSuite;
 
-    private ArrayList parameters = new ArrayList();
+    private List<Parameter> parameters = new ArrayList<Parameter>();
 
     private byte[] requestorEntropy;
 
@@ -126,7 +125,7 @@ public class STSClient {
             ServiceClient client = getServiceClient(rstQn, issuerAddress);
 
             for (int i = 0; i < parameters.size(); i++) {
-                Parameter param = (Parameter)parameters.get(i);
+                Parameter param = parameters.get(i);
                 client.getAxisService().addParameter(param.getName(), param.getValue());
             }
 
@@ -470,10 +469,9 @@ public class STSClient {
         if (issuerPolicy != null) {
             log.debug("Processing Issuer policy");
 
-            List issuerAssertions = issuerPolicy.getAlternatives().next();
+            List<PolicyComponent> issuerAssertions = issuerPolicy.getAlternatives().next();
 
-            for (Iterator iter = issuerAssertions.iterator(); iter.hasNext();) {
-                Assertion tempAssertion = (Assertion) iter.next();
+            for(PolicyComponent tempAssertion: issuerAssertions) {
                 //find the AlgorithmSuite assertion
                 if (tempAssertion instanceof Binding) {
 
@@ -490,10 +488,9 @@ public class STSClient {
 
             log.debug("Processing service policy to find Trust10 assertion");
 
-            List assertions = servicePolicy.getAlternatives().next();
+            List<PolicyComponent> assertions = servicePolicy.getAlternatives().next();
 
-            for (Iterator iter = assertions.iterator(); iter.hasNext();) {
-                Assertion tempAssertion = (Assertion) iter.next();
+            for(PolicyComponent tempAssertion: assertions) {
                 //find the Trust10 assertion
                 if (tempAssertion instanceof Trust10) {
                     log.debug("Extracting Trust10 assertion from " +

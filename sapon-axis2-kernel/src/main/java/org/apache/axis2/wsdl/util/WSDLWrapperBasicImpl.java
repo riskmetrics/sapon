@@ -47,6 +47,7 @@ import javax.xml.namespace.QName;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.w3c.dom.Element;
 
 
 /**
@@ -67,8 +68,8 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
 
     // the location of the base document used in the wsdl4j definition
     private URL wsdlURL = null;
-    private String wsdlExplicitURI = null;
-    private String wsdlDocumentBaseURI = null;
+//    private String wsdlExplicitURI = null;
+//    private String wsdlDocumentBaseURI = null;
 
     //-------------------------------------------------------------------------
     // constructors
@@ -306,7 +307,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getNamespaces() {
+    public Map<String, String> getNamespaces() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getNamespaces()");
         }
@@ -316,7 +317,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public List getNativeAttributeNames() {
+    public List<String> getNativeAttributeNames() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getNativeAttributeNames()");
         }
@@ -365,7 +366,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public List getImports(String namespaceURI) {
+    public List<Import> getImports(String namespaceURI) {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getImports(" + namespaceURI + ")");
         }
@@ -375,7 +376,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getImports() {
+    public Map<String, List<Import>> getImports() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getImports()");
         }
@@ -414,7 +415,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getMessages() {
+    public Map<QName, Message> getMessages() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getMessages()");
         }
@@ -453,7 +454,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getBindings() {
+    public Map<QName, Binding> getBindings() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getBindings()");
         }
@@ -463,7 +464,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getAllBindings() {
+    public Map<QName, Binding> getAllBindings() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllBindings()");
         }
@@ -502,7 +503,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getPortTypes() {
+    public Map<QName, PortType> getPortTypes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getPortTypes()");
         }
@@ -512,7 +513,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getAllPortTypes() {
+    public Map<QName, PortType> getAllPortTypes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllPortTypes()");
         }
@@ -551,7 +552,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getServices() {
+    public Map<QName, Service> getServices() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getServices()");
         }
@@ -561,7 +562,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getAllServices() {
+    public Map<QName, Service> getAllServices() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllServices()");
         }
@@ -571,7 +572,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public void setDocumentationElement(org.w3c.dom.Element docEl) {
+    public void setDocumentationElement(Element docEl) {
 
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".setDocumentationElement()");
@@ -581,7 +582,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         }
     }
 
-    public org.w3c.dom.Element getDocumentationElement() {
+    public Element getDocumentationElement() {
 
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getDocumentationElement()");
@@ -601,7 +602,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         }
     }
 
-    public List getExtensibilityElements() {
+    public List<ExtensibilityElement> getExtensibilityElements() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getExtensibilityElements()");
         }
@@ -823,7 +824,7 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public Map getExtensionAttributes() {
+    public Map<QName, List<QName>> getExtensionAttributes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getExtensionAttributes()");
         }
@@ -833,15 +834,13 @@ public class WSDLWrapperBasicImpl implements WSDLWrapperImpl {
         return null;
     }
 
-    public void setExtensionAttribute(QName name, java.lang.Object value) {
+    public void setExtensionAttribute(QName name, List<QName> values) {
         if (isDebugEnabled) {
-            log.debug(getClass().getName() + ".setExtensionAttribute(" + name + ",  " + value + ")");
+            log.debug(getClass().getName() + ".setExtensionAttribute(" + name + ",  " + values + ")");
         }
         if (wsdlDefinition != null) {
-            wsdlDefinition.setExtensionAttribute(name, value);
+            wsdlDefinition.setExtensionAttribute(name, values);
         }
     }
-
-
 
 }

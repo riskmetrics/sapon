@@ -19,9 +19,9 @@
 
 package org.apache.axis2.wsdl;
 
-import org.apache.axis2.namespace.Constants;
-
 import javax.xml.namespace.QName;
+
+import org.apache.axis2.namespace.Constants;
 
 public class SOAPHeaderMessage {
 

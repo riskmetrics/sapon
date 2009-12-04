@@ -19,7 +19,6 @@ package org.apache.rahas.impl;
 import java.io.FileInputStream;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 
@@ -88,7 +87,7 @@ public class SAMLTokenIssuerConfig extends AbstractIssuerConfig {
     protected String issuerKeyAlias;
     protected String issuerKeyPassword;
     protected String issuerName;
-    protected Map trustedServices = new HashMap();
+    protected Map<String, String> trustedServices = new HashMap<String, String>();
     protected String trustStorePropFile;
     protected SAMLCallbackHandler callbackHander;
 
@@ -224,7 +223,7 @@ public class SAMLTokenIssuerConfig extends AbstractIssuerConfig {
                                              new String[]{service.getText().trim()});
                 }
                 if (this.trustedServices == null) {
-                    this.trustedServices = new HashMap();
+                    this.trustedServices = new HashMap<String, String>();
                 }
 
                 //Add the trusted service and the alias to the map of services
@@ -241,7 +240,7 @@ public class SAMLTokenIssuerConfig extends AbstractIssuerConfig {
 		if (attrElemet != null) {
 				try {
 					String value = attrElemet.getText();
-					Class handlerClass = Class.forName(value);
+					Class<?> handlerClass = Class.forName(value);
 					this.callbackHander = (SAMLCallbackHandler)handlerClass.newInstance();
 				} catch (ClassNotFoundException e) {
 					log.debug("Error loading class" , e);
@@ -299,11 +298,11 @@ public class SAMLTokenIssuerConfig extends AbstractIssuerConfig {
         proofKeyTypeElem.setText(this.proofKeyType);
 
         OMElement trustedServicesElem = fac.createOMElement(TRUSTED_SERVICES, configElem);
-        for (Iterator iterator = this.trustedServices.keySet().iterator(); iterator.hasNext();) {
-            String service = (String) iterator.next();
+        for (Object element : this.trustedServices.keySet()) {
+            String service = (String) element;
             OMElement serviceElem = fac.createOMElement(SERVICE, trustedServicesElem);
             serviceElem.setText(service);
-            serviceElem.addAttribute("alias", (String)this.trustedServices.get(service), null);
+            serviceElem.addAttribute("alias", this.trustedServices.get(service), null);
 
         }
 
@@ -322,7 +321,7 @@ public class SAMLTokenIssuerConfig extends AbstractIssuerConfig {
         this.issuerName = issuerName;
     }
 
-    public void setTrustedServices(Map trustedServices) {
+    public void setTrustedServices(Map<String, String> trustedServices) {
         this.trustedServices = trustedServices;
     }
 
@@ -352,7 +351,7 @@ public class SAMLTokenIssuerConfig extends AbstractIssuerConfig {
         this.cryptoPropertiesElement= fac.createOMElement(CRYPTO_PROPERTIES);
         OMElement cryptoElem = fac.createOMElement(CRYPTO, this.cryptoPropertiesElement);
         cryptoElem.addAttribute(PROVIDER.getLocalPart(), providerClassName, null);
-        Enumeration keys =  props.keys();
+        Enumeration<?> keys =  props.keys();
         while (keys.hasMoreElements()) {
             String prop = (String) keys.nextElement();
             String value = (String)props.get(prop);
@@ -368,7 +367,7 @@ public class SAMLTokenIssuerConfig extends AbstractIssuerConfig {
      * those keys.
      * @return
      */
-    public Map getTrustedServices() {
+    public Map<String, String> getTrustedServices() {
         return trustedServices;
     }
 

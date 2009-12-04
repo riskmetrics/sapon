@@ -80,8 +80,8 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
 
     // the location of the base document used in the wsdl4j definition
     private URL wsdlURL = null;
-    private String wsdlExplicitURI = null;
-    private String wsdlDocumentBaseURI = null;
+//    private String wsdlExplicitURI = null;
+//    private String wsdlDocumentBaseURI = null;
 
     // an object that maintains a synchronized counter
     private Counter accessCount = null;
@@ -417,14 +417,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getNamespaces() {
+    public Map<String, String> getNamespaces() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getNamespaces()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<String, String> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getNamespaces();
@@ -433,14 +433,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public List getNativeAttributeNames() {
+    public List<String> getNativeAttributeNames() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getNativeAttributeNames()");
         }
 
         getWrappedDefinitionForUse();
 
-        List results = null;
+        List<String> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getNativeAttributeNames();
@@ -517,14 +517,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public List getImports(String namespaceURI) {
+    public List<Import> getImports(String namespaceURI) {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getImports(" + namespaceURI + ")");
         }
 
         getWrappedDefinitionForUse();
 
-        List results = null;
+        List<Import> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getImports(namespaceURI);
@@ -533,14 +533,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getImports() {
+    public Map<String, List<Import>> getImports() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getImports()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<String, List<Import>> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getImports();
@@ -600,14 +600,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getMessages() {
+    public Map<QName, Message> getMessages() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getMessages()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, Message> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getMessages();
@@ -667,14 +667,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getBindings() {
+    public Map<QName, Binding> getBindings() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getBindings()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, Binding> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getBindings();
@@ -683,14 +683,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getAllBindings() {
+    public Map<QName, Binding> getAllBindings() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllBindings()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, Binding> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getAllBindings();
@@ -750,14 +750,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getPortTypes() {
+    public Map<QName, PortType> getPortTypes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getPortTypes()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, PortType> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getPortTypes();
@@ -766,14 +766,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getAllPortTypes() {
+    public Map<QName, PortType> getAllPortTypes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllPortTypes()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, PortType> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getAllPortTypes();
@@ -833,14 +833,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getServices() {
+    public Map<QName, Service> getServices() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getServices()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, Service> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getServices();
@@ -849,14 +849,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getAllServices() {
+    public Map<QName, Service> getAllServices() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getAllServices()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, Service> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getAllServices();
@@ -915,14 +915,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         doneUsingWrappedDefinition();
     }
 
-    public List getExtensibilityElements() {
+    public List<ExtensibilityElement> getExtensibilityElements() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getExtensibilityElements()");
         }
 
         getWrappedDefinitionForUse();
 
-        List results = null;
+        List<ExtensibilityElement> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getExtensibilityElements();
@@ -1318,14 +1318,14 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public Map getExtensionAttributes() {
+    public Map<QName, List<QName>> getExtensionAttributes() {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".getExtensionAttributes()");
         }
 
         getWrappedDefinitionForUse();
 
-        Map results = null;
+        Map<QName, List<QName>> results = null;
 
         if (wsdlDefinition != null) {
             results = wsdlDefinition.getExtensionAttributes();
@@ -1334,7 +1334,7 @@ public class WSDLWrapperSaveImpl implements WSDLWrapperImpl {
         return results;
     }
 
-    public void setExtensionAttribute(QName name, java.lang.Object value) {
+    public void setExtensionAttribute(QName name, List<QName> value) {
         if (isDebugEnabled) {
             log.debug(getClass().getName() + ".setExtensionAttribute(" + name + ",  " + value + ")");
         }

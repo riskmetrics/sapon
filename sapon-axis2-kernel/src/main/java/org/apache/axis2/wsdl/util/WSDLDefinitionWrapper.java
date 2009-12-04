@@ -71,7 +71,6 @@ import org.apache.commons.logging.LogFactory;
 public class WSDLDefinitionWrapper implements Definition {
 
     private static final Log log = LogFactory.getLog(WSDLDefinitionWrapper.class);
-    private static final boolean isDebugEnabled = log.isDebugEnabled();
 
     // javax.wsdl.Definition implements java.io.Serializable
     static final long serialVersionUID = -2788807375814097409L;
@@ -360,11 +359,11 @@ public class WSDLDefinitionWrapper implements Definition {
         return wrapperImpl.getPrefix(namespaceURI);
     }
 
-    public Map getNamespaces() {
+    public Map<String, String> getNamespaces() {
         return wrapperImpl.getNamespaces();
     }
 
-    public List getNativeAttributeNames() {
+    public List<String> getNativeAttributeNames() {
         return wrapperImpl.getNativeAttributeNames();
     }
 
@@ -385,11 +384,11 @@ public class WSDLDefinitionWrapper implements Definition {
         return wrapperImpl.removeImport(importDef);
     }
 
-    public List getImports(String namespaceURI) {
+    public List<Import> getImports(String namespaceURI) {
         return wrapperImpl.getImports(namespaceURI);
     }
 
-    public Map getImports() {
+    public Map<String, List<Import>> getImports() {
         return wrapperImpl.getImports();
     }
 
@@ -405,7 +404,7 @@ public class WSDLDefinitionWrapper implements Definition {
         return wrapperImpl.removeMessage(name);
     }
 
-    public Map getMessages() {
+    public Map<QName, Message> getMessages() {
         return wrapperImpl.getMessages();
     }
 
@@ -421,11 +420,11 @@ public class WSDLDefinitionWrapper implements Definition {
         return wrapperImpl.removeBinding(name);
     }
 
-    public Map getBindings() {
+    public Map<QName, Binding> getBindings() {
         return wrapperImpl.getBindings();
     }
 
-    public Map getAllBindings() {
+    public Map<QName, Binding> getAllBindings() {
         return wrapperImpl.getAllBindings();
     }
 
@@ -441,11 +440,11 @@ public class WSDLDefinitionWrapper implements Definition {
         return wrapperImpl.removePortType(name);
     }
 
-    public Map getPortTypes() {
+    public Map<QName, PortType> getPortTypes() {
         return wrapperImpl.getPortTypes();
     }
 
-    public Map getAllPortTypes() {
+    public Map<QName, PortType> getAllPortTypes() {
         return wrapperImpl.getAllPortTypes();
     }
 
@@ -461,11 +460,11 @@ public class WSDLDefinitionWrapper implements Definition {
         return wrapperImpl.removeService(name);
     }
 
-    public Map getServices() {
+    public Map<QName, Service> getServices() {
         return wrapperImpl.getServices();
     }
 
-    public Map getAllServices() {
+    public Map<QName, Service> getAllServices() {
         return wrapperImpl.getAllServices();
     }
 
@@ -481,7 +480,7 @@ public class WSDLDefinitionWrapper implements Definition {
         wrapperImpl.addExtensibilityElement(extElement);
     }
 
-    public List getExtensibilityElements() {
+    public List<ExtensibilityElement> getExtensibilityElements() {
         return wrapperImpl.getExtensibilityElements();
     }
 
@@ -574,11 +573,11 @@ public class WSDLDefinitionWrapper implements Definition {
         return wrapperImpl.getExtensionAttribute(name);
     }
 
-    public Map getExtensionAttributes() {
+    public Map<QName, List<QName>> getExtensionAttributes() {
         return wrapperImpl.getExtensionAttributes();
     }
 
-    public void setExtensionAttribute(QName name, java.lang.Object value) {
+    public void setExtensionAttribute(QName name, List<QName> value) {
         wrapperImpl.setExtensionAttribute(name, value);
     }
 

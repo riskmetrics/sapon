@@ -61,8 +61,8 @@ public class WSDL11ActionHelperTest extends TestCase {
                 "http://ws.apache.org/axis2/actiontest/withoutWSAWActionNoName/echoRequest";
         PortType pt = definition.getPortType(
                 new QName("http://ws.apache.org/axis2/actiontest/", "withoutWSAWActionNoName"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Input in = op.getInput();
         String actualAction = WSDL11ActionHelper.getActionFromInputElement(definition, pt, op, in);
         assertEquals(expectedAction, actualAction);
@@ -73,8 +73,8 @@ public class WSDL11ActionHelperTest extends TestCase {
                 "http://ws.apache.org/axis2/actiontest/withoutWSAWActionNoName/echoResponse";
         PortType pt = definition.getPortType(
                 new QName("http://ws.apache.org/axis2/actiontest/", "withoutWSAWActionNoName"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Output out = op.getOutput();
         String actualAction =
                 WSDL11ActionHelper.getActionFromOutputElement(definition, pt, op, out);
@@ -89,8 +89,8 @@ public class WSDL11ActionHelperTest extends TestCase {
                 "http://ws.apache.org/axis2/actiontest/withoutWSAWAction/NamedInput";
         PortType pt = definition.getPortType(
                 new QName("http://ws.apache.org/axis2/actiontest/", "withoutWSAWAction"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Input in = op.getInput();
         String actualAction = WSDL11ActionHelper.getActionFromInputElement(definition, pt, op, in);
         assertEquals(expectedAction, actualAction);
@@ -101,8 +101,8 @@ public class WSDL11ActionHelperTest extends TestCase {
                 "http://ws.apache.org/axis2/actiontest/withoutWSAWAction/NamedOutput";
         PortType pt = definition.getPortType(
                 new QName("http://ws.apache.org/axis2/actiontest/", "withoutWSAWAction"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Output out = op.getOutput();
         String actualAction =
                 WSDL11ActionHelper.getActionFromOutputElement(definition, pt, op, out);
@@ -114,8 +114,8 @@ public class WSDL11ActionHelperTest extends TestCase {
                 "http://ws.apache.org/axis2/actiontest/withoutWSAWAction/echo/Fault/echoFault";
         PortType pt = definition.getPortType(
                 new QName("http://ws.apache.org/axis2/actiontest/", "withoutWSAWAction"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Fault fault = op.getFault("echoFault");
         String actualAction =
                 WSDL11ActionHelper.getActionFromFaultElement(definition, pt, op, fault);
@@ -129,8 +129,8 @@ public class WSDL11ActionHelperTest extends TestCase {
         String expectedAction = "http://example.org/action/echoIn";
         PortType pt = definition
                 .getPortType(new QName("http://ws.apache.org/axis2/actiontest/", "withWSAWAction"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Input in = op.getInput();
         String actualAction = WSDL11ActionHelper.getActionFromInputElement(definition, pt, op, in);
         assertEquals(expectedAction, actualAction);
@@ -140,8 +140,8 @@ public class WSDL11ActionHelperTest extends TestCase {
         String expectedAction = "http://example.org/action/echoOut";
         PortType pt = definition
                 .getPortType(new QName("http://ws.apache.org/axis2/actiontest/", "withWSAWAction"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Output out = op.getOutput();
         String actualAction =
                 WSDL11ActionHelper.getActionFromOutputElement(definition, pt, op, out);
@@ -152,8 +152,8 @@ public class WSDL11ActionHelperTest extends TestCase {
         String expectedAction = "http://example.org/action/echoFault";
         PortType pt = definition
                 .getPortType(new QName("http://ws.apache.org/axis2/actiontest/", "withWSAWAction"));
-        List operations = pt.getOperations();
-        Operation op = (Operation) operations.get(0);
+        List<Operation> operations = pt.getOperations();
+        Operation op = operations.get(0);
         Fault fault = op.getFault("echoFault");
         String actualAction =
                 WSDL11ActionHelper.getActionFromFaultElement(definition, pt, op, fault);

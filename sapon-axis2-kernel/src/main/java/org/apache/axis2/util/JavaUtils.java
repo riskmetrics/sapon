@@ -414,7 +414,7 @@ public class JavaUtils {
         if (len == 0) {
             return EMPTY_STRING_ARRAY;
         }
-        List list = new ArrayList();
+        List<String> list = new ArrayList<String>();
         int i = 0, start = 0;
         boolean match = false;
         while (i < len) {
@@ -432,10 +432,10 @@ public class JavaUtils {
         if (match) {
             list.add(str.substring(start, i));
         }
-        return (String[]) list.toArray(new String[list.size()]);
+        return list.toArray(new String[list.size()]);
     }
 
-    public static Class getWrapperClass(Class primitive) {
+    public static Class<?> getWrapperClass(Class<?> primitive) {
         if (primitive == int.class) {
             return java.lang.Integer.class;
         } else if (primitive == short.class) {
@@ -457,7 +457,7 @@ public class JavaUtils {
         return null;
     }
 
-    public static Class getWrapperClass(String primitive) {
+    public static Class<?> getWrapperClass(String primitive) {
         if (primitive.equals("int")) {
             return java.lang.Integer.class;
         } else if (primitive.equals("short")) {
@@ -516,7 +516,7 @@ public class JavaUtils {
         }
         return index;
     }
-    
+
     /**
      * replace: Like String.replace except that the old new items are strings.
      *
@@ -528,7 +528,9 @@ public class JavaUtils {
     public static final String replace(String name,
                                        String oldT, String newT) {
 
-        if (name == null) return "";
+        if (name == null) {
+			return "";
+		}
 
         // Create a string buffer that is twice initial length.
         // This is a good starting point.
@@ -545,8 +547,9 @@ public class JavaUtils {
                 start = i + len;
                 i = name.indexOf(oldT, start);
             }
-            if (start < name.length())
-                sb.append(name.substring(start));
+            if (start < name.length()) {
+				sb.append(name.substring(start));
+			}
         } catch (NullPointerException e) {
             // No FFDC code needed
         }
@@ -555,7 +558,7 @@ public class JavaUtils {
     }
     /**
      * Get a string containing the stack of the current location.
-     * Note This utility is useful in debug scenarios to dump out 
+     * Note This utility is useful in debug scenarios to dump out
      * the call stack.
      *
      * @return String
