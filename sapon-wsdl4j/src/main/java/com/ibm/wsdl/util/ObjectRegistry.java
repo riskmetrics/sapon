@@ -1,0 +1,65 @@
+/*
+ * (c) Copyright IBM Corp 2001, 2006
+ */
+
+package com.ibm.wsdl.util;
+
+import java.util.Hashtable;
+import java.util.Map;
+
+/**
+ * The <em>ObjectRegistry</em> is used to do name-to-object reference lookups.
+ * If an <em>ObjectRegistry</em> is passed as a constructor argument, then this
+ * <em>ObjectRegistry</em> will be a cascading registry: when a lookup is
+ * invoked, it will first look in its own table for a name, and if it's not
+ * there, it will cascade to the parent <em>ObjectRegistry</em>.
+ * All registration is always local. [??]
+ *
+ * @author   Sanjiva Weerawarana
+ * @author   Matthew J. Duftler
+ */
+public class ObjectRegistry {
+  Hashtable<String, Object> reg = new Hashtable<String, Object>();
+  ObjectRegistry parent = null;
+
+  public ObjectRegistry () {
+  }
+
+  public ObjectRegistry (Map<String, ?> initialValues) {
+    if(initialValues != null)
+    {
+      for(Map.Entry<String, ?> e: initialValues.entrySet()) {
+        register(e.getKey(), e.getValue());
+      }
+    }
+  }
+
+  public ObjectRegistry (ObjectRegistry parent) {
+    this.parent = parent;
+  }
+
+  // register an object
+  public void register (String name, Object obj) {
+    reg.put (name, obj);
+  }
+
+  // unregister an object (silent if unknown name)
+  public void unregister (String name) {
+    reg.remove (name);
+  }
+
+  // lookup an object: cascade up if needed
+  public Object lookup (String name) throws IllegalArgumentException {
+    Object obj = reg.get (name);
+
+    if (obj == null && parent != null) {
+      obj = parent.lookup (name);
+    }
+
+    if (obj == null) {
+      throw new IllegalArgumentException ("object '" + name + "' not in registry");
+    }
+
+    return obj;
+  }
+}
