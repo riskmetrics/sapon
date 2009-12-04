@@ -19,13 +19,14 @@
 
 package org.apache.synapse.commons.util;
 
+import java.lang.reflect.Method;
+
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.commons.SynapseCommonsException;
-
-import javax.xml.namespace.QName;
-import java.lang.reflect.Method;
 
 /**
  * This class will be used as a Helper class to get the properties loaded while building the
@@ -57,7 +58,7 @@ public class PropertyHelper {
 
             for (Method method1 : methods) {
                 if (mName.equals(method1.getName())) {
-                    Class[] params = method1.getParameterTypes();
+                    Class<?>[] params = method1.getParameterTypes();
                     if (params.length != 1) {
                         handleException("Did not find a setter method named : " + mName +
                                 "() that takes a single String, int, long, float, double ," +
@@ -66,28 +67,28 @@ public class PropertyHelper {
                         String value = (String) val;
                         if (String.class.equals(params[0])) {
                             method = obj.getClass().getMethod(mName, String.class);
-                            method.invoke(obj, new String[]{value});
+                            method.invoke(obj, value);
                         } else if (int.class.equals(params[0])) {
                             method = obj.getClass().getMethod(mName, int.class);
-                            method.invoke(obj, new Integer[]{new Integer(value)});
+                            method.invoke(obj, new Integer(value));
                         } else if (long.class.equals(params[0])) {
                             method = obj.getClass().getMethod(mName, long.class);
-                            method.invoke(obj, new Long[]{new Long(value)});
+                            method.invoke(obj, new Long(value));
                         } else if (float.class.equals(params[0])) {
                             method = obj.getClass().getMethod(mName, float.class);
-                            method.invoke(obj, new Float[]{new Float(value)});
+                            method.invoke(obj, new Float(value));
                         } else if (double.class.equals(params[0])) {
                             method = obj.getClass().getMethod(mName, double.class);
-                            method.invoke(obj, new Double[]{new Double(value)});
+                            method.invoke(obj, new Double(value));
                         } else if (boolean.class.equals(params[0])) {
                             method = obj.getClass().getMethod(mName, boolean.class);
-                            method.invoke(obj, new Boolean[]{Boolean.valueOf(value)});
+                            method.invoke(obj, Boolean.valueOf(value));
                         } else {
                             continue;
                         }
                     } else if (val instanceof OMElement && OMElement.class.equals(params[0])) {
                         method = obj.getClass().getMethod(mName, OMElement.class);
-                        method.invoke(obj, new OMElement[]{(OMElement) val});
+                        method.invoke(obj, (OMElement) val);
                     } else {
                         continue;
                     }
