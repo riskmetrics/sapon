@@ -20,12 +20,12 @@
 package org.apache.axis2.addressing.i18n;
 
 
-import org.apache.axis2.i18n.MessageBundle;
-import org.apache.axis2.i18n.MessagesConstants;
-
 import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
+import org.apache.axis2.i18n.MessageBundle;
+import org.apache.axis2.i18n.MessagesConstants;
 
 /**
  * @see org.apache.axis2.i18n.Messages The implementation is the same but just thisClass static
@@ -145,7 +145,7 @@ public class AddressingMessages {
      * @param args An array of objects to place in corresponding variables
      * @return Returns the formatted message.
      */
-    public static String getMessage(String key, String[] args)
+    public static String getMessage(String key, Object... args)
             throws MissingResourceException {
         return messageBundle.getMessage(key, args);
     }
