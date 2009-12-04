@@ -395,7 +395,8 @@ public class HTTPConstants {
     /**
      * @deprecated
      */
-    public static final String MTOM_RECEIVED_CONTENT_TYPE = "MTOM_RECEIVED";
+    @Deprecated
+	public static final String MTOM_RECEIVED_CONTENT_TYPE = "MTOM_RECEIVED";
 
     /**
      * Field ISE[]
@@ -437,10 +438,6 @@ public class HTTPConstants {
      */
     public static final String CACHED_HTTP_CLIENT = "CACHED_HTTP_CLIENT";
 
-    /**
-     * @deprecated please use MULTITHREAD_HTTP_CONNECTION_MANAGER
-     */
-    public static final String MUTTITHREAD_HTTP_CONNECTION_MANAGER = "MUTTITHREAD_HTTP_CONNECTION_MANAGER";
 
     public static final String MULTITHREAD_HTTP_CONNECTION_MANAGER = "MULTITHREAD_HTTP_CONNECTION_MANAGER";
 
@@ -501,11 +498,12 @@ public class HTTPConstants {
     /**
      * @deprecated Please use Constants.Configuration.CONTENT_TYPE
      */
-    public static final String CONTENT_TYPE = "Content-Type";
+    @Deprecated
+	public static final String CONTENT_TYPE = "Content-Type";
 
     public static final String OMIT_SOAP_12_ACTION = "OmitSOAP12Action";
     public static final String CUSTOM_PROTOCOL_HANDLER = "CUSTOM_PROTOCOL_HANDLER";
-    
+
     public static final String HTTP_METHOD_PARAMS = "HTTP_METHOD_PARAMS";
 
     /*

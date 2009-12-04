@@ -18,12 +18,9 @@ package org.apache.rampart.util;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.Parameter;
 import org.apache.rampart.handler.WSSHandlerConstants;
-import org.apache.rampart.handler.config.InflowConfiguration;
-import org.apache.rampart.handler.config.OutflowConfiguration;
 import org.apache.ws.security.WSSecurityException;
 import org.apache.ws.security.handler.WSHandlerConstants;
 
@@ -143,83 +140,6 @@ public class HandlerParameterDecoder {
 					new Integer(repetitionCount));
 		}
 	}
-
-    public static OutflowConfiguration getOutflowConfiguration(Parameter outflowConfigParam) throws AxisFault {
-        if (outflowConfigParam != null) {
-            OMElement outflowParamElem = (OMElement)outflowConfigParam.getValue();
-
-            OMElement actionElem = outflowParamElem
-                    .getFirstChildWithName(new QName(WSSHandlerConstants.ACTION));
-            if (actionElem == null) {
-                throw new AxisFault(
-                        "Inflow configuration must contain an 'action' "
-                                + "elements the child of 'InflowSecurity' element");
-            }
-
-            OutflowConfiguration outflowConfiguration = new OutflowConfiguration();
-
-            for(OMElement element: actionElem.getChildElements()) {
-
-                String localName = element.getLocalName();
-                String text = element.getText().trim();
-                if(localName.equals(WSHandlerConstants.PW_CALLBACK_CLASS)) {
-                    outflowConfiguration.setPasswordCallbackClass(text);
-                } else if(localName.equals(WSHandlerConstants.SIG_PROP_FILE)) {
-                    outflowConfiguration.setSignaturePropFile(text);
-                } else if(localName.equals(WSHandlerConstants.ENC_PROP_FILE)) {
-                    outflowConfiguration.setEncryptionPropFile(text);
-                } else if(localName.equals(WSHandlerConstants.ENC_CALLBACK_CLASS)) {
-                    outflowConfiguration.setEmbeddedKeyCallbackClass(text);
-                } else if(localName.equals(WSHandlerConstants.USER)) {
-                    outflowConfiguration.setUser(text);
-                } else if(localName.equals(WSHandlerConstants.ENCRYPTION_USER)) {
-                    outflowConfiguration.setEncryptionUser(text);
-                }
-            }
-            return outflowConfiguration;
-        }
-        return null;
-    }
-
-    public static InflowConfiguration getInflowConfiguration(Parameter inflowConfigParam) throws AxisFault {
-
-        if (inflowConfigParam != null) {
-            OMElement inFlowParamElem = (OMElement)inflowConfigParam.getValue();
-
-            OMElement actionElem = inFlowParamElem
-                    .getFirstChildWithName(new QName(WSSHandlerConstants.ACTION));
-            if (actionElem == null) {
-                throw new AxisFault(
-                        "Inflow configuration must contain an 'action' "
-                                + "elements the child of 'InflowSecurity' element");
-            }
-
-            InflowConfiguration inflowConfiguration = new InflowConfiguration();
-
-            for(OMElement element: actionElem.getChildElements()) {
-
-                String localName = element.getLocalName();
-                String text = element.getText().trim();
-
-                if(localName.equals(WSHandlerConstants.PW_CALLBACK_CLASS)) {
-                    inflowConfiguration.setPasswordCallbackClass(text);
-                } else if(localName.equals(WSHandlerConstants.SIG_PROP_FILE)) {
-                    inflowConfiguration.setSignaturePropFile(text);
-                } else if(localName.equals(WSHandlerConstants.DEC_PROP_FILE)) {
-                    inflowConfiguration.setDecryptionPropFile(text);
-                } else if (WSHandlerConstants.ENABLE_SIGNATURE_CONFIRMATION
-                        .equals(localName)) {
-                    if ("false".equals(text)
-                            || "0".equals(text)) {
-                        inflowConfiguration
-                                .setEnableSignatureConfirmation(false);
-                    }
-                }
-            }
-            return inflowConfiguration;
-        }
-        return null;
-    }
 
     private static void handleSignEncrParts(boolean signAllHeaders,
             boolean signBody, boolean encrBody, MessageContext msgCtx,

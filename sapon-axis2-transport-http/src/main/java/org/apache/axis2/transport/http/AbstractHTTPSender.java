@@ -498,11 +498,6 @@ public abstract class AbstractHTTPSender {
             HttpConnectionManager connManager =
                     (HttpConnectionManager) msgContext.getProperty(
                             HTTPConstants.MULTITHREAD_HTTP_CONNECTION_MANAGER);
-            if (connManager == null) {
-                connManager =
-                        (HttpConnectionManager) msgContext.getProperty(
-                                HTTPConstants.MUTTITHREAD_HTTP_CONNECTION_MANAGER);
-            }
             if(connManager != null){
                 httpClient = new HttpClient(connManager);
             } else {
