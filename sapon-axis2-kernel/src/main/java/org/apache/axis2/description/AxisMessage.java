@@ -182,16 +182,6 @@ public class AxisMessage extends AxisDescription {
         this.name = name;
     }
 
-    /**
-     * This will return a list of WSDLExtensibilityAttribute
-     */
-    public List getExtensibilityAttributes() {
-        // TODO : Deepal implement this properly.
-
-        // the list should contain list of WSDLExtensibilityAttribute
-        return new ArrayList(0);
-    }
-
     public void addSoapHeader(SOAPHeaderMessage soapHeaderMessage) {
         soapHeaders.add(soapHeaderMessage);
     }
