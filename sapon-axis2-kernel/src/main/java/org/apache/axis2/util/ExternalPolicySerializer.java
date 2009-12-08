@@ -22,7 +22,6 @@ package org.apache.axis2.util;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -113,10 +112,7 @@ public class ExternalPolicySerializer {
 
     	writer.writeStartElement(Constants.URI_POLICY_NS, Constants.ELEM_EXACTLYONE);
 
-    	for (Iterator<List<PolicyComponent>> iterator = policy.getAlternatives(); iterator.hasNext();) {
-    		final List<PolicyComponent> assertionList = iterator.next();
-
-    		// write <wsp:All>
+        for(final List<PolicyComponent> assertionList: policy.getAlternatives()) {
     		writer.writeStartElement(Constants.URI_POLICY_NS, Constants.ELEM_ALL);
 
     		for (final PolicyComponent assertion: assertionList) {
@@ -127,7 +123,6 @@ public class ExternalPolicySerializer {
     			assertion.serialize(writer);
     		}
 
-    		// write </wsp:All>
     		writer.writeEndElement();
     	}
 

@@ -1,12 +1,12 @@
 /*
  * Copyright 2001-2004 The Apache Software Foundation.
- * 
+ *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,7 +15,6 @@
  */
 package org.apache.ws.secpolicy11.builders;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -24,6 +23,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.AssertionBuilderFactory;
 import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyEngine;
 import org.apache.neethi.builders.AssertionBuilder;
 import org.apache.ws.secpolicy.SP11Constants;
@@ -54,12 +54,10 @@ public class SupportingTokensBuilder implements AssertionBuilder {
         Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
         policy = (Policy) policy.normalize(false);
 
-        for (Iterator iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative((List) iterator.next(), supportingToken);
-            /*
-             * for the moment we will say there should be only one alternative 
-             */
-            break;            
+        for (List<PolicyComponent> alts: policy.getAlternatives()) {
+            processAlternative(alts, supportingToken);
+            // for the moment we will say there should be only one alternative
+            break;
         }
 
         return supportingToken;
@@ -72,33 +70,34 @@ public class SupportingTokensBuilder implements AssertionBuilder {
                 SP11Constants.SIGNED_ENDORSING_SUPPORTING_TOKENS};
     }
 
-    private void processAlternative(List assertions, SupportingToken supportingToken) {
-        
-        for (Iterator iterator = assertions.iterator(); iterator.hasNext();) {
-
-            Assertion primitive = (Assertion) iterator.next();
+    private void processAlternative(List<PolicyComponent> assertions,
+    								SupportingToken supportingToken)
+    {
+        for (PolicyComponent pc: assertions) {
+            Assertion primitive = (Assertion)pc;
             QName qname = primitive.getName();
 
             if (SP11Constants.ALGORITHM_SUITE.equals(qname)) {
-                supportingToken.setAlgorithmSuite((AlgorithmSuite) primitive);
-
-            } else if (SP11Constants.SIGNED_PARTS.equals(qname)) {
                 supportingToken
-                        .setSignedParts((SignedEncryptedParts) primitive);
-
-            } else if (SP11Constants.SIGNED_ELEMENTS.equals(qname)) {
+                        .setAlgorithmSuite((AlgorithmSuite) primitive);
+            }
+            else if (SP11Constants.SIGNED_PARTS.equals(qname)) {
+                supportingToken
+                	    .setSignedParts((SignedEncryptedParts) primitive);
+            }
+            else if (SP11Constants.SIGNED_ELEMENTS.equals(qname)) {
                 supportingToken
                         .setSignedElements((SignedEncryptedElements) primitive);
-
-            } else if (SP11Constants.ENCRYPTED_PARTS.equals(qname)) {
+            }
+            else if (SP11Constants.ENCRYPTED_PARTS.equals(qname)) {
                 supportingToken
                         .setEncryptedParts((SignedEncryptedParts) primitive);
-
-            } else if (SP11Constants.ENCRYPTED_ELEMENTS.equals(qname)) {
+            }
+            else if (SP11Constants.ENCRYPTED_ELEMENTS.equals(qname)) {
                 supportingToken
                         .setEncryptedElements((SignedEncryptedElements) primitive);
-
-            } else if (primitive instanceof Token) {
+            }
+            else if (primitive instanceof Token) {
                 supportingToken.addToken((Token) primitive);
             }
         }

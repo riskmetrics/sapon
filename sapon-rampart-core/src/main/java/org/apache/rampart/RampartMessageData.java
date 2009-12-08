@@ -29,6 +29,7 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyEngine;
 import org.apache.rahas.RahasConstants;
 import org.apache.rahas.SimpleTokenStore;
@@ -248,7 +249,8 @@ public class RampartMessageData {
             }
 
             if(this.servicePolicy != null){
-                List it = this.servicePolicy.getAlternatives().next();
+                List<PolicyComponent> it
+                	= this.servicePolicy.getAlternatives().iterator().next();
 
                 //Process policy and build policy data
                 this.policyData = RampartPolicyBuilder.build(it);
@@ -292,7 +294,8 @@ public class RampartMessageData {
                         this.servicePolicy.addAssertion(rc);
                     }
 
-                    List it = this.servicePolicy.getAlternatives().next();
+                    List<PolicyComponent> it
+                    	= this.servicePolicy.getAlternatives().iterator().next();
 
                     //Process policy and build policy data
                     this.policyData = RampartPolicyBuilder.build(it);

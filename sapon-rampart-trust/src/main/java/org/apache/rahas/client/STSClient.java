@@ -469,7 +469,8 @@ public class STSClient {
         if (issuerPolicy != null) {
             log.debug("Processing Issuer policy");
 
-            List<PolicyComponent> issuerAssertions = issuerPolicy.getAlternatives().next();
+            List<PolicyComponent> issuerAssertions
+            	= issuerPolicy.getAlternatives().iterator().next();
 
             for(PolicyComponent tempAssertion: issuerAssertions) {
                 //find the AlgorithmSuite assertion
@@ -488,7 +489,8 @@ public class STSClient {
 
             log.debug("Processing service policy to find Trust10 assertion");
 
-            List<PolicyComponent> assertions = servicePolicy.getAlternatives().next();
+            List<PolicyComponent> assertions
+            	= servicePolicy.getAlternatives().iterator().next();
 
             for(PolicyComponent tempAssertion: assertions) {
                 //find the Trust10 assertion

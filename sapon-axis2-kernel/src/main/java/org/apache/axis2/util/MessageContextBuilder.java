@@ -119,7 +119,7 @@ public class MessageContextBuilder {
     }
 
     /**
-     * Creates a MessageContext for use with a non-fault response based on an request MessageContext
+     * Creates a MessageContext for use with a non-fault response based on a request MessageContext
      */
     public static MessageContext createOutMessageContext(MessageContext inMessageContext)
             throws AxisFault {

@@ -22,7 +22,6 @@ package org.apache.axis2.client;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -88,8 +87,7 @@ public class WSDLBasedPolicyProcessor {
     				false );
 
     		Set<String> namespaceSet = new HashSet<String>();
-    		for (Iterator<List<PolicyComponent>> iter = policy.getAlternatives(); iter.hasNext();) {
-    			List<PolicyComponent> assertionList = iter.next();
+    		for (List<PolicyComponent> assertionList: policy.getAlternatives()) {
     			namespaceSet.clear();
 
     			//First we compute the set of distinct namespaces of assertions

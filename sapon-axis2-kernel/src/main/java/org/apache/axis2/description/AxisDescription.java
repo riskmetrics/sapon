@@ -353,7 +353,7 @@ public abstract class AxisDescription
            * policy contains multiple alternatives only the first alternative will
            * be considered.
            */
-        Iterator<List<PolicyComponent>> iterator = policy.getAlternatives();
+        Iterator<List<PolicyComponent>> iterator = policy.getAlternatives().iterator();
         if (!iterator.hasNext()) {
             throw new AxisFault("Policy doesn't contain any policy alternatives");
         }

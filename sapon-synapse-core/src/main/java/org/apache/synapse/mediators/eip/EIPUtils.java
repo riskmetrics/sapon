@@ -36,7 +36,8 @@ import org.jaxen.JaxenException;
  */
 public class EIPUtils {
 
-    private static final Log log = LogFactory.getLog(EIPUtils.class);
+    @SuppressWarnings("unused")
+	private static final Log log = LogFactory.getLog(EIPUtils.class);
 
     /**
      * Return the set of elements specified by the XPath over the given envelope
@@ -125,5 +126,5 @@ public class EIPUtils {
                 }
             }
         }
-    }    
+    }
 }

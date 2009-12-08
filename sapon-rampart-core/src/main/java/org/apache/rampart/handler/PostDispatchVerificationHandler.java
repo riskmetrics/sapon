@@ -16,7 +16,6 @@
 
 package org.apache.rampart.handler;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
@@ -29,8 +28,8 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.HandlerDescription;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.Handler;
-import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyEngine;
 import org.apache.rampart.RampartMessageData;
 import org.apache.rampart.policy.RampartPolicyData;
@@ -121,12 +120,9 @@ public class PostDispatchVerificationHandler implements Handler {
             return InvocationResponse.CONTINUE;
         }
 
-        Iterator alternatives = policy.getAlternatives();
-
         boolean securityPolicyPresent = false;
-        if(alternatives.hasNext()) {
-            List<Assertion> assertions = (List<Assertion>)alternatives.next();
-            for (final Assertion assertion: assertions) {
+        for(List<PolicyComponent> assertions: policy.getAlternatives()) {
+            for (PolicyComponent assertion: assertions) {
                 //Check for any *Binding assertion
                 if (assertion instanceof Binding) {
                     securityPolicyPresent = true;
@@ -138,8 +134,6 @@ public class PostDispatchVerificationHandler implements Handler {
                 }
             }
         }
-
-
 
         if (securityPolicyPresent) {
         	//rpd is null when invoked with soap12 bindings and no addressing

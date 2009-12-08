@@ -15,7 +15,6 @@
  */
 package org.apache.ws.secpolicy12.builders;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -24,6 +23,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.AssertionBuilderFactory;
 import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyEngine;
 import org.apache.neethi.builders.AssertionBuilder;
 import org.apache.neethi.builders.xml.XmlPrimitiveAssertion;
@@ -49,14 +49,16 @@ public class HttpsTokenBuilder implements AssertionBuilder {
     /**
      * {@inheritDoc}
      */
-    public Assertion build(OMElement element, AssertionBuilderFactory factory) throws IllegalArgumentException {
+    public Assertion build(OMElement element, AssertionBuilderFactory factory)
+    	throws IllegalArgumentException
+    {
         HttpsToken httpsToken = new HttpsToken(SPConstants.SP_V12);
 
         Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
         policy = (Policy) policy.normalize(false);
 
-        for (Iterator iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative((List) iterator.next(), httpsToken);
+        for (List<PolicyComponent> alts: policy.getAlternatives()) {
+            processAlternative(alts, httpsToken);
             break; // since there should be only one alternative
         }
 
@@ -82,10 +84,11 @@ public class HttpsTokenBuilder implements AssertionBuilder {
      * @param assertions the list of assertions to be searched through.
      * @param parent the https token, that is to be populated with retrieved data.
      */
-    private void processAlternative(List assertions, HttpsToken parent) {
-
-        for (Iterator iterator = assertions.iterator(); iterator.hasNext();) {
-            XmlPrimitiveAssertion primtive = (XmlPrimitiveAssertion) iterator.next();
+    private void processAlternative(List<PolicyComponent> assertions,
+    								HttpsToken parent)
+    {
+        for (Object element : assertions) {
+            XmlPrimitiveAssertion primtive = (XmlPrimitiveAssertion) element;
             QName qname = primtive.getName();
 
             if (qname != null) {

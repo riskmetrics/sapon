@@ -15,7 +15,6 @@
  */
 package org.apache.ws.secpolicy11.builders;
 
-import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -25,6 +24,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.AssertionBuilderFactory;
 import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyEngine;
 import org.apache.neethi.builders.AssertionBuilder;
 import org.apache.neethi.builders.xml.XmlPrimitiveAssertion;
@@ -41,8 +41,8 @@ public class TransportTokenBuilder implements AssertionBuilder {
         Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
         policy = (Policy) policy.normalize(false);
 
-        for (Iterator iterator = policy.getAlternatives(); iterator.hasNext();) {
-            processAlternative((List) iterator.next(), transportToken);
+        for (List<PolicyComponent> alts: policy.getAlternatives()) {
+            processAlternative(alts, transportToken);
             break; // since there should be only one alternative
         }
 
@@ -53,10 +53,11 @@ public class TransportTokenBuilder implements AssertionBuilder {
         return new QName[] {SP11Constants.TRANSPORT_TOKEN};
     }
 
-    private void processAlternative(List assertions, TransportToken parent) {
-
-        for (Iterator iterator = assertions.iterator(); iterator.hasNext();) {
-            XmlPrimitiveAssertion primtive = (XmlPrimitiveAssertion) iterator.next();
+    private void processAlternative(List<PolicyComponent> assertions,
+    								TransportToken parent)
+    {
+        for (PolicyComponent pc: assertions) {
+            XmlPrimitiveAssertion primtive = (XmlPrimitiveAssertion) pc;
             QName qname = primtive.getName();
 
             if (SP11Constants.HTTPS_TOKEN.equals(qname)) {

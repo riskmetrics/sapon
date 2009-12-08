@@ -37,7 +37,7 @@ public class MTOMAssertionTest extends TestCase {
         try {
             Policy p = this.getPolicy(
             	getClass().getResourceAsStream("/policy-mtom-security.xml"));
-            List<PolicyComponent> assertions = p.getAlternatives().next();
+            List<PolicyComponent> assertions = p.getAlternatives().iterator().next();
 
             boolean isMTOMAssertionFound = false;
 
@@ -62,7 +62,7 @@ public class MTOMAssertionTest extends TestCase {
         try {
             Policy p = this.getPolicy(
             	getClass().getResourceAsStream("/policy-mtom-optional.xml"));
-            List<PolicyComponent> assertions = p.getAlternatives().next();
+            List<PolicyComponent> assertions = p.getAlternatives().iterator().next();
 
             for(PolicyComponent assertion: assertions) {
                 if (assertion instanceof MTOM10Assertion) {
@@ -82,7 +82,7 @@ public class MTOMAssertionTest extends TestCase {
         try {
             Policy p = this.getPolicy(
             	getClass().getResourceAsStream("/policy-mtom11.xml"));
-            List<PolicyComponent> assertions = p.getAlternatives().next();
+            List<PolicyComponent> assertions = p.getAlternatives().iterator().next();
 
             boolean isMTOMAssertionFound = false;
 
@@ -104,7 +104,7 @@ public class MTOMAssertionTest extends TestCase {
         try {
             Policy p = this.getPolicy(
             	getClass().getResourceAsStream("/policy-mtom11-optional.xml"));
-            List<PolicyComponent> assertions = p.getAlternatives().next();
+            List<PolicyComponent> assertions = p.getAlternatives().iterator().next();
 
             for(PolicyComponent assertion: assertions) {
                 if (assertion instanceof MTOM10Assertion) {

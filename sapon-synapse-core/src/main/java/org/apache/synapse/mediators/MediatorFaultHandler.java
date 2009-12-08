@@ -104,12 +104,4 @@ public class MediatorFaultHandler extends FaultHandler {
     public void setFaultMediator(Mediator faultMediator) {
         this.faultMediator = faultMediator;
     }
-
-    private void traceOrDebugWarn(boolean traceOn, String msg) {
-        if (traceOn) {
-            trace.warn(msg);
-        }
-        log.warn(msg);
-    }
-
 }
