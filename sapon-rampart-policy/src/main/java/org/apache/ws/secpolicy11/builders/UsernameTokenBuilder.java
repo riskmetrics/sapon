@@ -46,7 +46,7 @@ public class UsernameTokenBuilder implements AssertionBuilder {
 
         OMElement policyElement = element.getFirstElement();
 
-        if (policyElement != null && !policyElement.getQName().equals(org.apache.neethi.Constants.Q_ELEM_POLICY)) {
+        if (policyElement != null && policyElement.getQName().equals(org.apache.neethi.Constants.Q_ELEM_POLICY)) {
 
             Policy policy = PolicyEngine.getPolicy(element.getFirstElement());
             policy = (Policy) policy.normalize(false);
