@@ -185,11 +185,11 @@ public class Policy extends All {
      *
      * @return
      */
-    public Iterator<List<PolicyComponent>> getAlternatives() {
+    public Iterable<List<PolicyComponent>> getAlternatives() {
         return new PolicyIterator(this);
     }
 
-    private class PolicyIterator implements Iterator<List<PolicyComponent>> {
+    private class PolicyIterator implements Iterator<List<PolicyComponent>>, Iterable<List<PolicyComponent>> {
         Iterator<PolicyComponent> alternatives = null;
 
         public PolicyIterator(Policy policy) {
@@ -210,6 +210,10 @@ public class Policy extends All {
         public void remove() {
             throw new UnsupportedOperationException(
                     "policyAlternative.remove() is not supported");
+        }
+
+        public Iterator<List<PolicyComponent>> iterator() {
+        	return this;
         }
     }
 
