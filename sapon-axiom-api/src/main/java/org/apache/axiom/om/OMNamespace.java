@@ -38,14 +38,6 @@ public interface OMNamespace {
     String getPrefix();
 
     /**
-     * Method getName.
-     *
-     * @return Returns String.
-     * @deprecated This method is deprecated. Please use getNamespaceURI() method instead.
-     */
-    String getName();
-
-    /**
      * Provides the namespace URI of this namespace.
      *
      * @return - the namespace URI of the namespace.

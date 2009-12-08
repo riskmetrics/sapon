@@ -18,16 +18,16 @@
  */
 package org.apache.axiom.om.ds;
 
-import org.apache.axiom.om.OMDataSourceExt;
-import org.apache.axiom.om.util.StAXUtils;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+import java.io.ByteArrayInputStream;
+import java.io.UnsupportedEncodingException;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
+import org.apache.axiom.om.OMDataSourceExt;
+import org.apache.axiom.om.util.StAXUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * ByteArrayDataSource is an example implementation of OMDataSourceExt.
@@ -35,34 +35,36 @@ import java.io.UnsupportedEncodingException;
  * This data source is useful for placing bytes into an OM
  * tree, instead of having a deeply nested tree.
  */
-public class ByteArrayDataSource extends OMDataSourceExtBase {
+public class ByteArrayDataSource extends OMDataSourceExtBase<EncodedByteArray> {
 
     private static final Log log = LogFactory.getLog(ByteArrayDataSource.class);
     private static boolean DEBUG_ENABLED = log.isDebugEnabled();
-	
-    ByteArray byteArray = null;
-    
+
+    private EncodedByteArray byteArray;
+
     /**
      * Constructor
-     * @param bytes 
+     * @param bytes
      * @param encoding
      */
     public ByteArrayDataSource(byte[] bytes, String encoding) {
-        byteArray = new ByteArray();
-        byteArray.bytes = bytes;
-        byteArray.encoding = encoding;
+        this(new EncodedByteArray(bytes, encoding));
     }
-   
- 
+
+    public ByteArrayDataSource(EncodedByteArray bytes) {
+    	byteArray = bytes;
+    }
+
+
     public XMLStreamReader getReader() throws XMLStreamException {
         if (DEBUG_ENABLED) {
             log.debug("getReader");
         }
-        return StAXUtils.createXMLStreamReader(new ByteArrayInputStream(byteArray.bytes),
-                                               byteArray.encoding);                                                                       
+        return StAXUtils.createXMLStreamReader(new ByteArrayInputStream(byteArray.getBytes()),
+                                               byteArray.getEncoding());
     }
 
-    public Object getObject() {
+    public EncodedByteArray getObject() {
        return byteArray;
     }
 
@@ -82,30 +84,21 @@ public class ByteArrayDataSource extends OMDataSourceExtBase {
         }
         // Return the byte array directly if it is the same encoding
         // Otherwise convert the bytes to the proper encoding
-        if (!byteArray.encoding.equalsIgnoreCase(encoding)) {
-            String text = new String(byteArray.bytes, byteArray.encoding);
-            
+        EncodedByteArray out = byteArray;
+        if (!byteArray.getEncoding().equalsIgnoreCase(encoding)) {
+            String text = new String(byteArray.getBytes(), byteArray.getEncoding());
+
             // Convert the internal data structure to the new bytes/encoding
-            byteArray.bytes = text.getBytes(encoding);
-            byteArray.encoding = encoding;
+            out = new EncodedByteArray(text.getBytes(encoding), encoding);
         }
-        return byteArray.bytes;
+        return out.getBytes();
     }
-    
+
     public void close() {
         byteArray = null;
     }
 
-    public OMDataSourceExt copy() {
-        // Return shallow copy
-        return new ByteArrayDataSource(byteArray.bytes, byteArray.encoding);
+    public OMDataSourceExt<EncodedByteArray> copy() {
+        return new ByteArrayDataSource(byteArray.copy());
     }
-    
-    /**
-     * Object containing the byte[]/encoding pair
-     */
-    public class ByteArray {
-        public byte[] bytes;
-        public String encoding;
-    }   
 }

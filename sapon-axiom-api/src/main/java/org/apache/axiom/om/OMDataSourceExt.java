@@ -18,36 +18,36 @@
  */
 package org.apache.axiom.om;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import javax.xml.stream.XMLStreamWriter;
-
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import javax.xml.stream.XMLStreamWriter;
+
 /**
  * Interface to a backing object that can can be read and written as XML.
- * 
+ *
  * To plug an arbitrary object into an OM tree.  Follow these steps
  *  1) Provide a class that implements OMDataSourceExt.
- *  2) Use OMFactory.createOMElement(OMDataSource, String, OMNamespace) to build an
- *     OMSourcedElement.
+ *  2) Use OMFactory.createOMElement(OMDataSource, String, OMNamespace) to
+ *     build an OMSourcedElement.
  *  3) Add the OMSourcedElement to the OM tree.
- * 
+ *
  * OMDataSourceExt provides additional methods that are not available on the
  * original OMDataSource.
- * 
+ *
  * @see OMDataSource
  * @see OMSourceElementImpl
  */
-public interface OMDataSourceExt extends OMDataSource {
-    
+public interface OMDataSourceExt<T> extends OMDataSource {
+
     /* Property lossyPrefix
      * Value null or Boolean.TRUE or Boolean.FALSE
-     * If Boolean.TRUE, this indicates that expansion is needed to 
-     * obtain the actual prefix name. 
+     * If Boolean.TRUE, this indicates that expansion is needed to
+     * obtain the actual prefix name.
      */
     public static final String LOSSY_PREFIX = "lossyPrefix";
 
@@ -94,13 +94,13 @@ public interface OMDataSourceExt extends OMDataSource {
      * @throws XMLStreamException
      */
     public XMLStreamReader getReader() throws XMLStreamException;
-    
+
     /**
      * Returns the backing Object.
      * @return Object
      */
-    public Object getObject();
-    
+    public T getObject();
+
     /**
      * Returns true if reading the backing object is destructive.
      * An example of an object with a destructive read is an InputSteam.
@@ -109,7 +109,7 @@ public interface OMDataSourceExt extends OMDataSource {
      * @return boolean
      */
     public boolean isDestructiveRead();
-    
+
     /**
      * Returns true if writing the backing object is destructive.
      * An example of an object with a destructive write is an InputStream.
@@ -118,14 +118,14 @@ public interface OMDataSourceExt extends OMDataSource {
      * @return boolean
      */
     public boolean isDestructiveWrite();
-    
+
     /**
      * Returns a InputStream representing the xml data
      * @param encoding String encoding of InputStream
      * @return InputStream
      */
     public InputStream getXMLInputStream(String encoding) throws UnsupportedEncodingException;
-    
+
     /**
      * Returns a byte[] representing the xml data
      * @param encoding String encoding of InputStream
@@ -133,32 +133,32 @@ public interface OMDataSourceExt extends OMDataSource {
      * @see getXMLInputStream
      */
     public byte[] getXMLBytes(String encoding) throws UnsupportedEncodingException;
-    
+
     /**
      * Close the DataSource and free its resources.
      */
     public void close();
-    
+
     /**
      * Create a copy of the OMDataSourceExt
      * @return OMDataSourceExt
      */
-    public OMDataSourceExt copy();
-    
+    public OMDataSourceExt<T> copy();
+
     /**
      * Returns true if property is set
      * @param key
      * @return
      */
     public boolean hasProperty(String key);
-    
+
     /**
      * Query a property stored on the OMDataSource
      * @param key
      * @return value or null
      */
     public Object getProperty(String key);
-    
+
     /**
      * Set a property on the OMDataSource
      * @param key

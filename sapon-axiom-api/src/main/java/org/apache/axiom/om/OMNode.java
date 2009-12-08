@@ -19,11 +19,12 @@
 
 package org.apache.axiom.om;
 
+import java.io.OutputStream;
+import java.io.Writer;
+
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStream;
-import java.io.Writer;
 
 /**
  * Defines the base interface used by most of the XML object model within Axis.
@@ -40,6 +41,7 @@ import java.io.Writer;
  * <code>OMNode</code>. </p>
  */
 public interface OMNode {
+
     /**
      * The node is an <code>Element</code>.
      *
@@ -100,11 +102,19 @@ public interface OMNode {
      * Returns the parent containing node.
      * <p/>
      * <p/>
-     * Returns the parent container, which may be either an {@link OMDocument} or {@link OMElement}.
+     * Returns the parent container, which may be either an {@link OMDocument}
+     * or {@link OMElement}.
      *
      * @return The {@link OMContainer} of the node.
      */
     OMContainer getParent();
+
+    /**
+     * Gets the previous sibling.
+     *
+     * @return Returns node.
+     */
+    OMNode getPreviousOMSibling();
 
     /**
      * Returns the next sibling in document order.
@@ -172,13 +182,6 @@ public interface OMNode {
      *         #ENTITY_REFERENCE_NODE}, {@link #SPACE_NODE}, or {@link #TEXT_NODE}.
      */
     int getType();
-
-    /**
-     * Gets the previous sibling.
-     *
-     * @return Returns node.
-     */
-    OMNode getPreviousOMSibling();
 
     /**
      * Serializes the node with caching.
@@ -287,7 +290,7 @@ public interface OMNode {
      * @param build if true, the object is built first before closing the builder/parser
      */
     void close(boolean build);
-    
+
     /**
      * Returns the OMFactory that created this object
      */

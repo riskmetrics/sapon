@@ -42,7 +42,7 @@ public interface OMAttribute {
     void setAttributeType(String value);
 
     /** @param omNamespace  */
-    void setOMNamespace(OMNamespace omNamespace);
+    void setNamespace(OMNamespace namespace);
 
     /** @return Returns OMNamespace. */
     OMNamespace getNamespace();

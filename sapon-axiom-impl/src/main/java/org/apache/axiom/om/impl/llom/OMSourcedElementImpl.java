@@ -169,9 +169,9 @@ public class OMSourcedElementImpl extends OMElementImpl implements OMSourcedElem
      */
     private boolean isLossyPrefix(OMDataSource source) {
         Object lossyPrefix = null;
-        if (source instanceof OMDataSourceExt) {
+        if (source instanceof OMDataSourceExt<?>) {
             lossyPrefix =
-                ((OMDataSourceExt) source).getProperty(OMDataSourceExt.LOSSY_PREFIX);
+                ((OMDataSourceExt<?>) source).getProperty(OMDataSourceExt.LOSSY_PREFIX);
 
         }
         return lossyPrefix == Boolean.TRUE;
@@ -656,16 +656,16 @@ public class OMSourcedElementImpl extends OMElementImpl implements OMSourcedElem
     }
 
     private boolean isDestructiveWrite() {
-        if (dataSource instanceof OMDataSourceExt) {
-            return ((OMDataSourceExt) dataSource).isDestructiveWrite();
+        if (dataSource instanceof OMDataSourceExt<?>) {
+            return ((OMDataSourceExt<?>) dataSource).isDestructiveWrite();
         } else {
             return true;
         }
     }
 
     private boolean isDestructiveRead() {
-        if (dataSource instanceof OMDataSourceExt) {
-            return ((OMDataSourceExt) dataSource).isDestructiveRead();
+        if (dataSource instanceof OMDataSourceExt<?>) {
+            return ((OMDataSourceExt<?>) dataSource).isDestructiveRead();
         } else {
             return false;
         }
@@ -1158,8 +1158,8 @@ public class OMSourcedElementImpl extends OMElementImpl implements OMSourcedElem
                 readerFromDS = null;
             }
             if (dataSource != null) {
-                if (dataSource instanceof OMDataSourceExt) {
-                    ((OMDataSourceExt)dataSource).close();
+                if (dataSource instanceof OMDataSourceExt<?>) {
+                    ((OMDataSourceExt<?>)dataSource).close();
                 }
                 dataSource = null;
             }

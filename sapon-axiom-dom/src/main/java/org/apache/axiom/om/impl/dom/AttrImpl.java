@@ -283,9 +283,9 @@ public class AttrImpl extends NodeImpl implements OMAttribute, Attr {
     /**
      * Sets the namespace of this attribute node.
      *
-     * @see org.apache.axiom.om.OMAttribute#setOMNamespace (org.apache.axiom.om.OMNamespace)
+     * @see org.apache.axiom.om.OMAttribute#setNamespace (org.apache.axiom.om.OMNamespace)
      */
-    public void setOMNamespace(OMNamespace omNamespace) {
+    public void setNamespace(OMNamespace omNamespace) {
         this.namespace = (NamespaceImpl) omNamespace;
     }
 

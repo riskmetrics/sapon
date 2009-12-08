@@ -19,13 +19,13 @@
 
 package org.apache.axiom.om.impl.llom;
 
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMConstants;
+import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-import org.apache.axiom.om.OMElement;
-
-import javax.xml.namespace.QName;
 
 /** Class OMAttributeImpl */
 public class OMAttributeImpl implements OMAttribute {
@@ -40,7 +40,7 @@ public class OMAttributeImpl implements OMAttribute {
 
     /** Field namespace */
     private OMNamespace namespace;
-    
+
     private QName qName;
 
     /** <code>OMFactory</code> that created this <code>OMAttribute</code> */
@@ -56,10 +56,11 @@ public class OMAttributeImpl implements OMAttribute {
      * @param ns
      * @param value
      */
-    public OMAttributeImpl(String localName, OMNamespace ns, String value, OMFactory factory) 
+    public OMAttributeImpl(String localName, OMNamespace ns, String value, OMFactory factory)
     {
-        if (localName == null || localName.trim().length() == 0)
-            throw new IllegalArgumentException("Local name may not be null or empty");
+        if (localName == null || localName.trim().length() == 0) {
+			throw new IllegalArgumentException("Local name may not be null or empty");
+		}
 
         this.localName = localName;
         this.value = value;
@@ -104,8 +105,9 @@ public class OMAttributeImpl implements OMAttribute {
      * @param localName
      */
     public void setLocalName(String localName) {
-        if (localName == null || localName.trim().length() == 0)
-            throw new IllegalArgumentException("Local name may not be null or empty");
+        if (localName == null || localName.trim().length() == 0) {
+			throw new IllegalArgumentException("Local name may not be null or empty");
+		}
         this.localName = localName;
         this.qName = null;
     }
@@ -151,7 +153,7 @@ public class OMAttributeImpl implements OMAttribute {
      *
      * @param omNamespace
      */
-    public void setOMNamespace(OMNamespace omNamespace) {
+    public void setNamespace(OMNamespace omNamespace) {
         this.namespace = omNamespace;
         this.qName = null;
     }
@@ -195,8 +197,11 @@ public class OMAttributeImpl implements OMAttribute {
      * @param obj The object to compare with this instance.
      * @return True if obj is equal to this or else false.
      */
-    public boolean equals(Object obj) {
-        if (! (obj instanceof OMAttribute)) return false;
+    @Override
+	public boolean equals(Object obj) {
+        if (! (obj instanceof OMAttribute)) {
+			return false;
+		}
         OMAttribute other = (OMAttribute)obj;
         //first check namespace then localName then value to improve performance
         return (namespace == null ? other.getNamespace() == null :
@@ -207,7 +212,8 @@ public class OMAttributeImpl implements OMAttribute {
 
     }
 
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         return localName.hashCode() ^ (value != null ? value.hashCode() : 0) ^
                 (namespace != null ? namespace.hashCode() : 0);
     }

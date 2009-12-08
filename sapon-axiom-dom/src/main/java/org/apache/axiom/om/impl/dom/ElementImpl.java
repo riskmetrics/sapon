@@ -371,7 +371,7 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
             AttrImpl namespaceAttr = new AttrImpl(this.ownerNode,
                                                   localName, nsuri, this.factory);
             NamespaceImpl xmlNs = new NamespaceImpl(OMConstants.XMLNS_NS_URI);
-            namespaceAttr.setOMNamespace(xmlNs);
+            namespaceAttr.setNamespace(xmlNs);
             return namespaceAttr;
         }
 
@@ -533,7 +533,7 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
             } else {
                 AttrImpl attr = new AttrImpl(this.ownerNode, DOMUtil
                         .getLocalName(qualifiedName), value, this.factory);
-                attr.setOMNamespace(new NamespaceImpl(namespaceURI, DOMUtil
+                attr.setNamespace(new NamespaceImpl(namespaceURI, DOMUtil
                         .getPrefix(qualifiedName)));
 
                 this.setAttributeNodeNS(attr);
@@ -579,7 +579,7 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
                     .getLocalName(qualifiedName));
             if (attributeNode != null) {
                 AttrImpl tempAttr = ((AttrImpl) attributeNode);
-                tempAttr.setOMNamespace(new NamespaceImpl(namespaceURI, DOMUtil
+                tempAttr.setNamespace(new NamespaceImpl(namespaceURI, DOMUtil
                         .getPrefix(qualifiedName)));
                 tempAttr.setAttributeValue(value);
                 this.attributes.setNamedItem(tempAttr);
@@ -1328,7 +1328,7 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
                     OMNamespace ns = e.getValue();
                     AttrImpl attr = new AttrImpl(this.ownerNode, prefix, ns
                             .getNamespaceURI(), this.factory);
-                    attr.setOMNamespace(new NamespaceImpl(
+                    attr.setNamespace(new NamespaceImpl(
                             OMConstants.XMLNS_NS_URI,
                             OMConstants.XMLNS_NS_PREFIX));
                     attributeMap.addItem(attr);
@@ -1352,7 +1352,7 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
                 if (!parentHasSameDefaultNS) {
                     AttrImpl attr = new AttrImpl(this.ownerNode, "xmlns",
                                                  this.namespace.getNamespaceURI(), this.factory);
-                    attr.setOMNamespace(new NamespaceImpl(
+                    attr.setNamespace(new NamespaceImpl(
                             OMConstants.XMLNS_NS_URI,
                             OMConstants.XMLNS_NS_PREFIX));
                     attributeMap.addItem(attr);

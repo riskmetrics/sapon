@@ -18,17 +18,17 @@
  */
 package org.apache.axiom.om.ds;
 
-import org.apache.axiom.om.OMDataSourceExt;
-import org.apache.axiom.om.OMOutputFormat;
-import org.apache.axiom.om.util.StAXUtils;
-
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-
 import java.io.CharArrayReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
+import org.apache.axiom.om.OMDataSourceExt;
+import org.apache.axiom.om.OMOutputFormat;
+import org.apache.axiom.om.util.StAXUtils;
 
 /**
  * CharArrayDataSource is an example implementation of OMDataSourceExt.
@@ -36,20 +36,21 @@ import java.io.Writer;
  * This data source is useful for placing characters into an OM
  * tree, instead of having a deeply nested tree.
  */
-public class CharArrayDataSource extends OMDataSourceExtBase {
+public class CharArrayDataSource extends OMDataSourceExtBase<char[]> {
 
     char[] chars = null;
-   
+
     /**
      * Constructor
-     * @param bytes 
+     * @param bytes
      * @param encoding
      */
     public CharArrayDataSource(char[] chars) {
         this.chars = chars;
     }
 
-    public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
+    @Override
+	public void serialize(Writer writer, OMOutputFormat format) throws XMLStreamException {
         try {
             writer.write(chars);
         } catch (UnsupportedEncodingException e) {
@@ -58,15 +59,15 @@ public class CharArrayDataSource extends OMDataSourceExtBase {
             throw new XMLStreamException(e);
         }
     }
-    
+
     public XMLStreamReader getReader() throws XMLStreamException {
         CharArrayReader reader = new CharArrayReader(chars);
-        
-        return StAXUtils.createXMLStreamReader(reader);                                                                   
+
+        return StAXUtils.createXMLStreamReader(reader);
     }
-    
-    
-    public Object getObject() {
+
+
+    public char[] getObject() {
        return chars;
     }
 
@@ -81,16 +82,16 @@ public class CharArrayDataSource extends OMDataSourceExtBase {
     }
 
     public byte[] getXMLBytes(String encoding) throws UnsupportedEncodingException {
-        
+
         String text = new String(chars);
         return text.getBytes(encoding);
     }
-    
+
     public void close() {
         chars = null;
     }
 
-    public OMDataSourceExt copy() {
+    public OMDataSourceExt<char[]> copy() {
         // Return shallow copy
         return new CharArrayDataSource(chars);
     }

@@ -43,7 +43,7 @@ import org.apache.commons.logging.LogFactory;
  * OMDataSourceExtBase is a convenient base class that can be extended
  * by other OMDataSourceExt implementations.
  */
-public abstract class OMDataSourceExtBase implements OMDataSourceExt {
+public abstract class OMDataSourceExtBase<T> implements OMDataSourceExt<T> {
 
     private static final Log log = LogFactory.getLog(OMDataSourceExtBase.class);
     private static boolean DEBUG_ENABLED = log.isDebugEnabled();

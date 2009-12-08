@@ -131,7 +131,7 @@ public abstract class SOAPHeaderBlockImpl extends OMSourcedElementImpl
      */
     protected String getOMDataSourceProperty(String key) {
         if (this.hasOMDataSourceProperty(key)) {
-            return (String) ((OMDataSourceExt) getDataSource()).getProperty(key);
+            return (String) ((OMDataSourceExt<?>) getDataSource()).getProperty(key);
         }
         return null;
     }
@@ -143,8 +143,8 @@ public abstract class SOAPHeaderBlockImpl extends OMSourcedElementImpl
     protected boolean hasOMDataSourceProperty(String key) {
         if (!this.isExpanded()) {
             OMDataSource ds = this.getDataSource();
-            if (ds instanceof OMDataSourceExt) {
-                return ((OMDataSourceExt)ds).hasProperty(key);
+            if (ds instanceof OMDataSourceExt<?>) {
+                return ((OMDataSourceExt<?>)ds).hasProperty(key);
             }
         }
         return false;

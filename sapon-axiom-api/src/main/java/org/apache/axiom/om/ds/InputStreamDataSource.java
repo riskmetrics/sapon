@@ -40,10 +40,11 @@ import org.apache.axiom.om.util.StAXUtils;
  * This data source is useful for placing an InputStream into an OM
  * tree, instead of having a deeply nested tree.
  */
-public class InputStreamDataSource extends OMDataSourceExtBase {
+public class InputStreamDataSource extends OMDataSourceExtBase<EncodedInputStream> {
 
-    Data data = null;
-    private static final int BUFFER_LEN = 4096;
+	private static final int BUFFER_LEN = 4096;
+
+    private EncodedInputStream data = null;
 
     /**
      * Constructor
@@ -51,9 +52,7 @@ public class InputStreamDataSource extends OMDataSourceExtBase {
      * @param encoding
      */
     public InputStreamDataSource(InputStream is, String encoding) {
-        data = new Data();
-        data.is = is;
-        data.encoding = encoding;
+        data = new EncodedInputStream(is, encoding);
     }
 
     @Override
@@ -63,12 +62,12 @@ public class InputStreamDataSource extends OMDataSourceExtBase {
         }
         String encoding = format.getCharSetEncoding();
         try {
-            if (!data.encoding.equalsIgnoreCase(encoding)) {
+            if (!data.getEncoding().equalsIgnoreCase(encoding)) {
                 byte[] bytes = getXMLBytes(encoding);
                 output.write(bytes);
             } else {
                 // Write the input stream to the output stream
-                inputStream2OutputStream(data.is, output);
+                inputStream2OutputStream(data.getInputStream(), output);
             }
         } catch (UnsupportedEncodingException e) {
             throw new XMLStreamException(e);
@@ -89,7 +88,8 @@ public class InputStreamDataSource extends OMDataSourceExtBase {
         if (data == null) {
             throw new OMException("The InputStreamDataSource does not have a backing object");
         }
-        return StAXUtils.createXMLStreamReader(data.is,data.encoding);
+        return StAXUtils.createXMLStreamReader(data.getInputStream(),
+        		                               data.getEncoding());
     }
 
     @Override
@@ -98,10 +98,10 @@ public class InputStreamDataSource extends OMDataSourceExtBase {
         if (data == null) {
             throw new OMException("The InputStreamDataSource does not have a backing object");
         }
-        return data.is;
+        return data.getInputStream();
     }
 
-    public Object getObject() {
+    public EncodedInputStream getObject() {
        return data;
     }
 
@@ -136,30 +136,35 @@ public class InputStreamDataSource extends OMDataSourceExtBase {
     }
 
     public void close() {
-        if (data.is != null) {
+        if (data.getInputStream() != null) {
             try {
-                data.is.close();
+                data.getInputStream().close();
             } catch (IOException e) {
                 throw new OMException(e);
             }
-            data.is = null;
         }
     }
 
     /**
      * Return a InputStreamDataSource backed by a ByteArrayInputStream
      */
-    public OMDataSourceExt copy() {
+    public OMDataSourceExt<EncodedInputStream> copy() {
         byte[] bytes;
         try {
-            bytes = getXMLBytes(data.encoding);
+            bytes = getXMLBytes(data.getEncoding());
         } catch (UnsupportedEncodingException e) {
             throw new OMException(e);
         }
         InputStream is1 = new ByteArrayInputStream(bytes);
         InputStream is2 = new ByteArrayInputStream(bytes);
-        data.is = is1;
-        return new InputStreamDataSource(is2, data.encoding);
+
+        //we just read all the bytes of the original input stream, meaning the
+        //original input stream may not be available in the form we expect. We
+        //swap in the byte[] we created from the original input stream.  This
+        //seems like a bad idea, but it was the old behavior, so we'll keep it
+        //until it proves to be a problem.
+        data = new EncodedInputStream(is1, data.getEncoding());
+        return new InputStreamDataSource(is2, data.getEncoding());
     }
 
     /**
@@ -177,13 +182,5 @@ public class InputStreamDataSource extends OMDataSourceExtBase {
             os.write(buffer, 0, bytesRead);
             bytesRead = is.read(buffer);
         }
-    }
-
-    /**
-     * Object containing the InputStream/encoding pair
-     */
-    public class Data {
-        public String encoding;
-        public InputStream is;
     }
 }

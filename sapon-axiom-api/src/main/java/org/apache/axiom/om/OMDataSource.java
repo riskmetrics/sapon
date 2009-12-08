@@ -18,19 +18,21 @@
  */
 
 /**
- * 
+ *
  */
 package org.apache.axiom.om;
+
+import java.io.OutputStream;
+import java.io.Writer;
 
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStream;
-import java.io.Writer;
 
 /**
- * Interface to arbitrary source of XML element data. This provides the hook for using a general
- * data source (such as data binding frameworks) as the backing source of data for an element.
+ * Interface to arbitrary source of XML element data. This provides the hook
+ * for using a general data source (such as data binding frameworks) as the
+ * backing source of data for an element.
  */
 public interface OMDataSource {
     /**

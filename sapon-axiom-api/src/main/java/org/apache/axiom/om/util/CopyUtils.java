@@ -53,25 +53,19 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * CopyUtils provides static utility methods that are useful for creating a copy of
- * an OM/SOAPEnvelope tree.
- * During the expansion, the Source tree retains its shape
- * (OMSourcedElement nodes are not expanded).
- * The Target tree has nodes that retain the class identity of the source node.  For
- * example, a SOAPFault in the source tree will have a SOAPFault in the target tree.
+ * CopyUtils provides static utility methods that are useful for creating a
+ * copy of an OM/SOAPEnvelope tree.
+ * During the expansion, the Source tree retains its shape (OMSourcedElement
+ * nodes are not expanded).
+ * The Target tree has nodes that retain the class identity of the source node.
+ * For example, a SOAPFault in the source tree will have a SOAPFault in the
+ * target tree.
  */
 public class CopyUtils {
 
     private static Log log = LogFactory.getLog(CopyUtils.class);
-    private static final boolean IS_DEBUG_ENABLED = log.isDebugEnabled();
 
-
-    /**
-     * Private Constructor
-     */
-    private CopyUtils() {
-    }
-
+    private CopyUtils() {}
 
     /**
      * Creates a copy of the source envelope.
@@ -197,19 +191,19 @@ public class CopyUtils {
     private static void copyOMText(SOAPFactory factory,
                                    OMContainer targetParent,
                                    OMText sourceText) {
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("start copyOMText");
         }
         if (sourceText.isBinary()) {
             // This forces a load of the datahandler so that it is saved on the copy.
             Object dh = sourceText.getDataHandler();
-            if (IS_DEBUG_ENABLED) {
+            if (log.isDebugEnabled()) {
                 String dhclass = (dh == null) ? "null" : dh.getClass().toString();
                 log.debug("The source text's binary data handler is " + dhclass);
             }
         }
         factory.createOMText(targetParent, sourceText);
-        if (IS_DEBUG_ENABLED) {
+        if (log.isDebugEnabled()) {
             log.debug("end copyOMText");
         }
     }
@@ -243,19 +237,19 @@ public class CopyUtils {
         OMDataSource ds = sourceOMSE.getDataSource();
         if (ds == null ||
             sourceOMSE.isExpanded() ||
-            !(ds instanceof OMDataSourceExt)) {
+            !(ds instanceof OMDataSourceExt<?>)) {
             copyOMElement(factory, targetParent, sourceOMSE);
             return;
         }
 
         // If copying is destructive, then copy the OM tree
-        OMDataSourceExt sourceDS = (OMDataSourceExt) ds;
+        OMDataSourceExt<?> sourceDS = (OMDataSourceExt<?>) ds;
         if (sourceDS.isDestructiveRead() ||
             sourceDS.isDestructiveWrite()) {
             copyOMElement(factory, targetParent, sourceOMSE);
             return;
         }
-        OMDataSourceExt targetDS = ((OMDataSourceExt) ds).copy();
+        OMDataSourceExt<?> targetDS = ((OMDataSourceExt<?>) ds).copy();
         if (targetDS == null) {
             copyOMElement(factory, targetParent, sourceOMSE);
             return;
@@ -283,13 +277,13 @@ public class CopyUtils {
         OMDataSource ds = sourceSHB.getDataSource();
         if (ds == null ||
             sourceSHB.isExpanded() ||
-            !(ds instanceof OMDataSourceExt)) {
+            !(ds instanceof OMDataSourceExt<?>)) {
             copySOAPHeaderBlock_NoDataSource(factory, targetParent, sourceSHB);
             return;
         }
 
         // If copying is destructive, then copy the OM tree
-        OMDataSourceExt sourceDS = (OMDataSourceExt) ds;
+        OMDataSourceExt<?> sourceDS = (OMDataSourceExt<?>) ds;
         if (sourceDS.isDestructiveRead() ||
             sourceDS.isDestructiveWrite()) {
             copySOAPHeaderBlock_NoDataSource(factory, targetParent, sourceSHB);
@@ -297,7 +291,7 @@ public class CopyUtils {
         }
 
         // Otherwise create a copy of the OMDataSource
-        OMDataSourceExt targetDS = ((OMDataSourceExt) ds).copy();
+        OMDataSourceExt<?> targetDS = ((OMDataSourceExt<?>) ds).copy();
         SOAPHeaderBlock targetSHB =
             factory.createSOAPHeaderBlock(sourceSHB.getLocalName(),
                                           sourceSHB.getNamespace(),

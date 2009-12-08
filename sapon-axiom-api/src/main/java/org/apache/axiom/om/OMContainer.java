@@ -22,15 +22,17 @@ package org.apache.axiom.om;
 import javax.xml.namespace.QName;
 
 /**
- * Captures the operations related to containment shared by both a document and an element.
+ * Captures the operations related to containment shared by both a document and
+ * an element.
  * <p/>
- * <p>Exposes the ability to add, find, and iterate over the children of a document or element.</p>
+ * <p>Exposes the ability to add, find, and iterate over the children of a
+ * document or element.</p>
  */
 public interface OMContainer {
 
     /**
-     * Adds the given node as the last child. One must preserve the order of children, in this
-     * operation. Tip : appending the new child is preferred.
+     * Adds the given node as the last child. One must preserve the order of
+     * children, in this operation. Tip : appending the new child is preferred.
      *
      * @param omNode
      */
