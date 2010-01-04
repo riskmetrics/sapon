@@ -80,6 +80,8 @@ import org.apache.axis2.deployment.DeploymentConstants;
 import org.apache.axis2.deployment.util.ExcludeInfo;
 import org.apache.axis2.deployment.util.PhasesInfo;
 import org.apache.axis2.deployment.util.Utils;
+import org.apache.axis2.description.hierarchy.AxisDescription;
+import org.apache.axis2.description.hierarchy.ServiceGroupDescendant;
 import org.apache.axis2.description.java2wsdl.DefaultSchemaGenerator;
 import org.apache.axis2.description.java2wsdl.DocLitBareSchemaGenerator;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
@@ -119,7 +121,8 @@ import org.xml.sax.SAXException;
 /**
  * Class AxisService
  */
-public class AxisService extends AxisDescription implements ModuleConfigAccessor
+public class AxisService extends AxisDescriptionBase
+	implements ModuleConfigAccessor, ServiceGroupDescendant
 {
 
 	// ////////////////////////////////////////////////////////////////
@@ -150,6 +153,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	private int nsCount = 0;
 	private static final Log log = LogFactory.getLog(AxisService.class);
 	private URL fileName;
+
+	private AxisServiceGroup parent;
 
 	// Maps httpLocations to corresponding operations. Used to dispatch rest
 	// messages.
@@ -260,7 +265,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	// //////////////////////////////////////
 
 	/** Map of prefix -> namespaceURI */
-	private NamespaceMap namespaceMap;
+	private Map<String, String> namespaceMap;
 
 	private String soapNsUri;
 	private String endpointName;
@@ -314,21 +319,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		this.endpointMap.put(key, axisEndpoint);
 	}
 
-	//	/**
-	//	 * @deprecated Use AddressingHelper.getAddressingRequirementParemeterValue
-	//	 */
-	//	@Deprecated
-	//	public String getWSAddressingFlag() {
-	//		return AddressingHelper.getAddressingRequirementParemeterValue(this);
-	//	}
-	//
-	//	/**
-	//	 * @deprecated Use AddressingHelper.setAddressingRequirementParemeterValue
-	//	 */
-	//	@Deprecated
-	//	public void setWSAddressingFlag(String ar) {
-	//		AddressingHelper.setAddressingRequirementParemeterValue(this, ar);
-	//	}
+	private final Map<QName, AxisOperation> operations
+		= new HashMap<QName, AxisOperation>();
 
 	public boolean isSchemaLocationsAdjusted() {
 		return schemaLocationsAdjusted;
@@ -386,24 +378,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		dataLocators = new HashMap<String, AxisDataLocator>();
 		dataLocatorClassNames = new HashMap<String, String>();
 	}
-
-	//	/**
-	//	 * @return name of the port type
-	//	 * @deprecated use AxisService#getEndpointName() instead.
-	//	 */
-	//	@Deprecated
-	//	public String getPortTypeName() {
-	//		return endpointName;
-	//	}
-	//
-	//	/**
-	//	 * @param portTypeName
-	//	 * @deprecated use AxisService#setEndpointName() instead
-	//	 */
-	//	@Deprecated
-	//	public void setPortTypeName(String portTypeName) {
-	//		this.endpointName = portTypeName;
-	//	}
 
 	public String getBindingName() {
 		return bindingName;
@@ -522,16 +496,15 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 *             if a problem occurs
 	 */
 	void addModuleOperations(AxisModule module) throws AxisFault {
-		HashMap<QName, AxisOperation> map = module.getOperations();
+		Map<QName, AxisOperation> map = module.getOperations();
 		Collection<AxisOperation> col = map.values();
-		PhaseResolver phaseResolver = new PhaseResolver(getAxisConfiguration());
+		PhaseResolver phaseResolver = new PhaseResolver(getConfiguration());
 		for (AxisOperation axisOperation2 : col) {
 			AxisOperation axisOperation = copyOperation(axisOperation2);
 			if (this.getOperation(axisOperation.getName()) == null) {
 				List<String> wsamappings = axisOperation.getWSAMappingList();
 				if (wsamappings != null) {
-					for (int j = 0, size = wsamappings.size(); j < size; j++) {
-						String mapping = wsamappings.get(j);
+					for(String mapping: wsamappings) {
 						mapActionToOperation(mapping, axisOperation);
 					}
 				}
@@ -605,7 +578,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 					+ axisOperation.getName().getLocalPart()
 					+ Java2WSDLConstants.RESPONSE);
 		}
-		addChild(axisOperation);
+		this.operations.put(axisOperation.getName(), axisOperation);
 
 		String operationName = axisOperation.getName().getLocalPart();
 
@@ -616,8 +589,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		 * especially for the SOAPBodyBasedDispatcher
 		 */
 
-		for (final AxisDescription axisMessage: axisOperation.getChildren()) {
-			String messageName = ((AxisMessage) axisMessage).getName();
+		for (final AxisMessage axisMessage: axisOperation.getMessages()) {
+			String messageName = axisMessage.getName();
 			if (messageName != null && !messageName.equals(operationName)) {
 				mapActionToOperation(messageName, axisOperation);
 			}
@@ -655,8 +628,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 				return messageReceiver;
 			}
 		}
-		if (getAxisConfiguration() != null) {
-			return getAxisConfiguration().getMessageReceiver(mepURL);
+		if (getConfiguration() != null) {
+			return getConfiguration().getMessageReceiver(mepURL);
 		}
 		return null;
 	}
@@ -677,26 +650,11 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		operation.setMessageReceiver(axisOperation.getMessageReceiver());
 		operation.setName(axisOperation.getName());
 
-		Iterator<Parameter> parameters = axisOperation.getParameters().iterator();
-
-		while (parameters.hasNext()) {
-			Parameter parameter = parameters.next();
-
+		for(Parameter parameter: axisOperation.getParameters()) {
 			operation.addParameter(parameter);
 		}
 
-		PolicyInclude policyInclude = new PolicyInclude(operation);
-		PolicyInclude axisOperationPolicyInclude = axisOperation
-		.getPolicyInclude();
-
-		if (axisOperationPolicyInclude != null) {
-			Policy policy = axisOperationPolicyInclude.getPolicy();
-			if (policy != null) {
-				policyInclude.setPolicy(axisOperationPolicyInclude.getPolicy());
-			}
-		}
-		operation.setPolicyInclude(policyInclude);
-
+		operation.attachPolicyComponents(axisOperation.getAttachedPolicyComponents());
 		operation.setWsamappingList(axisOperation.getWSAMappingList());
 		operation.setRemainingPhasesInFlow(axisOperation
 				.getRemainingPhasesInFlow());
@@ -886,7 +844,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 
 	private XmlSchema addNameSpaces(int i) {
 		XmlSchema schema = schemaList.get(i);
-		NamespaceMap map = (NamespaceMap) namespaceMap.clone();
+		NamespaceMap map = new NamespaceMap(namespaceMap);
 		NamespacePrefixList namespaceContext = schema.getNamespaceContext();
 		String prefixes[] = namespaceContext.getDeclaredPrefixes();
 		for (String prefix : prefixes) {
@@ -910,7 +868,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 
 	private String[] calculateEPRs() {
 		try {
-			String requestIP = org.apache.axis2.util.Utils.getIpAddress(getAxisConfiguration());
+			String requestIP = org.apache.axis2.util.Utils.getIpAddress(getConfiguration());
 			return calculateEPRs(requestIP);
 		} catch (SocketException e) {
 			log.error("Cannot get local IP address", e);
@@ -919,7 +877,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	}
 
 	private String[] calculateEPRs(String requestIP) {
-		AxisConfiguration axisConfig = getAxisConfiguration();
+		AxisConfiguration axisConfig = getConfiguration();
 		if (axisConfig == null) {
 			return null;
 		}
@@ -1427,70 +1385,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	}
 
 	/**
-	 * Print the WSDL2.0 with a default URL. This will be called only during
-	 * codegen time.
-	 *
-	 * @param out
-	 * @throws AxisFault
-	 */
-//	public void printWSDL2(OutputStream out) throws AxisFault {
-//		printWSDL2(out, null);
-//	}
-
-//	public void printWSDL2(OutputStream out, String requestIP) throws AxisFault {
-//		AxisService2WSDL20 axisService2WSDL2 = new AxisService2WSDL20(this);
-//		try {
-//			if (requestIP != null) {
-//				axisService2WSDL2.setEPRs(calculateEPRs(requestIP));
-//			}
-//			OMElement wsdlElement = axisService2WSDL2.generateOM();
-//			wsdlElement.serialize(out);
-//			out.flush();
-//			out.close();
-//		} catch (Exception e) {
-//			throw AxisFault.makeFault(e);
-//		}
-//	}
-
-	/**
-	 * Produces a WSDL2 for this AxisService and prints it to the specified
-	 * OutputStream.
-	 *
-	 * @param out
-	 *            destination stream.
-	 * @param wsdl
-	 *            wsdl name
-	 * @return -1 implies not found, 0 implies redirect to root, 1 implies
-	 *         found/printed wsdl
-	 * @throws IOException
-	 */
-//	public int printWSDL2(OutputStream out, String requestIP, String wsdl)
-//	throws IOException, AxisFault {
-//		// a name is present - try to pump the requested wsdl file
-//		if (!"".equals(wsdl)) {
-//			// make sure we are only serving .wsdl files and ignore requests with
-//			// ".." in the name.
-//			if (wsdl.endsWith(".wsdl") && wsdl.indexOf("..") == -1) {
-//				InputStream in = getClassLoader().getResourceAsStream(
-//						DeploymentConstants.META_INF + "/" + wsdl);
-//				if (in != null) {
-//					IOUtils.copy(in, out, true);
-//				} else {
-//					// can't find the wsdl
-//					return -1;
-//				}
-//			} else {
-//				// bad wsdl2 request
-//				return -1;
-//			}
-//		} else {
-//			printWSDL2(out, requestIP);
-//		}
-//
-//		return 1;
-//	}
-
-	/**
 	 * Gets the description about the service which is specified in
 	 * services.xml.
 	 *
@@ -1531,15 +1425,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		return fileName;
 	}
 
-//	/**
-//	 * @deprecated please use getLastUpdate
-//	 * @return
-//	 */
-//	@Deprecated
-//	public long getLastupdate() {
-//		return lastupdate;
-//	}
-
 	public long getLastUpdate() {
 		return lastupdate;
 	}
@@ -1567,10 +1452,10 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 			log.debug("Get operation for " + operationName);
 		}
 
-		AxisOperation axisOperation = (AxisOperation) getChild(operationName);
+		AxisOperation axisOperation = operations.get(operationName);
 
 		if (axisOperation == null) {
-			axisOperation = (AxisOperation) getChild(new QName(
+			axisOperation = operations.get(new QName(
 					getTargetNamespace(), operationName.getLocalPart()));
 
 			if (LoggingControl.debugLoggingAllowed && log.isDebugEnabled()) {
@@ -1598,7 +1483,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 
 			if (namespaces != null) {
 				for(final String namespace: namespaces) {
-					axisOperation = (AxisOperation) getChild(new QName(
+					axisOperation = operations.get(new QName(
 							namespace, operationName.getLocalPart()));
 
 					if (axisOperation != null) {
@@ -1685,9 +1570,9 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		// so I believe this to be valid. There may be customers using the
 		// shortname as the SOAPAction in their client code that would
 		// also require this support.
-		for(final AxisDescription op: getChildren()) {
-			if (((AxisOperation)op).getName().getLocalPart().equals(soapAction)) {
-				operation = (AxisOperation) op;
+		for(final AxisOperation op: getOperations()) {
+			if (op.getName().getLocalPart().equals(soapAction)) {
+				operation = op;
 				break;
 			}
 		}
@@ -1709,7 +1594,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 * @return Returns HashMap
 	 */
 	public Iterable<AxisOperation> getOperations() {
-		return (Iterable<AxisOperation>) getChildren();
+		return operations.values();
 	}
 
 	/*
@@ -1734,17 +1619,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		return operationList;
 	}
 
-//	/**
-//	 * Sets the description about the service which is specified in services.xml
-//	 *
-//	 * @param documentation
-//	 * @deprecated Use setDocumentation() instead
-//	 */
-//	@Deprecated
-//	public void setServiceDescription(String documentation) {
-//		setDocumentation(documentation);
-//	}
-
 	/**
 	 * Method setClassLoader.
 	 *
@@ -1757,15 +1631,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	public void setFileName(URL fileName) {
 		this.fileName = fileName;
 	}
-
-//	/**
-//	 * Sets the current time as last update time of the service.
-//	 * @deprecated please use setLastUpdate
-//	 */
-//	@Deprecated
-//	public void setLastupdate() {
-//		lastupdate = new Date().getTime();
-//	}
 
 	/**
 	 * Sets the current time as last update time of the service.
@@ -1835,11 +1700,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		this.useDefaultChains = useDefaultChains;
 	}
 
-	@Override
-	public Object getKey() {
-		return this.name;
-	}
-
 	public boolean isActive() {
 		return active;
 	}
@@ -1847,15 +1707,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	public void setActive(boolean active) {
 		this.active = active;
 	}
-
-//	/**
-//	 * @deprecated please use getSchemaTargetNamespace
-//	 * @return
-//	 */
-//	@Deprecated
-//	public String getSchematargetNamespace() {
-//		return schematargetNamespace;
-//	}
 
 	public String getSchemaTargetNamespace() {
 		return schematargetNamespace;
@@ -1868,16 +1719,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	public String getSchemaTargetNamespacePrefix() {
 		return schematargetNamespacePrefix;
 	}
-
-//	/**
-//	 * @deprecated please use setSchemaTargetNamespacePrefix
-//	 * @param schematargetNamespacePrefix
-//	 */
-//	@Deprecated
-//	public void setSchematargetNamespacePrefix(
-//			String schematargetNamespacePrefix) {
-//		this.schematargetNamespacePrefix = schematargetNamespacePrefix;
-//	}
 
 	public void setSchemaTargetNamespacePrefix(
 			String schematargetNamespacePrefix) {
@@ -1968,10 +1809,10 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	@Override
 	public void onDisengage(AxisModule module) throws AxisFault {
 		removeModuleOperations(module);
-		for(final AxisDescription axisOperation: getChildren()) {
-			((AxisOperation)axisOperation).disengageModule(module);
+		for(AxisOperation axisOperation: getOperations()) {
+			axisOperation.disengageModule(module);
 		}
-		AxisConfiguration config = getAxisConfiguration();
+		AxisConfiguration config = getConfiguration();
 		if (!config.isEngaged(module.getName())) {
 			PhaseResolver phaseResolver = new PhaseResolver(config);
 			phaseResolver.disengageModuleFromGlobalChains(module);
@@ -1985,7 +1826,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 *            the module in question
 	 */
 	private void removeModuleOperations(AxisModule module) {
-		HashMap<QName, AxisOperation> moduleOperations = module.getOperations();
+		Map<QName, AxisOperation> moduleOperations = module.getOperations();
 		if (moduleOperations != null) {
 			for (AxisOperation axisOperation : moduleOperations.values()) {
 				AxisOperation operation = axisOperation;
@@ -2161,7 +2002,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		SchemaGenerator schemaGenerator;
 		List<String> excludeOperation = new ArrayList<String>();
 		AxisService service = new AxisService();
-		service.setParent(axisConfiguration);
 		service.setName(serviceName);
 
 		try {
@@ -2218,7 +2058,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		axisService.setName(serviceName);
 		axisService.setClassLoader(loader);
 
-		NamespaceMap map = new NamespaceMap();
+		Map<String, String> map = new HashMap<String, String>();
 		map.put(Java2WSDLConstants.AXIS2_NAMESPACE_PREFIX,
 				Java2WSDLConstants.AXIS2_XSD);
 		map.put(Java2WSDLConstants.DEFAULT_SCHEMA_NAMESPACE_PREFIX,
@@ -2281,8 +2121,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 
 		String endpointName = axisService.getEndpointName();
 		if ((endpointName == null || endpointName.length() == 0)
-				&& axisService.getAxisConfiguration() != null) {
-			Utils.addEndpointsToService(axisService, axisService.getAxisConfiguration());
+				&& axisService.getConfiguration() != null) {
+			Utils.addEndpointsToService(axisService, axisService.getConfiguration());
 		}
 
 		return axisService;
@@ -2290,9 +2130,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	}
 
 	public void removeOperation(QName opName) {
-		AxisOperation operation = getOperation(opName);
+		AxisOperation operation = operations.remove(opName);
 		if (operation != null) {
-			removeChild(opName);
 			List<String> mappingList = operation.getWSAMappingList();
 			if (mappingList != null) {
 				for(String actionMapping: mappingList) {
@@ -2302,17 +2141,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 			operationsAliasesMap.remove(operation.getName().getLocalPart());
 		}
 	}
-
-	//	/**
-	//	 * Get the namespace map for this service.
-	//	 *
-	//	 * @return a Map of prefix (String) to namespace URI (String)
-	//	 * @deprecated please use getNamespaceMap()
-	//	 */
-	//	@Deprecated
-	//	public Map<String, String> getNameSpacesMap() {
-	//		return namespaceMap;
-	//	}
 
 	/**
 	 * Get the namespace map for this service.
@@ -2341,16 +2169,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		this.importedNamespaces = importedNamespaces;
 	}
 
-	//    /**
-	//     * @deprecated please use setNamespaceMap
-	//     * @param nameSpacesMap
-	//     */
-	//    @Deprecated
-	//	public void setNameSpacesMap(NamespaceMap nameSpacesMap) {
-	//		this.namespaceMap = nameSpacesMap;
-	//	}
-
-	public void setNamespaceMap(NamespaceMap namespaceMap) {
+	public void setNamespaceMap(Map<String, String> namespaceMap) {
 		this.namespaceMap = namespaceMap;
 	}
 
@@ -2359,7 +2178,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		String prefix = schema.getNamespaceContext().getPrefix(targetNameSpace);
 
 		if (namespaceMap == null) {
-			namespaceMap = new NamespaceMap();
+			namespaceMap = new HashMap<String, String>();
 		}
 
 		if (!namespaceMap.values().contains(targetNameSpace)) {
@@ -2485,7 +2304,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 			nameTable.put(s, newURI);
 			sourceURIToNewLocationMap.put(sourceURI, newURI);
 		}
-
 	}
 
 	/**
@@ -2574,8 +2392,7 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 */
 	private <K,V> Map<V, K> swapMappingTable(final Map<K, V> originalTable)
 	{
-		final Map<V, K> swappedTable
-		= new HashMap<V, K>(originalTable.size());
+		final Map<V, K> swappedTable = new HashMap<V, K>(originalTable.size());
 		for(final Map.Entry<K, V> e: originalTable.entrySet()) {
 			swappedTable.put(e.getValue(), e.getKey());
 		}
@@ -2674,7 +2491,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 * @return array of {@link Data} object for the request.
 	 * @throws AxisFault
 	 */
-
 	public Data[] getData(	DataRetrievalRequest request,
 							MessageContext msgContext )
 		throws AxisFault
@@ -2776,8 +2592,9 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 */
 
 	public AxisDataLocator getGlobalDataLocator(String dialect)
-	throws AxisFault {
-		AxisConfiguration axisConfig = getAxisConfiguration();
+		throws AxisFault
+	{
+		AxisConfiguration axisConfig = getConfiguration();
 		AxisDataLocator locator = null;
 		if (axisConfig != null) {
 			locator = axisConfig.getDataLocator(dialect);
@@ -2791,7 +2608,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		}
 
 		return locator;
-
 	}
 
 	protected AxisDataLocator loadDataLocator(String className)
@@ -2845,10 +2661,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 *         found.
 	 * @see #setMessageElementQNameToOperationMap(Map)
 	 */
-	public AxisOperation getOperationByMessageElementQName(
-			QName messageElementQName) {
-		return messageElementQNameToOperationMap
-		.get(messageElementQName);
+	public AxisOperation getOperationByMessageElementQName(QName messageElementQName) {
+		return messageElementQNameToOperationMap.get(messageElementQName);
 	}
 
 	/**
@@ -2882,16 +2696,6 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 
 	}
 
-	//	// @deprecated - use getEndpointURL in axisEndpoint
-	//	public String getEndpointURL() {
-	//		return endpointURL;
-	//	}
-	//
-	//	// @deprecated - use setEndpointURL in axisEndpoint
-	//	public void setEndpointURL(String endpointURL) {
-	//		this.endpointURL = endpointURL;
-	//	}
-
 	// TODO : Explain what goes in this map!
 	public Map<String, AxisEndpoint> getEndpoints() {
 		return endpointMap;
@@ -2913,12 +2717,15 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 		this.operationsNameList = operationsNameList;
 	}
 
-	public AxisServiceGroup getAxisServiceGroup() {
-		return (AxisServiceGroup) parent;
+	@Override
+	public AxisServiceGroup getServiceGroup() {
+		return parent;
 	}
 
 	public void setParent(AxisServiceGroup parent) {
 		this.parent = parent;
+		this.parameterInclude.setParent(parent);
+		this.policySubject.setParent(parent);
 	}
 
 	@Override
@@ -2963,8 +2770,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 * @return true if ServiceContextLister is in the list
 	 */
 	public boolean hasMessageContextListener(Class<?> cls) {
-		for (int i=0; i<messageContextListeners.size(); i++) {
-			if (messageContextListeners.get(i).getClass() == cls) {
+		for (MessageContextListener mcl: messageContextListeners) {
+			if (mcl.getClass().equals(cls)) {
 				return true;
 			}
 		}
@@ -2977,8 +2784,8 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 * @param mc MessageContext
 	 */
 	public void attachServiceContextEvent(ServiceContext sc, MessageContext mc) {
-		for (int i=0; i<messageContextListeners.size(); i++) {
-			messageContextListeners.get(i).attachServiceContextEvent(sc, mc);
+		for (MessageContextListener mcl: messageContextListeners) {
+			mcl.attachServiceContextEvent(sc, mc);
 		}
 	}
 
@@ -2987,8 +2794,18 @@ public class AxisService extends AxisDescription implements ModuleConfigAccessor
 	 * @param mc MessageContext
 	 */
 	public void attachEnvelopeEvent(MessageContext mc) {
-		for (int i=0; i<messageContextListeners.size(); i++) {
-			messageContextListeners.get(i).attachEnvelopeEvent(mc);
+		for (MessageContextListener mcl: messageContextListeners) {
+			mcl.attachEnvelopeEvent(mc);
 		}
+	}
+
+	@Override
+	public AxisConfiguration getConfiguration() {
+		return (parent != null) ? parent.getConfiguration() : null;
+	}
+
+	@Override
+	public Policy getEffectivePolicy() {
+		return getEffectivePolicy(this);
 	}
 }

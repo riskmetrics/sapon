@@ -125,17 +125,17 @@ public class OutOnlyAxisOperation extends AxisOperation {
 
     @Override
 	public List<Phase> getPhasesInFaultFlow() {
-        return (List<Phase>)inFaultMessage.getMessageFlow();
+        return inFaultMessage.getMessageFlow();
     }
 
     @Override
 	public List<Phase> getPhasesOutFaultFlow() {
-        return (List<Phase>)outFaultMessage.getMessageFlow();
+        return outFaultMessage.getMessageFlow();
     }
 
     @Override
 	public List<Phase> getPhasesOutFlow() {
-        return (List<Phase>)outMessage.getMessageFlow();
+        return outMessage.getMessageFlow();
     }
 
     @Override

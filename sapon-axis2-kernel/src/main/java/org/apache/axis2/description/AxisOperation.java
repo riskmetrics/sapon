@@ -40,6 +40,8 @@ import org.apache.axis2.context.OperationContext;
 import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.util.PhasesInfo;
+import org.apache.axis2.description.hierarchy.AxisDescription;
+import org.apache.axis2.description.hierarchy.ServiceDescendant;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.AxisError;
 import org.apache.axis2.engine.MessageReceiver;
@@ -49,17 +51,17 @@ import org.apache.axis2.phaseresolver.PhaseResolver;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.neethi.Policy;
 
-public abstract class AxisOperation extends AxisDescription
-	implements WSDLConstants, ModuleConfigAccessor
+public abstract class AxisOperation extends AxisDescriptionBase
+	implements ServiceDescendant, WSDLConstants, ModuleConfigAccessor
 {
+	private static final Log log = LogFactory.getLog(AxisOperation.class);
 
     public static final String STYLE_RPC = "rpc";
     public static final String STYLE_MSG = "msg";
     public static final String STYLE_DOC = "doc";
 
-    private static final Log log = LogFactory.getLog(AxisOperation.class);
-    /** message exchange pattern */
     private int mep = WSDLConstants.MEP_CONSTANT_INVALID;
 
     // to hide control operation , operation which added by RM like module
@@ -73,6 +75,8 @@ public abstract class AxisOperation extends AxisDescription
 
     private Map<String, ModuleConfiguration> moduleConfigmap;
 
+    private final Map<String, AxisMessage> messages;
+
     // To store deploy-time module refs
     private List<String> modulerefs;
 
@@ -80,18 +84,19 @@ public abstract class AxisOperation extends AxisDescription
 
     private QName name;
 
+    private AxisService parent;
+
     private List<String> wsamappingList;
     private String outputAction;
     private LinkedHashMap<String, String> faultActions = new LinkedHashMap<String, String>();
 
     private String soapAction;
 
-
-    /** Default constructor */
     public AxisOperation() {
         mepURI = WSDL2Constants.MEP_URI_IN_OUT;
         modulerefs = new ArrayList<String>();
         moduleConfigmap = new HashMap<String, ModuleConfiguration>();
+        messages = new HashMap<String, AxisMessage>();
         faultMessages = new ArrayList<AxisMessage>();
         //setup a temporary name
         QName tmpName = new QName(this.getClass().getName() + "_" + UUIDGenerator.getUUID());
@@ -103,13 +108,13 @@ public abstract class AxisOperation extends AxisDescription
         this.setName(name);
     }
 
-    public abstract void addMessage(AxisMessage message, String label);
-
     /**
-     * Adds a message context into an operation context. Depending on MEPs, this method has to be
-     * overridden. Depending on the MEP operation description know how to fill the message context
-     * map in operationContext. As an example, if the MEP is IN-OUT then depending on messagable
-     * operation description should know how to keep them in correct locations.
+     * Adds a message context into an operation context. Depending on MEPs,
+     * this method has to be overridden. Depending on the MEP operation
+     * description know how to fill the message context map in
+     * operationContext. As an example, if the MEP is IN-OUT then depending on
+     * messagable operation description should know how to keep them in correct
+     * locations.
      *
      * @param msgContext <code>MessageContext</code>
      * @param opContext  <code>OperationContext</code>
@@ -124,6 +129,12 @@ public abstract class AxisOperation extends AxisDescription
 
     public void addModule(String moduleName) {
         modulerefs.add(moduleName);
+    }
+
+    public void setParent(AxisService parentService) {
+    	this.parent = parentService;
+    	this.policySubject.setParent(parentService);
+    	this.parameterInclude.setParent(parentService);
     }
 
     /**
@@ -150,24 +161,24 @@ public abstract class AxisOperation extends AxisDescription
         // If I'm not, the operations will already have been added by someone above, so don't
         // do it again.
         if (selfEngaged) {
-            AxisService service = getAxisService();
+            AxisService service = getService();
             if (service != null) {
                 service.addModuleOperations(axisModule);
             }
         }
-        AxisConfiguration axisConfig = getAxisConfiguration();
+        AxisConfiguration axisConfig = getConfiguration();
         PhaseResolver phaseResolver = new PhaseResolver(axisConfig);
         phaseResolver.engageModuleToOperation(this, axisModule);
     }
 
     @Override
 	protected void onDisengage(AxisModule module) {
-        AxisService service = getAxisService();
+        AxisService service = getService();
         if (service == null) {
 			return;
 		}
 
-        AxisConfiguration axisConfiguration = service.getAxisConfiguration();
+        AxisConfiguration axisConfiguration = getConfiguration();
         PhaseResolver phaseResolver = new PhaseResolver(axisConfiguration);
         if (!service.isEngaged(module.getName()) &&
             (axisConfiguration != null && !axisConfiguration.isEngaged(module.getName()))) {
@@ -176,7 +187,7 @@ public abstract class AxisOperation extends AxisDescription
         phaseResolver.disengageModuleFromOperationChain(module, this);
 
         //removing operations added at the time of module engagemnt
-        HashMap<QName, AxisOperation> moduleOperations = module.getOperations();
+        Map<QName, AxisOperation> moduleOperations = module.getOperations();
         if (moduleOperations != null) {
             Iterator<AxisOperation> moduleOperations_itr = moduleOperations.values().iterator();
             while (moduleOperations_itr.hasNext()) {
@@ -185,25 +196,6 @@ public abstract class AxisOperation extends AxisDescription
             }
         }
     }
-
-    /**
-     * To remove module from engage  module list
-     *
-     * @param module module to remove
-     * @deprecated please use disengageModule(), this method will disappear after 1.3
-     */
-    @Deprecated
-	public void removeFromEngagedModuleList(AxisModule module) {
-        try {
-            disengageModule(module);
-        } catch (AxisFault axisFault) {
-            // Can't do much here...
-            log.error(axisFault.getMessage(), axisFault);
-        }
-    }
-
-//  Note - removed this method which was dead code.
-//    private AxisOperation copyOperation(AxisOperation axisOperation) throws AxisFault {
 
     /**
      * Returns as existing OperationContext related to this message if one exists.
@@ -239,6 +231,10 @@ public abstract class AxisOperation extends AxisDescription
         }
 
         return operationContext;
+    }
+
+    public Iterable<AxisMessage> getMessages() {
+    	return messages.values();
     }
 
     /**
@@ -360,6 +356,14 @@ public abstract class AxisOperation extends AxisDescription
      */
 
     public abstract AxisMessage getMessage(String label);
+    public abstract void addMessage(AxisMessage message, String label);
+
+    protected AxisMessage unconditionalGetMessage(String label) {
+    	return messages.get(label);
+    }
+    protected void unconditionalAddMessage(String label, AxisMessage message) {
+    	messages.put(label, message);
+    }
 
     public String getMessageExchangePattern() {
         return mepURI;
@@ -399,26 +403,6 @@ public abstract class AxisOperation extends AxisDescription
 
     public boolean isControlOperation() {
         return controlOperation;
-    }
-
-    // to check whether a given parameter is locked
-    @Override
-	public boolean isParameterLocked(String parameterName) {
-
-        // checking the locked value of parent
-        boolean locked = false;
-
-        if (getParent() != null) {
-            locked = getParent().isParameterLocked(parameterName);
-        }
-
-        if (locked) {
-            return true;
-        } else {
-            Parameter parameter = getParameter(parameterName);
-
-            return (parameter != null) && parameter.isLocked();
-        }
     }
 
     public void setControlOperation(boolean controlOperation) {
@@ -474,11 +458,6 @@ public abstract class AxisOperation extends AxisDescription
      * @return an OperationClient set up appropriately for this operation
      */
     public abstract OperationClient createClient(ServiceContext sc, Options options);
-
-    @Override
-	public Object getKey() {
-        return this.name;
-    }
 
     public List<AxisMessage> getFaultMessages() {
         return faultMessages;
@@ -554,21 +533,18 @@ public abstract class AxisOperation extends AxisDescription
     }
 
     /**
-     * Get the messages referenced by this operation
-     *
-     * @return an Iterator of all the AxisMessages we deal with
-     */
-    public Iterable<AxisMessage> getMessages() {
-        return (Iterable<AxisMessage>)getChildren();
-    }
-
-    /**
      * Typesafe access to parent service
      *
      * @return the AxisService which contains this AxisOperation
      */
-    public AxisService getAxisService() {
-        return (AxisService)getParent();
+    @Override
+    public AxisService getService() {
+        return parent;
+    }
+
+    @Override
+    public AxisServiceGroup getServiceGroup() {
+    	return parent.getServiceGroup();
     }
 
     public String getSoapAction() {
@@ -581,4 +557,14 @@ public abstract class AxisOperation extends AxisDescription
          */
         return soapAction;
     }
+
+	@Override
+	public AxisConfiguration getConfiguration() {
+		return parent.getConfiguration();
+	}
+
+	@Override
+	public Policy getEffectivePolicy() {
+		return getEffectivePolicy(getService());
+	}
 }

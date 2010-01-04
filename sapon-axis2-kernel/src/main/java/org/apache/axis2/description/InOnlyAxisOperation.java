@@ -35,6 +35,7 @@ import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.wsdl.WSDLConstants;
+import org.apache.neethi.Policy;
 
 public class InOnlyAxisOperation extends AxisOperation {
 
@@ -69,8 +70,7 @@ public class InOnlyAxisOperation extends AxisOperation {
     @Override
 	public void addMessage(AxisMessage message, String label) {
         if (WSDLConstants.MESSAGE_LABEL_IN_VALUE.equals(label)) {
-//            inMessage = message;
-            addChild("inMessage", message);
+            unconditionalAddMessage("inMessage", message);
         } else {
             throw new UnsupportedOperationException("Not yet implemented");
         }
@@ -114,13 +114,13 @@ public class InOnlyAxisOperation extends AxisOperation {
 
         outPhase = new ArrayList<Phase>();
 
-        addChild("inMessage", inMessage);
+        unconditionalAddMessage("inMessage", inMessage);
     }
 
     @Override
     public AxisMessage getMessage(String label) {
         if (WSDLConstants.MESSAGE_LABEL_IN_VALUE.equals(label)) {
-            return (AxisMessage) getChild("inMessage");
+            return unconditionalGetMessage("inMessage");
         } else {
             throw new UnsupportedOperationException(Messages.getMessage("invalidacess"));
         }
@@ -128,12 +128,12 @@ public class InOnlyAxisOperation extends AxisOperation {
 
     @Override
 	public List<Phase> getPhasesInFaultFlow() {
-        return (List<Phase>)inFaultMessage.getMessageFlow();
+        return inFaultMessage.getMessageFlow();
     }
 
     @Override
 	public List<Phase> getPhasesOutFaultFlow() {
-        return (List<Phase>)outFaultMessage.getMessageFlow();
+        return outFaultMessage.getMessageFlow();
     }
 
     @Override
@@ -143,7 +143,7 @@ public class InOnlyAxisOperation extends AxisOperation {
 
     @Override
 	public List<Phase> getRemainingPhasesInFlow() {
-        return (List<Phase>)((AxisMessage) getChild("inMessage")).getMessageFlow();
+        return (unconditionalGetMessage("inMessage")).getMessageFlow();
     }
 
     @Override
@@ -163,6 +163,12 @@ public class InOnlyAxisOperation extends AxisOperation {
 
     @Override
     public void setRemainingPhasesInFlow(List<Phase> list) {
-        ((AxisMessage) getChild("inMessage")).setMessageFlow(list);
+        unconditionalGetMessage("inMessage").setMessageFlow(list);
     }
+
+	@Override
+	public Policy getEffectivePolicy() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

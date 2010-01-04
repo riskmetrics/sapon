@@ -20,35 +20,34 @@
 package org.apache.axis2.description;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.xml.namespace.QName;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.description.hierarchy.AxisDescription;
+import org.apache.axis2.description.hierarchy.OperationDescendant;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.axis2.engine.Handler;
+import org.apache.axis2.engine.Phase;
 import org.apache.axis2.phaseresolver.PhaseResolver;
-import org.apache.axis2.util.PolicyUtil;
 import org.apache.axis2.wsdl.SOAPHeaderMessage;
 import org.apache.neethi.Policy;
-import org.apache.neethi.PolicyComponent;
 import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaElement;
-import org.apache.ws.commons.schema.XmlSchemaImport;
-import org.apache.ws.commons.schema.XmlSchemaInclude;
+import org.apache.ws.commons.schema.XmlSchemaExternal;
 import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 
 
 /**
- * This class represents the messages in WSDL. There can be message element in services.xml
- * which are represented by this class.
+ * This class represents the messages in WSDL. There can be message element in
+ * services.xml which are represented by this class.
  */
-public class AxisMessage extends AxisDescription {
-
-    private List<? extends Handler> handlerChain;
+public class AxisMessage extends AxisDescriptionBase
+	implements OperationDescendant
+{
+    private List<Phase> handlerChain;
     private String name;
     private List<SOAPHeaderMessage> soapHeaders;
 
@@ -62,13 +61,7 @@ public class AxisMessage extends AxisDescription {
     private List<String> modulerefs;
     private String partName = Java2WSDLConstants.PARAMETERS;
 
-    // private PolicyInclude policyInclude;
-
-    //To chcek whether the message is wrapped or unwrapped
-    private boolean wrapped = true;
-
-    private Policy effectivePolicy = null;
-    private Date lastPolicyCalcuatedTime = null;
+    private AxisOperation parent;
 
     public String getMessagePartName() {
 		return messagePartName;
@@ -80,34 +73,21 @@ public class AxisMessage extends AxisDescription {
 
 	public AxisMessage() {
         soapHeaders = new ArrayList<SOAPHeaderMessage>();
-        handlerChain = new ArrayList<Handler>();
+        handlerChain = new ArrayList<Phase>();
         modulerefs = new ArrayList<String>();
     }
 
-    public List<? extends Handler> getMessageFlow() {
+	public void setParent(AxisOperation parentOp) {
+		this.parent = parentOp;
+		this.parameterInclude.setParent(parentOp);
+		this.policySubject.setParent(parentOp);
+	}
+
+    public List<Phase> getMessageFlow() {
         return handlerChain;
     }
 
-    @Override
-	public boolean isParameterLocked(String parameterName) {
-
-        // checking the locked value of parent
-        boolean locked = false;
-
-        if (getParent() != null) {
-            locked = getParent().isParameterLocked(parameterName);
-        }
-
-        if (locked) {
-            return true;
-        } else {
-            Parameter parameter = getParameter(parameterName);
-
-            return (parameter != null) && parameter.isLocked();
-        }
-    }
-
-    public void setMessageFlow(List<? extends Handler> operationFlow) {
+    public void setMessageFlow(List<Phase> operationFlow) {
         this.handlerChain = operationFlow;
     }
 
@@ -127,14 +107,9 @@ public class AxisMessage extends AxisDescription {
         this.elementQname = element;
     }
 
-    @Override
-	public Object getKey() {
-        return this.elementQname;
-    }
-
     public XmlSchemaElement getSchemaElement() {
         XmlSchemaElement xmlSchemaElement = null;
-        AxisService service = getAxisOperation().getAxisService();
+        AxisService service = getService();
         for (final XmlSchema schema: service.getSchema()) {
         	xmlSchemaElement = getSchemaElement(schema);
             if (xmlSchemaElement != null){
@@ -145,32 +120,35 @@ public class AxisMessage extends AxisDescription {
     }
 
     private XmlSchemaElement getSchemaElement(XmlSchema schema) {
-        XmlSchemaElement xmlSchemaElement = null;
-        if (schema != null) {
-            xmlSchemaElement = schema.getElementByName(this.elementQname);
-            if (xmlSchemaElement == null) {
-                // try to find in an import or an include
-                XmlSchemaObjectCollection includes = schema.getIncludes();
-                if (includes != null) {
-                    Iterator includesIter = includes.getIterator();
-                    Object object;
-                    while (includesIter.hasNext()) {
-                        object = includesIter.next();
-                        if (object instanceof XmlSchemaImport) {
-                            XmlSchema schema1 = ((XmlSchemaImport) object).getSchema();
-                            xmlSchemaElement = getSchemaElement(schema1);
-                        }
-                        if (object instanceof XmlSchemaInclude) {
-                            XmlSchema schema1 = ((XmlSchemaInclude) object).getSchema();
-                            xmlSchemaElement = getSchemaElement(schema1);
-                        }
-                        if (xmlSchemaElement != null){
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+    	if(schema == null) {
+    		return null;
+    	}
+
+    	XmlSchemaElement xmlSchemaElement
+        	= schema.getElementByName(this.elementQname);
+
+    	if(xmlSchemaElement != null) {
+    		return xmlSchemaElement;
+    	}
+
+    	// try to find in an import or an include
+    	XmlSchemaObjectCollection includes = schema.getIncludes();
+    	if (includes != null) {
+    		Iterator<?> includesIter = includes.getIterator();
+    		while (includesIter.hasNext()) {
+    			Object object = includesIter.next();
+    			if (object instanceof XmlSchemaExternal) {
+    				XmlSchema nextSchema = ((XmlSchemaExternal) object).getSchema();
+    				xmlSchemaElement = getSchemaElement(nextSchema);
+        			if (xmlSchemaElement != null){
+        				break;
+        			}
+    			} else {
+    				continue;
+    			}
+    		}
+    	}
+
         return xmlSchemaElement;
     }
 
@@ -199,7 +177,7 @@ public class AxisMessage extends AxisDescription {
      */
     @Override
 	public void onEngage(AxisModule axisModule, AxisDescription engager) throws AxisFault {
-        PhaseResolver phaseResolver = new PhaseResolver(getAxisConfiguration());
+        PhaseResolver phaseResolver = new PhaseResolver(getConfiguration());
         phaseResolver.engageModuleToMessage(this, axisModule);
     }
 
@@ -212,9 +190,8 @@ public class AxisMessage extends AxisDescription {
     }
 
     public AxisOperation getAxisOperation(){
-        return (AxisOperation)parent;
+        return parent;
     }
-
 
     public String getPartName() {
         return partName;
@@ -224,87 +201,28 @@ public class AxisMessage extends AxisDescription {
         this.partName = partName;
     }
 
-
-    public boolean isWrapped() {
-        return wrapped;
-    }
-
-    public void setWrapped(boolean wrapped) {
-        this.wrapped = wrapped;
-    }
-
-    public Policy getEffectivePolicy() {
-		if (lastPolicyCalcuatedTime == null || isPolicyUpdated()) {
-			effectivePolicy = calculateEffectivePolicy();
-		}
-		return effectivePolicy;
+	@Override
+	public AxisConfiguration getConfiguration() {
+		return parent.getConfiguration();
 	}
 
-	public Policy calculateEffectivePolicy() {
-		PolicySubject policySubject = null;
-		ArrayList<PolicyComponent> policyList = new ArrayList<PolicyComponent>();
-
-		// AxisMessage
-		policySubject = getPolicySubject();
-		policyList.addAll(policySubject.getAttachedPolicyComponents());
-
-		// AxisOperation
-		AxisOperation axisOperation = getAxisOperation();
-		if (axisOperation != null) {
-			policyList.addAll(axisOperation.getPolicySubject()
-					.getAttachedPolicyComponents());
-		}
-
-		// AxisService
-		AxisService axisService = (axisOperation == null) ? null
-				: axisOperation.getAxisService();
-		if (axisService != null) {
-			policyList.addAll(axisService.getPolicySubject()
-					.getAttachedPolicyComponents());
-		}
-
-		// AxisConfiguration
-		AxisConfiguration axisConfiguration = (axisService == null) ? null
-				: axisService.getAxisConfiguration();
-		if (axisConfiguration != null) {
-			policyList.addAll(axisConfiguration.getPolicySubject()
-					.getAttachedPolicyComponents());
-		}
-
-		Policy result = PolicyUtil.getMergedPolicy(policyList, axisService);
-		lastPolicyCalcuatedTime = new Date();
-		return result;
+	@Override
+	public AxisOperation getOperation() {
+		return parent;
 	}
 
-	public boolean isPolicyUpdated() {
-		// AxisMessage
-		if (getPolicySubject().getLastUpdatedTime().after(
-				lastPolicyCalcuatedTime)) {
-			return true;
-		}
-		// AxisOperation
-		AxisOperation axisOperation = (AxisOperation) parent;
-		if (axisOperation != null
-				&& axisOperation.getPolicySubject().getLastUpdatedTime().after(
-						lastPolicyCalcuatedTime)) {
-			return true;
-		}
-		// AxisService
-		AxisService axisService = (axisOperation == null) ? null
-				: axisOperation.getAxisService();
-		if (axisService != null
-				&& axisService.getPolicySubject().getLastUpdatedTime().after(
-						lastPolicyCalcuatedTime)) {
-			return true;
-		}
-		// AxisConfiguration
-		AxisConfiguration axisConfiguration = (axisService == null) ? null
-				: axisService.getAxisConfiguration();
-		if (axisConfiguration != null
-				&& axisConfiguration.getPolicySubject().getLastUpdatedTime()
-						.after(lastPolicyCalcuatedTime)) {
-			return true;
-		}
-		return false;
+	@Override
+	public AxisService getService() {
+		return parent.getService();
+	}
+
+	@Override
+	public AxisServiceGroup getServiceGroup() {
+		return parent.getServiceGroup();
+	}
+
+	@Override
+	public Policy getEffectivePolicy() {
+		return getEffectivePolicy(getService());
 	}
 }

@@ -19,26 +19,32 @@
 
 package org.apache.axis2.description;
 
+import java.net.SocketException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.description.hierarchy.ServiceDescendant;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.transport.TransportListener;
 import org.apache.axis2.util.Utils;
 import org.apache.axis2.util.WSDLSerializationUtil;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.neethi.Policy;
 
-import java.net.SocketException;
-import java.util.HashMap;
-import java.util.Map;
-
-public class AxisEndpoint extends AxisDescription {
+public class AxisEndpoint extends AxisDescriptionBase
+	implements ServiceDescendant
+{
 
     private static final Log logger = LogFactory.getLog(AxisEndpoint.class);
+
+    private AxisService parent;
 
     // The name of the endpoint
     private String name;
@@ -114,18 +120,14 @@ public class AxisEndpoint extends AxisDescription {
         this.binding = binding;
     }
 
-    public Object getKey() {
-        // ToDO
-        return null; // To change body of implemented methods use File |
-        // Settings | File Templates.
-    }
-
-    public void engageModule(AxisModule axisModule) throws AxisFault {
+    @Override
+	public void engageModule(AxisModule axisModule) throws AxisFault {
         // TODO - We totally should support this.  Endpoint Policy Subject, anyone?
         throw new UnsupportedOperationException("Sorry we do not support this");
     }
 
-    public boolean isEngaged(String moduleName) {
+    @Override
+	public boolean isEngaged(String moduleName) {
         throw new UnsupportedOperationException("axisMessage.isEngaged() is not supported");
     }
 
@@ -160,7 +162,7 @@ public class AxisEndpoint extends AxisDescription {
     }
 
     public AxisService getAxisService() {
-        return (AxisService)parent;
+        return parent;
     }
 
     public void setParent(AxisService service) {
@@ -177,10 +179,10 @@ public class AxisEndpoint extends AxisDescription {
 
     public String calculateEndpointURL(String hostIP) {
         if (transportInDescName != null && parent != null) {
-            AxisConfiguration axisConfiguration = getAxisConfiguration();
+            AxisConfiguration axisConfiguration = getConfiguration();
             if (axisConfiguration != null) {
                 try {
-                    String serviceName = ((AxisService)parent).getName();
+                    String serviceName = (parent).getName();
                     TransportInDescription in =
                             axisConfiguration.getTransportIn(transportInDescName);
                     TransportListener listener = in.getReceiver();
@@ -213,9 +215,9 @@ public class AxisEndpoint extends AxisDescription {
 
     public boolean isActive() {
         if (transportInDescName != null && parent != null) {
-            AxisConfiguration axisConfiguration = getAxisConfiguration();
+            AxisConfiguration axisConfiguration = getConfiguration();
             if (axisConfiguration != null) {
-                AxisService service = (AxisService)parent;
+                AxisService service = parent;
                 if (service.isEnableAllTransports()) {
                     return axisConfiguration.getTransportsIn().containsKey(transportInDescName);
                 } else {
@@ -225,4 +227,24 @@ public class AxisEndpoint extends AxisDescription {
         }
         return false;
     }
+
+	@Override
+	public AxisConfiguration getConfiguration() {
+		return parent.getConfiguration();
+	}
+
+	@Override
+	public AxisService getService() {
+		return parent;
+	}
+
+	@Override
+	public AxisServiceGroup getServiceGroup() {
+		return parent.getServiceGroup();
+	}
+
+	@Override
+	public Policy getEffectivePolicy() {
+		return getEffectivePolicy(getService());
+	}
 }

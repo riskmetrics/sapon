@@ -55,11 +55,13 @@ public abstract class TwoChannelAxisOperation extends AxisOperation {
         createMessages();
     }
 
+    //TODO:  why is the internal key "in/outMessage" while the external key
+    //is "In/Out/Fault"?
     private void createMessages() {
         inMessage = new AxisMessage();
         inMessage.setDirection(WSDLConstants.WSDL_MESSAGE_DIRECTION_IN);
         inMessage.setParent(this);
-        addChild("inMessage", inMessage);
+        unconditionalAddMessage("inMessage", inMessage);
 
         inFaultMessage = new AxisMessage();
         inFaultMessage.setParent(this);
@@ -70,29 +72,28 @@ public abstract class TwoChannelAxisOperation extends AxisOperation {
         outMessage = new AxisMessage();
         outMessage.setDirection(WSDLConstants.WSDL_MESSAGE_DIRECTION_OUT);
         outMessage.setParent(this);
-        addChild("outMessage", outMessage);
+        unconditionalAddMessage("outMessage", outMessage);
     }
 
     @Override
 	public void addMessage(AxisMessage message, String label) {
         if (WSDLConstants.MESSAGE_LABEL_OUT_VALUE.equals(label)) {
-            addChild("outMessage", message);
+            unconditionalAddMessage("outMessage", message);
         } else if (WSDLConstants.MESSAGE_LABEL_IN_VALUE.equals(label)) {
-            addChild("inMessage", message);
+        	unconditionalAddMessage("inMessage", message);
         } else if (WSDLConstants.MESSAGE_LABEL_FAULT_VALUE.equals(label)) {
-            addChild("faultMessage", message);
+        	unconditionalAddMessage("faultMessage", message);
         } else {
             throw new UnsupportedOperationException("Not yet implemented");
         }
     }
 
-
     @Override
 	public AxisMessage getMessage(String label) {
         if (WSDLConstants.MESSAGE_LABEL_OUT_VALUE.equals(label)) {
-            return (AxisMessage) getChild("outMessage");
+            return unconditionalGetMessage("outMessage");
         } else if (WSDLConstants.MESSAGE_LABEL_IN_VALUE.equals(label)) {
-            return (AxisMessage) getChild("inMessage");
+            return unconditionalGetMessage("inMessage");
         } else {
             throw new UnsupportedOperationException("Not yet implemented");
         }
@@ -116,22 +117,22 @@ public abstract class TwoChannelAxisOperation extends AxisOperation {
 
     @Override
 	public List<Phase> getPhasesInFaultFlow() {
-        return (List<Phase>)inFaultMessage.getMessageFlow();
+        return inFaultMessage.getMessageFlow();
     }
 
     @Override
 	public List<Phase> getPhasesOutFaultFlow() {
-        return (List<Phase>)outFaultMessage.getMessageFlow();
+        return outFaultMessage.getMessageFlow();
     }
 
     @Override
 	public List<Phase> getPhasesOutFlow() {
-        return (List<Phase>)outMessage.getMessageFlow();
+        return outMessage.getMessageFlow();
     }
 
     @Override
 	public List<Phase> getRemainingPhasesInFlow() {
-        return (List<Phase>)inMessage.getMessageFlow();
+        return inMessage.getMessageFlow();
     }
 
     @Override

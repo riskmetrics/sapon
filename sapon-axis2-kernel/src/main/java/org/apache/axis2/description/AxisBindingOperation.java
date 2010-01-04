@@ -27,26 +27,37 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.util.PolicyUtil;
+import org.apache.axis2.description.hierarchy.BindingDescendant;
+import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.neethi.Policy;
-import org.apache.neethi.PolicyComponent;
 
 /**
  * An AxisBindingOperation represents a WSDL &lt;bindingOperation&gt;
  */
-public class AxisBindingOperation extends AxisDescription {
+public class AxisBindingOperation extends AxisDescriptionBase
+	implements BindingDescendant
+{
 
 	private AxisOperation axisOperation;
 
 	private QName name;
 
-	private Map<String, AxisBindingMessage> faults;
+	private AxisBinding parent;
 
-	private Map<String, Object> options;
+	private final Map<String, AxisBindingMessage> faults;
+
+	private final Map<String, Object> options;
+
+	private final Map<String, AxisBindingMessage> children;
 
 	public AxisBindingOperation() {
 		options = new HashMap<String, Object>();
 		faults = new HashMap<String, AxisBindingMessage>();
+		children = new HashMap<String, AxisBindingMessage>();
+	}
+
+	public void setParent(AxisBinding parentBinding) {
+		this.parent = parentBinding;
 	}
 
 	public List<AxisBindingMessage> getFaults() {
@@ -85,7 +96,7 @@ public class AxisBindingOperation extends AxisDescription {
 		Object property = this.options.get(name);
 
 		AxisBinding parent;
-		if (property == null && (parent = getAxisBinding()) != null) {
+		if (property == null && (parent = getBinding()) != null) {
 			property = parent.getProperty(name);
 		}
 
@@ -94,11 +105,6 @@ public class AxisBindingOperation extends AxisDescription {
 		}
 
 		return property;
-	}
-
-	@Override
-	public Object getKey() {
-		return name;
 	}
 
 	@Override
@@ -113,192 +119,45 @@ public class AxisBindingOperation extends AxisDescription {
 
 	}
 
-	/**
-	 * Generates the bindingOperation element
-	 *
-	 * @param wsdl
-	 *            The WSDL namespace
-	 * @param tns
-	 *            The targetnamespace
-	 * @param wsoap
-	 *            The SOAP namespace (WSDL 2.0)
-	 * @param whttp
-	 *            The HTTP namespace (WSDL 2.0)
-	 * @param type
-	 *            Indicates whether the binding is SOAP or HTTP
-	 * @param namespaceMap
-	 *            the service's namespace map (prefix -> namespace)
-	 * @param serviceName
-	 *            the name of the service
-	 * @return The generated binding element
-	 */
-//	public OMElement toWSDL20(OMNamespace wsdl, OMNamespace tns,
-//			OMNamespace wsoap, OMNamespace whttp, String type,
-//			Map<String, String> namespaceMap, String serviceName) {
-//		String property;
-//		OMFactory omFactory = OMAbstractFactory.getOMFactory();
-//		OMElement bindingOpElement = omFactory.createOMElement(
-//				WSDL2Constants.OPERATION_LOCAL_NAME, wsdl);
-//		bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//				WSDL2Constants.ATTRIBUTE_REF, null, tns.getPrefix() + ":"
-//						+ this.name.getLocalPart()));
-//
-//		if (WSDL2Constants.URI_WSDL2_SOAP.equals(type)
-//				|| Constants.URI_SOAP11_HTTP.equals(type)
-//				|| Constants.URI_SOAP12_HTTP.equals(type)) {
-//			// SOAP Binding specific properties
-//			property = (String) this.options
-//					.get(WSDL2Constants.ATTR_WSOAP_ACTION);
-//			if (property != null) {
-//				bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//						WSDL2Constants.ATTRIBUTE_ACTION, wsoap, property));
-//			}
-//			List<SOAPModuleMessage> soapModules = (List<SOAPModuleMessage>) this.options
-//					.get(WSDL2Constants.ATTR_WSOAP_MODULE);
-//			if (soapModules != null && soapModules.size() > 0) {
-//				WSDLSerializationUtil.addSOAPModuleElements(omFactory,
-//						soapModules, wsoap, bindingOpElement);
-//			}
-//			property = (String) this.options.get(WSDL2Constants.ATTR_WSOAP_MEP);
-//			if (property != null) {
-//				bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//						WSDL2Constants.ATTRIBUTE_MEP, wsoap, property));
-//			}
-//		} else if (WSDL2Constants.URI_WSDL2_HTTP.equals(type)) {
-//
-//			// HTTP Binding specific properties
-//			property = (String) this.options
-//					.get(WSDL2Constants.ATTR_WHTTP_INPUT_SERIALIZATION);
-//			if (property != null) {
-//				bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//						WSDL2Constants.ATTRIBUTE_INPUT_SERIALIZATION, whttp,
-//						property));
-//			}
-//			property = (String) this.options
-//					.get(WSDL2Constants.ATTR_WHTTP_OUTPUT_SERIALIZATION);
-//			if (property != null) {
-//				bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//						WSDL2Constants.ATTRIBUTE_OUTPUT_SERIALIZATION, whttp,
-//						property));
-//			}
-//			property = (String) this.options
-//					.get(WSDL2Constants.ATTR_WHTTP_FAULT_SERIALIZATION);
-//			if (property != null) {
-//				bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//						WSDL2Constants.ATTRIBUTE_FAULT_SERIALIZATION, whttp,
-//						property));
-//			}
-//			Boolean ignoreUncited = (Boolean) this.options
-//					.get(WSDL2Constants.ATTR_WHTTP_IGNORE_UNCITED);
-//			if (ignoreUncited != null) {
-//				bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//						WSDL2Constants.ATTRIBUTE_IGNORE_UNCITED, whttp,
-//						ignoreUncited.toString()));
-//			}
-//			property = (String) this.options
-//					.get(WSDL2Constants.ATTR_WHTTP_METHOD);
-//			if (property != null) {
-//				bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//						WSDL2Constants.ATTRIBUTE_METHOD, whttp, property));
-//			}
-//		}
-//
-//		// Common properties
-//		property = (String) this.options
-//				.get(WSDL2Constants.ATTR_WHTTP_LOCATION);
-//		if (property != null) {
-//			bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//					WSDL2Constants.ATTRIBUTE_LOCATION, whttp, property));
-//		}
-//		property = (String) this.options
-//				.get(WSDL2Constants.ATTR_WHTTP_CONTENT_ENCODING);
-//		if (property != null) {
-//			bindingOpElement
-//					.addAttribute(omFactory.createOMAttribute(
-//							WSDL2Constants.ATTRIBUTE_CONTENT_ENCODING, whttp,
-//							property));
-//		}
-//		property = (String) this.options
-//				.get(WSDL2Constants.ATTR_WHTTP_QUERY_PARAMETER_SEPARATOR);
-//		if (property != null) {
-//			bindingOpElement.addAttribute(omFactory.createOMAttribute(
-//					WSDL2Constants.ATTRIBUTE_QUERY_PARAMETER_SEPERATOR, whttp,
-//					property));
-//		}
-//
-//		// Add the input element
-//		AxisBindingMessage inMessage = (AxisBindingMessage) this
-//				.getChild(WSDLConstants.WSDL_MESSAGE_DIRECTION_IN);
-//		if (inMessage != null) {
-//			bindingOpElement.addChild(inMessage.toWSDL20(wsdl, tns, wsoap,
-//					whttp, namespaceMap));
-//		}
-//
-//		// Add the output element
-//		AxisBindingMessage outMessage = (AxisBindingMessage) this
-//				.getChild(WSDLConstants.WSDL_MESSAGE_DIRECTION_OUT);
-//		if (outMessage != null) {
-//			bindingOpElement.addChild(outMessage.toWSDL20(wsdl, tns, wsoap,
-//					whttp, namespaceMap));
-//		}
-//
-//		// Add any fault elements
-//		if (faults != null && faults.size() > 0) {
-//			Collection<AxisBindingMessage> faultValues = faults.values();
-//			Iterator<AxisBindingMessage> iterator = faultValues.iterator();
-//			while (iterator.hasNext()) {
-//				AxisBindingMessage faultMessage = iterator
-//						.next();
-//				bindingOpElement.addChild(faultMessage.toWSDL20(wsdl, tns,
-//						wsoap, whttp, namespaceMap));
-//			}
-//		}
-//		WSDLSerializationUtil.addWSDLDocumentationElement(this,
-//				bindingOpElement, omFactory, wsdl);
-//		WSDLSerializationUtil.addPoliciesAsExtensibleElement(this,
-//				bindingOpElement);
-//		return bindingOpElement;
-//	}
-
-	public Policy getEffectivePolicy() {
-		ArrayList<PolicyComponent> policyList = new ArrayList<PolicyComponent>();
-
-		PolicyInclude policyInclude;
-
-		// AxisBindingOperation policies
-		policyInclude = getPolicyInclude();
-		policyList.addAll(policyInclude.getAttachedPolicies());
-
-		// AxisBinding
-		AxisBinding axisBinding = getAxisBinding();
-		if (axisBinding != null) {
-			policyList.addAll(axisBinding.getPolicyInclude()
-					.getAttachedPolicies());
-		}
-
-		// AxisEndpoint
-		AxisEndpoint axisEndpoint = null;
-		if (axisBinding != null) {
-			axisEndpoint = axisBinding.getAxisEndpoint();
-		}
-
-		if (axisEndpoint != null) {
-			policyList.addAll(axisEndpoint.getPolicyInclude()
-					.getAttachedPolicies());
-		}
-
-		// AxisOperation
-		Policy axisOperationPolicy = axisOperation.getPolicyInclude()
-				.getEffectivePolicy();
-
-		if (axisOperationPolicy != null) {
-			policyList.add(axisOperationPolicy);
-		}
-
-		return PolicyUtil.getMergedPolicy(policyList, this);
+	public void addBindingMessage(String key, AxisBindingMessage message) {
+		children.put(key, message);
 	}
 
-	public AxisBinding getAxisBinding() {
-		return (AxisBinding) parent;
+	public AxisBindingMessage getChild(String key) {
+		return children.get(key);
+	}
+
+	public Iterable<AxisBindingMessage> getBindingMessages() {
+		return children.values();
+	}
+
+	@Override
+	public AxisConfiguration getConfiguration() {
+		return parent.getConfiguration();
+	}
+
+	@Override
+	public AxisBinding getBinding() {
+		return parent;
+	}
+
+	@Override
+	public AxisEndpoint getEndpoint() {
+		return parent.getEndpoint();
+	}
+
+	@Override
+	public AxisService getService() {
+		return parent.getService();
+	}
+
+	@Override
+	public AxisServiceGroup getServiceGroup() {
+		return parent.getServiceGroup();
+	}
+
+	@Override
+	public Policy getEffectivePolicy() {
+		return getEffectivePolicy(getService());
 	}
 }
