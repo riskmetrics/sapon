@@ -19,6 +19,11 @@
 
 package org.apache.axis2.client;
 
+import java.util.Iterator;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axis2.AxisFault;
@@ -34,11 +39,6 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.util.TargetResolver;
 import org.apache.axis2.wsdl.WSDLConstants;
-
-import java.util.Iterator;
-import java.util.Map;
-
-import javax.xml.namespace.QName;
 
 /**
  * An operation client is the way an advanced user interacts with Axis2. Actual
