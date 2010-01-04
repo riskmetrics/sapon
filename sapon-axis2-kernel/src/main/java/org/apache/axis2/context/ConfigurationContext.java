@@ -231,14 +231,14 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
         if (serviceContext == null) {
             String scope = axisService.getScope();
             if (Constants.SCOPE_APPLICATION.equals(scope)) {
-                String serviceGroupName = axisService.getAxisServiceGroup().getServiceGroupName();
+                String serviceGroupName = axisService.getServiceGroup().getName();
                 serviceGroupContext =
                         applicationSessionServiceGroupContexts.get(
                                 serviceGroupName);
                 if (serviceGroupContext == null) {
                     AxisServiceGroup axisServiceGroup = messageContext.getAxisServiceGroup();
                     if (axisServiceGroup == null) {
-                        axisServiceGroup = axisService.getAxisServiceGroup();
+                        axisServiceGroup = axisService.getServiceGroup();
                         messageContext.setAxisServiceGroup(axisServiceGroup);
                     }
                     ConfigurationContext cfgCtx = messageContext.getConfigurationContext();
@@ -263,14 +263,14 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
                         // TODO: However, soapsession functionality is still broken
                         serviceGroupContext =
                                 new ServiceGroupContext(this,
-                                                        axisService.getAxisServiceGroup());
+                                                        axisService.getServiceGroup());
                         serviceGroupContext.setId(serviceGroupContextId);
                         addServiceGroupContextIntoSoapSessionTable(serviceGroupContext);
 //                        throw new AxisFault("Unable to find corresponding context" +
 //                                            " for the serviceGroupId: " + serviceGroupContextId);
                     }
                 } else {
-                    AxisServiceGroup axisServiceGroup = axisService.getAxisServiceGroup();
+                    AxisServiceGroup axisServiceGroup = axisService.getServiceGroup();
                     serviceGroupContext = createServiceGroupContext(axisServiceGroup);
                     serviceContext = serviceGroupContext.getServiceContext(axisService);
                     // set the serviceGroupContextID
@@ -283,7 +283,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
                 messageContext
                         .setServiceContext(serviceGroupContext.getServiceContext(axisService));
             } else if (Constants.SCOPE_REQUEST.equals(scope)) {
-                AxisServiceGroup axisServiceGroup = axisService.getAxisServiceGroup();
+                AxisServiceGroup axisServiceGroup = axisService.getServiceGroup();
                 serviceGroupContext = createServiceGroupContext(axisServiceGroup);
                 messageContext.setServiceGroupContext(serviceGroupContext);
                 serviceContext = serviceGroupContext.getServiceContext(axisService);
@@ -395,7 +395,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
             applicationSessionServiceGroupContexts = new Hashtable<String, ServiceGroupContext>();
         }
         applicationSessionServiceGroupContexts.put(
-                serviceGroupContext.getDescription().getServiceGroupName(), serviceGroupContext);
+                serviceGroupContext.getDescription().getName(), serviceGroupContext);
     }
 
     /**
@@ -407,7 +407,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
     public void deployService(AxisService service) throws AxisFault {
         axisConfiguration.addService(service);
         if (Constants.SCOPE_APPLICATION.equals(service.getScope())) {
-            ServiceGroupContext sgc = createServiceGroupContext(service.getAxisServiceGroup());
+            ServiceGroupContext sgc = createServiceGroupContext(service.getServiceGroup());
             DependencyManager.initService(sgc);
         }
     }
@@ -908,10 +908,10 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
 			return;
 		}
 
-        String groupName = serviceGroup.getServiceGroupName();
+        String groupName = serviceGroup.getName();
         Object obj = applicationSessionServiceGroupContexts.get(groupName);
         if (obj != null) {
-            applicationSessionServiceGroupContexts.remove(serviceGroup.getServiceGroupName());
+            applicationSessionServiceGroupContexts.remove(serviceGroup.getName());
             return;
         }
 

@@ -106,7 +106,7 @@ public class SessionContext<P extends Context<?>> extends AbstractContext<P>
     }
 
     public void addServiceGroupContext(ServiceGroupContext serviceGroupContext) {
-        String serviceGroupID = serviceGroupContext.getDescription().getServiceGroupName();
+        String serviceGroupID = serviceGroupContext.getDescription().getName();
         serviceGroupContextMap.put(serviceGroupID, serviceGroupContext);
     }
 

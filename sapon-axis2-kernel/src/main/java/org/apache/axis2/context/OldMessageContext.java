@@ -919,7 +919,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
     public void setAxisService(AxisService axisService) {
         this.axisService = axisService;
         if (this.axisService != null) {
-            this.axisServiceGroup = axisService.getAxisServiceGroup();
+            this.axisServiceGroup = axisService.getServiceGroup();
         } else {
             this.axisServiceGroup = null;
         }
@@ -1251,8 +1251,8 @@ public class OldMessageContext extends AbstractContext<OperationContext>
 						.getEndpoint(axisService.getEndpointName());
 				if (axisEndpoint != null) {
 					AxisBinding axisBinding = axisEndpoint.getBinding();
-                    AxisBindingOperation axisBindingOperation = (AxisBindingOperation) axisBinding
-							.getChild(axisOperation.getName());
+                    AxisBindingOperation axisBindingOperation = axisBinding
+							.getBindingOperation(axisOperation.getName());
 
                     //If Binding Operation is not found, just return null
                     if (axisBindingOperation == null) {
@@ -1266,7 +1266,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
 							&& WSDLUtil
 									.isInputPresentForMEP(axisOperation
 											.getMessageExchangePattern())) {
-						axisBindingMessage = (AxisBindingMessage) axisBindingOperation
+						axisBindingMessage = axisBindingOperation
 								.getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
 						return axisBindingMessage;
 
@@ -1275,7 +1275,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
 							&& WSDLUtil
 									.isOutputPresentForMEP(axisOperation
 											.getMessageExchangePattern())) {
-						axisBindingMessage = (AxisBindingMessage) axisBindingOperation
+						axisBindingMessage = axisBindingOperation
 								.getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
 						return axisBindingMessage;
 					}

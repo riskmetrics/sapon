@@ -1101,7 +1101,7 @@ public class OldMessageContextExternalizer {
         AxisServiceGroup axisServiceGroup = context.getAxisServiceGroup();
         if (axisServiceGroup != null) {
             metaAxisServiceGroup = new MetaDataEntry(axisServiceGroup.getClass().getName(),
-                                                     axisServiceGroup.getServiceGroupName());
+                                                     axisServiceGroup.getName());
         }
         out.writeObject(metaAxisServiceGroup);
 

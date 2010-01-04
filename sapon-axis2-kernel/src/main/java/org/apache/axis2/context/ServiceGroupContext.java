@@ -111,7 +111,7 @@ public class ServiceGroupContext extends AbstractContext<ConfigurationContext>
         serviceContextMap = new HashMap<String, ServiceContext>();
         // initially set the id to the axisServiceGroup
         if (axisServiceGroup != null) {
-            setId(axisServiceGroup.getServiceGroupName());
+            setId(axisServiceGroup.getName());
         }
     }
 
@@ -140,7 +140,7 @@ public class ServiceGroupContext extends AbstractContext<ConfigurationContext>
         if (axisService == null) {
             throw new AxisFault(Messages.getMessage("invalidserviceinagroup",
                                                     service.getName(),
-                                                    axisServiceGroup.getServiceGroupName()));
+                                                    axisServiceGroup.getName()));
         }
         if (serviceContextMap == null) {
             serviceContextMap = new HashMap<String, ServiceContext>();
@@ -308,7 +308,7 @@ public class ServiceGroupContext extends AbstractContext<ConfigurationContext>
         metaAxisServiceGroup = null;
         if (axisServiceGroup != null) {
             metaAxisServiceGroup = new MetaDataEntry(axisServiceGroup.getClass().getName(),
-                                                     axisServiceGroup.getServiceGroupName());
+                                                     axisServiceGroup.getName());
         }
         out.writeObject(metaAxisServiceGroup);
 

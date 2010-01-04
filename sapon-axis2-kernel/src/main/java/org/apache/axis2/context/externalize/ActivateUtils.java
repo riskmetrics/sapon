@@ -76,7 +76,7 @@ public class ActivateUtils {
         for(final AxisServiceGroup serviceGroup: axisConfig.getServiceGroups()) {
 
             String tmpSGClassName = serviceGroup.getClass().getName();
-            String tmpSGName = serviceGroup.getServiceGroupName();
+            String tmpSGName = serviceGroup.getName();
 
             if (tmpSGClassName.equals(serviceGrpClassName)) {
                 boolean found = false;
