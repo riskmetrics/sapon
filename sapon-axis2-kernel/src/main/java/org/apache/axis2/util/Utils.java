@@ -185,7 +185,7 @@ public class Utils {
             throws AxisFault {
         String serviceGroupContextId = UUIDGenerator.getUUID();
         ServiceGroupContext serviceGroupContext =
-                configurationContext.createServiceGroupContext(axisService.getAxisServiceGroup());
+                configurationContext.createServiceGroupContext(axisService.getServiceGroup());
 
         serviceGroupContext.setId(serviceGroupContextId);
         configurationContext.addServiceGroupContextIntoSoapSessionTable(serviceGroupContext);
@@ -444,7 +444,8 @@ public class Utils {
      * Further, in the first lookup, it will cache the looked
      * up value so that the subsequent method calls are extremely efficient.
      */
-    public static int getAxisSpecifMEPConstant(String messageExchangePattern) {
+    @SuppressWarnings("deprecation")
+	public static int getAxisSpecifMEPConstant(String messageExchangePattern) {
 
 
         int mepConstant = WSDLConstants.MEP_CONSTANT_INVALID;

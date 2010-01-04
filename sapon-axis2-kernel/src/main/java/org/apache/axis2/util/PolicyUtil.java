@@ -36,11 +36,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.util.UUIDGenerator;
-import org.apache.axis2.description.AxisDescription;
-import org.apache.axis2.description.AxisMessage;
-import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.description.PolicyInclude;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.neethi.Constants;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyComponent;
@@ -56,9 +53,7 @@ public class PolicyUtil {
 
 		char[] chars = unsafeString.toCharArray();
 
-		for (int i = 0; i < chars.length; i++) {
-			char c = chars[i];
-
+		for (char c : chars) {
 			switch (c) {
 			case '\\':
 				sbuf.append('\\');
@@ -215,37 +210,37 @@ public class PolicyUtil {
 		return baos.toString();
 	}
 
-	public static String generateId(AxisDescription description) {
-		PolicyInclude policyInclude = description.getPolicyInclude();
-		String identifier = "-policy-1";
-
-		if (description instanceof AxisMessage) {
-			identifier = "msg-" + ((AxisMessage) description).getName()
-					+ identifier;
-			description = description.getParent();
-		}
-
-		if (description instanceof AxisOperation) {
-			identifier = "op-" + ((AxisOperation) description).getName()
-					+ identifier;
-			description = description.getParent();
-		}
-
-		if (description instanceof AxisService) {
-			identifier = "service-" + ((AxisService) description).getName()
-					+ identifier;
-		}
-
-		/*
-		 * Int 49 is the value of the Character '1'. Here we want to change '1'
-		 * to '2' or '2' to '3' .. etc. to construct a unique identifier.
-		 */
-		for (int index = 49; policyInclude.getPolicy(identifier) != null; index++) {
-			identifier = identifier.replace((char) index, (char) (index + 1));
-		}
-
-		return identifier;
-	}
+//	public static String generateId(AxisDescription description) {
+//		PolicyInclude policyInclude = description.getPolicyInclude();
+//		String identifier = "-policy-1";
+//
+//		if (description instanceof AxisMessage) {
+//			identifier = "msg-" + ((AxisMessage) description).getName()
+//					+ identifier;
+//			description = ((AxisMessage)description).getAxisOperation();
+//		}
+//
+//		if (description instanceof AxisOperation) {
+//			identifier = "op-" + ((AxisOperation) description).getName()
+//					+ identifier;
+//			description = ((AxisOperation)description).getService();
+//		}
+//
+//		if (description instanceof AxisService) {
+//			identifier = "service-" + ((AxisService) description).getName()
+//					+ identifier;
+//		}
+//
+//		/*
+//		 * Int 49 is the value of the Character '1'. Here we want to change '1'
+//		 * to '2' or '2' to '3' .. etc. to construct a unique identifier.
+//		 */
+//		for (int index = 49; policyInclude.getPolicy(identifier) != null; index++) {
+//			identifier = identifier.replace((char) index, (char) (index + 1));
+//		}
+//
+//		return identifier;
+//	}
 
 	public static Policy getMergedPolicy(List policies,
 			AxisDescription description) {

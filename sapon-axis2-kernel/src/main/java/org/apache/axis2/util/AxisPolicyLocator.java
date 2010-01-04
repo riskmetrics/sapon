@@ -22,13 +22,12 @@ package org.apache.axis2.util;
 import org.apache.axis2.description.AxisBinding;
 import org.apache.axis2.description.AxisBindingMessage;
 import org.apache.axis2.description.AxisBindingOperation;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisEndpoint;
 import org.apache.axis2.description.AxisMessage;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
-import org.apache.axis2.description.PolicySubject;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyComponent;
@@ -48,8 +47,6 @@ public class AxisPolicyLocator implements PolicyRegistry {
     private static final short AXIS_SERVICE_GROUP = 8;
     private static final short AXIS_CONFIGURATION = 9;
 
-
-
     public AxisPolicyLocator(AxisDescription subject) {
         this.subject = subject;
     }
@@ -61,9 +58,8 @@ public class AxisPolicyLocator implements PolicyRegistry {
 
         Policy policy = null;
 
-        PolicySubject policySubject = subject.getPolicySubject();
-		PolicyComponent attachedPolicyComponent = policySubject
-				.getAttachedPolicyComponent(key);
+		PolicyComponent attachedPolicyComponent
+			= subject.getAttachedPolicyComponent(key);
 
 		if (attachedPolicyComponent != null
 				&& attachedPolicyComponent instanceof Policy) {
@@ -73,14 +69,12 @@ public class AxisPolicyLocator implements PolicyRegistry {
 			}
 		}
 
-
 		if (subject instanceof AxisService) {
 			policy = ((AxisService) subject).lookupPolicy(key);
 			if (policy != null) {
 				return policy;
 			}
 		}
-
 
         short type = getType(subject);
 
@@ -130,21 +124,21 @@ public class AxisPolicyLocator implements PolicyRegistry {
 
         switch (type) {
         case AXIS_BINDING_MESSAGE:
-            return ((AxisBindingMessage) thisLevel).getAxisBindingOperation();
+            return ((AxisBindingMessage) thisLevel).getBindingOperation();
         case AXIS_BINDING_OPERATION:
-            return ((AxisBindingOperation) thisLevel).getAxisBinding();
+            return ((AxisBindingOperation) thisLevel).getBinding();
         case AXIS_BINDING:
-            return ((AxisBinding) thisLevel).getAxisEndpoint();
+            return ((AxisBinding) thisLevel).getEndpoint();
         case AXIS_ENDPOINT:
-            return ((AxisEndpoint) thisLevel).getAxisService();
+            return ((AxisEndpoint) thisLevel).getService();
         case AXIS_MESSAGE:
-        	return ((AxisMessage) thisLevel).getAxisOperation();
+        	return ((AxisMessage) thisLevel).getOperation();
         case AXIS_OPERATION:
-        	return ((AxisOperation) thisLevel).getAxisService();
+        	return ((AxisOperation) thisLevel).getService();
         case AXIS_SERVICE:
-            return ((AxisService) thisLevel).getAxisServiceGroup();
+            return ((AxisService) thisLevel).getServiceGroup();
         case AXIS_SERVICE_GROUP:
-            return ((AxisServiceGroup) thisLevel).getAxisConfiguration();
+            return ((AxisServiceGroup) thisLevel).getConfiguration();
         default:
             return null;
         }
@@ -173,6 +167,5 @@ public class AxisPolicyLocator implements PolicyRegistry {
         }
 
         return -1;
-
     }
 }

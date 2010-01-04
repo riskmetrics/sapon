@@ -34,12 +34,12 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.OMNode;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingConstants;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisMessage;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.description.PolicySubject;
 import org.apache.axis2.description.WSDL2Constants;
+import org.apache.axis2.description.hierarchy.AxisDescription;
+import org.apache.axis2.description.hierarchy.ServiceDescendant;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.namespace.Constants;
@@ -253,8 +253,7 @@ public class WSDLSerializationUtil {
 
         binding.addAttribute(fac.createOMAttribute(WSDL2Constants.ATTRIBUTE_TYPE, null,
                                                    WSDL2Constants.URI_WSDL2_HTTP));
-        for(final AxisDescription desc: axisService.getChildren()) {
-        	final AxisOperation axisOperation = (AxisOperation) desc;
+        for(final AxisOperation axisOperation: axisService.getOperations()){
             final OMElement opElement
             	= fac.createOMElement(WSDL2Constants.OPERATION_LOCAL_NAME, wsdl);
             binding.addChild(opElement);
@@ -272,8 +271,7 @@ public class WSDLSerializationUtil {
                                                              OMFactory omFactory, OMElement binding,
                                                              OMNamespace wsdl, OMNamespace tns,
                                                              OMNamespace wsoap) {
-        for(final AxisDescription desc: axisService.getChildren()) {
-        	AxisOperation axisOperation = (AxisOperation) desc;
+        for(AxisOperation axisOperation: axisService.getOperations()) {
             if (axisOperation.isControlOperation()) {
                 continue;
             }
@@ -502,9 +500,8 @@ public class WSDLSerializationUtil {
 
     public static void addPoliciesAsExtensibleElement(
 			AxisDescription description, OMElement descriptionElement) {
-		PolicySubject policySubject = description.getPolicySubject();
-		Collection<PolicyComponent> attachPolicyComponents = policySubject
-				.getAttachedPolicyComponents();
+		Collection<PolicyComponent> attachPolicyComponents
+			= description.getAttachedPolicyComponents();
 		List<Policy> policies = new ArrayList<Policy>();
 
 		for (Object policyElement : attachPolicyComponents) {
@@ -531,8 +528,7 @@ public class WSDLSerializationUtil {
 		ExternalPolicySerializer filter = null;
 		if (!policies.isEmpty()) {
 			filter = new ExternalPolicySerializer();
-			AxisConfiguration axisConfiguration = description
-					.getAxisConfiguration();
+			AxisConfiguration axisConfiguration = description.getConfiguration();
 			if (axisConfiguration != null) {
 				filter.setAssertionsToFilter(axisConfiguration
 						.getLocalPolicyAssertions());
@@ -558,10 +554,18 @@ public class WSDLSerializationUtil {
 	}
 
 	private static AxisService getAxisService(AxisDescription description) {
-		if (description == null || description instanceof AxisService) {
-			return (AxisService) description;
-		} else {
-			return getAxisService(description.getParent());
+		if (description == null) {
+			return null;
+		}
+		else if(description instanceof ServiceDescendant) {
+			return ((ServiceDescendant)description).getService();
+		}
+		else if(description instanceof AxisService) {
+			return (AxisService)description;
+		}
+		else {
+			throw new RuntimeException(
+					"Description is not an AxisService or a ServiceDescendant");
 		}
 	}
 
