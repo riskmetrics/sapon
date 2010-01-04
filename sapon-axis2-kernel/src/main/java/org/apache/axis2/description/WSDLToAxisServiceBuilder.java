@@ -31,7 +31,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.namespace.Constants;
-import org.apache.neethi.PolicyRegistry;
 import org.apache.ws.commons.schema.XmlSchema;
 import org.apache.ws.commons.schema.XmlSchemaCollection;
 import org.apache.ws.commons.schema.resolver.URIResolver;
@@ -78,8 +77,6 @@ public abstract class WSDLToAxisServiceBuilder {
 
     protected AxisService axisService;
 
-    protected PolicyRegistry registry;
-
     protected AxisConfiguration axisConfig;
 
     protected QName serviceName;
@@ -100,13 +97,11 @@ public abstract class WSDLToAxisServiceBuilder {
         this.in = in;
         this.serviceName = serviceName;
         this.axisService = new AxisService();
-        setPolicyRegistryFromService(axisService);
     }
 
     public WSDLToAxisServiceBuilder(InputStream in, AxisService axisService) {
         this.in = in;
         this.axisService = axisService;
-        setPolicyRegistryFromService(axisService);
     }
 
     /**
@@ -124,11 +119,6 @@ public abstract class WSDLToAxisServiceBuilder {
 
     public void setServerSide(boolean serverSide) {
         isServerSide = serverSide;
-    }
-
-    protected void setPolicyRegistryFromService(AxisService axisService) {
-        PolicyInclude policyInclude = axisService.getPolicyInclude();
-        this.registry = policyInclude.getPolicyRegistry();
     }
 
     protected XmlSchema getXMLSchema(Element element, String baseUri) {

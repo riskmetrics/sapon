@@ -24,7 +24,6 @@ import java.util.List;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.i18n.Messages;
 
 /**
  * This is to store deployment time data , described by
@@ -44,23 +43,15 @@ public class ModuleConfiguration implements ParameterInclude {
     public ModuleConfiguration(String moduleName, ParameterInclude parent) {
         this.moduleName = moduleName;
         this.parent = parent;
-        parameterInclude = new ParameterIncludeImpl();
+        parameterInclude = new ParameterIncludeMixin();
     }
 
     public void addParameter(Parameter param) throws AxisFault {
-        if (isParameterLocked(param.getName())) {
-            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
-        } else {
-            parameterInclude.addParameter(param);
-        }
+    	parameterInclude.addParameter(param);
     }
 
     public void removeParameter(Parameter param) throws AxisFault {
-        if (isParameterLocked(param.getName())) {
-            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
-        } else {
-            parameterInclude.removeParameter(param);
-        }
+    	parameterInclude.removeParameter(param);
     }
 
     public void deserializeParameters(OMElement parameterElement) throws AxisFault {
@@ -80,20 +71,16 @@ public class ModuleConfiguration implements ParameterInclude {
     }
 
     public boolean isParameterLocked(String parameterName) {
-
-        // checking the locked value of parent
-        boolean loscked = false;
-
-        if (parent != null) {
-            loscked = parent.isParameterLocked(parameterName);
-        }
-
-        if (loscked) {
-            return true;
-        } else {
-            Parameter parameter = getParameter(parameterName);
-
-            return (parameter != null) && parameter.isLocked();
-        }
+    	return parameterInclude.isParameterLocked(parameterName);
     }
+
+	@Override
+	public void addParameterObserver(ParameterObserver observer) {
+		parameterInclude.addParameterObserver(observer);
+	}
+
+	@Override
+	public void removeParameterObserver(ParameterObserver observer) {
+		parameterInclude.removeParameterObserver(observer);
+	}
 }

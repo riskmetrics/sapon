@@ -57,7 +57,6 @@ import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyReference;
-import org.apache.neethi.PolicyRegistry;
 import org.apache.ws.commons.schema.XmlSchema;
 
 public class AxisService2WSDL11 implements Java2WSDLConstants {
@@ -131,7 +130,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 		serializer = new ExternalPolicySerializer();
 		// CHECKME check whether service.getAxisConfiguration() return null ???
 
-		AxisConfiguration configuration = axisService.getAxisConfiguration();
+		AxisConfiguration configuration = axisService.getConfiguration();
 		if (configuration != null) {
 			serializer.setAssertionsToFilter(configuration
 					.getLocalPolicyAssertions());
@@ -452,7 +451,6 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
                     operation.addChild(fault);
                 }
 			}
-
 		}
 	}
 
@@ -494,8 +492,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 			generateHttpPort(fac, defintions, service);
 		}
 
-        addPolicyAsExtElement(PolicyInclude.SERVICE_POLICY, axisService.getPolicyInclude(),
-                              service);
+        addPolicyAsExtElement(axisService, service);
 		// addPolicyAsExtElement(PolicyInclude.AXIS_SERVICE_POLICY, axisService.
 		// getPolicyInclude(), service);
 	}
@@ -544,14 +541,15 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 		}
 	}
 
-	private void addPolicyAsExtElement(int type, PolicyInclude policyInclude,
+	private void addPolicyAsExtElement(int type, PolicySubject policySubject,
 			OMElement parentElement) throws Exception {
-		ArrayList elementList = policyInclude.getPolicyElements(type);
+		Collection<PolicyComponent> policyComponents
+			= policySubject.getAttachedPolicyComponents();
 
-        for (Object policyElement : elementList) {
-            if (policyElement instanceof Policy) {
+        for (PolicyComponent policyComponent: policyComponents) {
+            if (policyComponent instanceof Policy) {
                 OMElement child = PolicyUtil.getPolicyComponentAsOMElement(
-                        (PolicyComponent)policyElement, serializer);
+                        policyComponent, serializer);
 
 //                OMNode firstChildElem = parentElement.getFirstElement();
 
@@ -569,9 +567,9 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
                 // one OM fix this issue we can revert this change.
                 parentElement.addChild(child);
 
-            } else if (policyElement instanceof PolicyReference) {
+            } else if (policyComponent instanceof PolicyReference) {
                 OMElement child = PolicyUtil
-                        .getPolicyComponentAsOMElement((PolicyComponent)policyElement);
+                        .getPolicyComponentAsOMElement(policyComponent);
                 OMElement firstChildElem = parentElement.getFirstElement();
 
                 if (firstChildElem == null) {
@@ -580,14 +578,13 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
                     firstChildElem.insertSiblingBefore(child);
                 }
 
-                PolicyRegistry reg = policyInclude.getPolicyRegistry();
-                String key = ((PolicyReference)policyElement).getURI();
+                String key = ((PolicyReference)policyComponent).getURI();
 
                 if (key.startsWith("#")) {
                     key = key.substring(key.indexOf("#") + 1);
                 }
 
-                Policy p = reg.lookup(key);
+                Policy p = null; //TODO: we need to find the policy.
 
                 if (p == null) {
                     throw new Exception("Policy not found for uri : " + key);
@@ -794,7 +791,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 			String MEP = axisOperation.getMessageExchangePattern();
 
 			if (isInMEP(MEP)) {
-				AxisBindingMessage axisBindingInMessage = (AxisBindingMessage) axisBindingOperation
+				AxisBindingMessage axisBindingInMessage = axisBindingOperation
 						.getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
 				if (axisBindingInMessage != null) {
 					AxisMessage inaxisMessage = axisBindingInMessage
@@ -817,7 +814,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 			}
 
 			if (isOutMEP(MEP)) {
-				AxisBindingMessage axisBindingOutMessage = (AxisBindingMessage) axisBindingOperation
+				AxisBindingMessage axisBindingOutMessage = axisBindingOperation
 						.getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
 				if (axisBindingOutMessage != null) {
 					AxisMessage outAxisMessage = axisBindingOutMessage
@@ -921,7 +918,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 
 			String MEP = axisOperation.getMessageExchangePattern();
 			if (isInMEP(MEP)) {
-				AxisBindingMessage axisBindingInMessage = (AxisBindingMessage) axisBindingOperation
+				AxisBindingMessage axisBindingInMessage = axisBindingOperation
 						.getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
 				if (axisBindingInMessage != null) {
 					AxisMessage inaxisMessage = axisBindingInMessage
@@ -942,7 +939,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 			}
 
 			if (isOutMEP(MEP)) {
-				AxisBindingMessage axisBindingOutMessage = (AxisBindingMessage) axisBindingOperation
+				AxisBindingMessage axisBindingOutMessage = axisBindingOperation
 						.getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
 				if (axisBindingOutMessage != null) {
 					AxisMessage outAxisMessage = axisBindingOutMessage
@@ -1025,7 +1022,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 			String MEP = axisOperation.getMessageExchangePattern();
 
 			if (isInMEP(MEP)) {
-				AxisBindingMessage axisBindingInMessage = (AxisBindingMessage) axisBindingOperation
+				AxisBindingMessage axisBindingInMessage = axisBindingOperation
 						.getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
 				if (axisBindingInMessage != null) {
 					AxisMessage inaxisMessage = axisBindingInMessage
@@ -1048,7 +1045,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 			}
 
 			if (isOutMEP(MEP)) {
-				AxisBindingMessage axisBindingOutMessage = (AxisBindingMessage) axisBindingOperation
+				AxisBindingMessage axisBindingOutMessage = axisBindingOperation
 						.getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
 				if (axisBindingOutMessage != null) {
 					AxisMessage outAxisMessage = axisBindingOutMessage
@@ -1070,9 +1067,8 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 		}
 	}
 
-	private void addPolicyAsExtElement(AxisDescription axisDescription,
+	private void addPolicyAsExtElement(PolicySubject policySubject,
 			OMElement wsdlElement) throws Exception {
-		PolicySubject policySubject = axisDescription.getPolicySubject();
 		Collection<PolicyComponent> attachPolicyComponents = policySubject
 				.getAttachedPolicyComponents();
 
@@ -1124,12 +1120,10 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
         }
 	}
 
-	private void addPolicyAsExtAttribute(AxisDescription axisDescription,
+	private void addPolicyAsExtAttribute(PolicySubject policySubject,
 			OMElement element, OMFactory factory) throws Exception {
 
-		PolicySubject policySubject = axisDescription.getPolicySubject();
 		List<String> policyURIs = new ArrayList<String>();
-
         for (Object policyElement : policySubject.getAttachedPolicyComponents()) {
             final String key, uri;
             final Policy p;
@@ -1211,7 +1205,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
             String hostIP;
 
             // First check the hostname parameter
-            hostIP = Utils.getHostname(axisService.getAxisConfiguration());
+            hostIP = Utils.getHostname(axisService.getConfiguration());
 
             //If it is not set extract the hostIP from the URL
 //            if (hostIP == null) {

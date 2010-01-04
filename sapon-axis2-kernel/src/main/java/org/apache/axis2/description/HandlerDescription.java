@@ -25,7 +25,6 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.engine.Handler;
-import org.apache.axis2.i18n.Messages;
 
 /**
  * Represents the deployment information about the handler
@@ -51,34 +50,19 @@ public class HandlerDescription implements ParameterInclude {
      * @param name name of handler
      */
     public HandlerDescription(String name) {
-        this.parameterInclude = new ParameterIncludeImpl();
+        this.parameterInclude = new ParameterIncludeMixin();
         this.rules = new PhaseRule();
         this.name = name;
     }
 
-    /**
-     * Add a Parameter
-     *
-     * @param param the Parameter to associate with this HandlerDescription
-     */
-    public void addParameter(Parameter param)
-    	throws AxisFault
-    {
-        if (isParameterLocked(param.getName())) {
-            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
-        } else {
-            parameterInclude.addParameter(param);
-        }
+    @Override
+    public void addParameter(Parameter param) throws AxisFault {
+    	parameterInclude.addParameter(param);
     }
 
-    public void removeParameter(Parameter param)
-    	throws AxisFault
-    {
-        if (isParameterLocked(param.getName())) {
-            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
-        } else {
-            parameterInclude.removeParameter(param);
-        }
+    @Override
+    public void removeParameter(Parameter param) throws AxisFault {
+    	parameterInclude.removeParameter(param);
     }
 
     public void deserializeParameters(OMElement parameterElement)
@@ -117,12 +101,7 @@ public class HandlerDescription implements ParameterInclude {
      * @return a Parameter, which may come from us or from some parent up the tree, or null.
      */
     public Parameter getParameter(String name) {
-        Parameter parameter = parameterInclude.getParameter(name);
-        if (parameter == null && parent != null) {
-            return parent.getParameter(name);
-        } else {
-            return parameter;
-        }
+        return parameterInclude.getParameter(name);
     }
 
     public List<Parameter> getParameters() {
@@ -144,12 +123,6 @@ public class HandlerDescription implements ParameterInclude {
 
     // to check whether the parameter is locked at any level
     public boolean isParameterLocked(String parameterName) {
-        if (parent != null) {
-            if (parent.isParameterLocked(parameterName)) {
-                return true;
-            }
-        }
-
         return parameterInclude.isParameterLocked(parameterName);
     }
 
@@ -194,4 +167,14 @@ public class HandlerDescription implements ParameterInclude {
     public void setRules(PhaseRule rules) {
         this.rules = rules;
     }
+
+	@Override
+	public void addParameterObserver(ParameterObserver observer) {
+		parameterInclude.addParameterObserver(observer);
+	}
+
+	@Override
+	public void removeParameterObserver(ParameterObserver observer) {
+		parameterInclude.removeParameterObserver(observer);
+	}
 }

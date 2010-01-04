@@ -31,37 +31,22 @@ import org.apache.axis2.transport.TransportListener;
 /**
  * Represents an incoming transport deployed in Axis2.
  */
-public class TransportInDescription implements ParameterInclude {
-
-    /**
-     * Field flowInclude
-     */
+public class TransportInDescription
+	implements ParameterInclude
+{
     private Flow faultFlow;
-
-    // Stores handler Fault in inFlow
-    private Phase faultPhase;
-
-    /**
-     * Field flowInclude
-     */
     private Flow inFlow;
 
-    // to store handler in inFlow
+    private Phase faultPhase;
     private Phase inPhase;
 
-    /**
-     * Field name
-     */
     protected String name;
 
-    /**
-     * Field paramInclude
-     */
     protected final ParameterInclude paramInclude;
     protected TransportListener receiver;
 
     public TransportInDescription(String name) {
-        paramInclude = new ParameterIncludeImpl();
+        paramInclude = new ParameterIncludeMixin();
         this.name = name;
         inPhase = new Phase(PhaseMetadata.TRANSPORT_PHASE);
         faultPhase = new Phase(PhaseMetadata.TRANSPORT_PHASE);
@@ -114,22 +99,21 @@ public class TransportInDescription implements ParameterInclude {
      * @param name
      * @return Returns Parameter.
      */
+    @Override
     public Parameter getParameter(String name) {
         return paramInclude.getParameter(name);
     }
 
+    @Override
     public List<Parameter> getParameters() {
         return paramInclude.getParameters();
     }
 
-    /**
-     * @return Returns TransportListener.
-     */
     public TransportListener getReceiver() {
         return receiver;
     }
 
-    // to check whether the parameter is locked at any level
+    @Override
     public boolean isParameterLocked(String parameterName) {
         return paramInclude.isParameterLocked(parameterName);
     }
@@ -150,17 +134,21 @@ public class TransportInDescription implements ParameterInclude {
         this.inPhase = inPhase;
     }
 
-    /**
-     * @param name
-     */
     public void setName(String name) {
         this.name = name;
     }
 
-    /**
-     * @param receiver
-     */
     public void setReceiver(TransportListener receiver) {
         this.receiver = receiver;
     }
+
+	@Override
+	public void addParameterObserver(ParameterObserver observer) {
+		paramInclude.addParameterObserver(observer);
+	}
+
+	@Override
+	public void removeParameterObserver(ParameterObserver observer) {
+		paramInclude.removeParameterObserver(observer);
+	}
 }

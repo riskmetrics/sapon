@@ -29,50 +29,28 @@ import org.apache.axis2.phaseresolver.PhaseMetadata;
 import org.apache.axis2.transport.TransportSender;
 
 /**
- * Represents a transport deployed in AXis2
+ * Represents a transport deployed in Axis2
  */
-public class TransportOutDescription implements ParameterInclude {
-
-    /**
-     * Field flowInclude
-     */
+public class TransportOutDescription
+	implements ParameterInclude
+{
     private Flow faultFlow;
-    private Phase faultPhase;
-
-    /**
-     * Field name
-     */
-    protected String name;
-
-    /**
-     * Field outFlow
-     */
     private Flow outFlow;
+
+    private Phase faultPhase;
     private Phase outPhase;
 
-    /**
-     * Field paramInclude
-     */
+    protected String name;
     protected final ParameterInclude paramInclude;
     protected TransportSender sender;
 
-    /**
-     * Constructor AxisTransport.
-     *
-     * @param name
-     */
     public TransportOutDescription(String name) {
-        paramInclude = new ParameterIncludeImpl();
+        paramInclude = new ParameterIncludeMixin();
         this.name = name;
         outPhase = new Phase(PhaseMetadata.TRANSPORT_PHASE);
         faultPhase = new Phase(PhaseMetadata.TRANSPORT_PHASE);
     }
 
-    /**
-     * Method addParameter.
-     *
-     * @param param
-     */
     public void addParameter(Parameter param) throws AxisFault {
         paramInclude.addParameter(param);
     }
@@ -93,9 +71,6 @@ public class TransportOutDescription implements ParameterInclude {
         return faultPhase;
     }
 
-    /**
-     * @return Returns QName.
-     */
     public String getName() {
         return name;
     }
@@ -108,28 +83,21 @@ public class TransportOutDescription implements ParameterInclude {
         return outPhase;
     }
 
-    /**
-     * Method getParameter.
-     *
-     * @param name
-     * @return Returns Parameter.
-     */
+    @Override
     public Parameter getParameter(String name) {
         return paramInclude.getParameter(name);
     }
 
+    @Override
     public List<Parameter> getParameters() {
         return paramInclude.getParameters();
     }
 
-    /**
-     * @return Returns TransportSender.
-     */
     public TransportSender getSender() {
         return sender;
     }
 
-    // to check whether the parameter is locked at any level
+    @Override
     public boolean isParameterLocked(String parameterName) {
         return paramInclude.isParameterLocked(parameterName);
     }
@@ -142,9 +110,6 @@ public class TransportOutDescription implements ParameterInclude {
         this.faultPhase = faultPhase;
     }
 
-    /**
-     * @param name
-     */
     public void setName(String name) {
         this.name = name;
     }
@@ -157,10 +122,17 @@ public class TransportOutDescription implements ParameterInclude {
         this.outPhase = outPhase;
     }
 
-    /**
-     * @param sender
-     */
     public void setSender(TransportSender sender) {
         this.sender = sender;
     }
+
+	@Override
+	public void addParameterObserver(ParameterObserver observer) {
+		paramInclude.addParameterObserver(observer);
+	}
+
+	@Override
+	public void removeParameterObserver(ParameterObserver observer) {
+		paramInclude.removeParameterObserver(observer);
+	}
 }

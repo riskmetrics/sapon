@@ -30,6 +30,11 @@ import org.apache.axis2.AxisFault;
  */
 public interface ParameterInclude {
 
+	void addParameterObserver(ParameterObserver observer);
+
+	void removeParameterObserver(ParameterObserver observer);
+
+
     /**
      * Method addParameter.
      *
