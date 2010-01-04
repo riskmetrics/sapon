@@ -61,12 +61,11 @@ public class WSDLToAllServicesBuilderTest extends TestCase {
         configContext.terminate();
     }
 
-    private void checkResults(List axisServices, String expectedService[]) {
-
-        Iterator asi = axisServices.iterator();
+    private void checkResults(List<AxisService> axisServices, String expectedService[]) {
+        Iterator<AxisService> asi = axisServices.iterator();
         int i = 0;
         while (asi.hasNext() && i < expectedService.length) {
-            AxisService as = (AxisService) asi.next();
+            AxisService as = asi.next();
             System.out.println("AxisService : " + as.getName());
             assertEquals("Unexpected service name in AxisService List: expected "
                     + expectedService[i] + " but found " + as.getName() + ".",
@@ -81,7 +80,7 @@ public class WSDLToAllServicesBuilderTest extends TestCase {
         File outLocation = new File("target/test-resources");
         outLocation.mkdirs();
         if (testResourceFile.exists()) {
-            List axisServices = null;
+            List<AxisService> axisServices = null;
             try {
                 WSDL11ToAllAxisServicesBuilder builder = new WSDL11ToAllAxisServicesBuilder(
                         new FileInputStream(testResourceFile));

@@ -46,7 +46,7 @@ public class OperationContextTest extends AbstractTestCase {
         AxisService axisService = new AxisService("TempSC");
         configContext.getAxisConfiguration().addService(axisService);
         ServiceGroupContext sgc = configContext.createServiceGroupContext(
-                axisService.getAxisServiceGroup());
+                axisService.getServiceGroup());
         ServiceContext sessionContext = sgc.getServiceContext(axisService);
         MessageContext messageContext1 = this.getBasicMessageContext();
 

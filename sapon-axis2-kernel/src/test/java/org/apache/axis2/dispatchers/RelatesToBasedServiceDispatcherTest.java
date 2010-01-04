@@ -19,7 +19,10 @@
 
 package org.apache.axis2.dispatchers;
 
+import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.RelatesTo;
 import org.apache.axis2.context.ConfigurationContext;
@@ -30,10 +33,9 @@ import org.apache.axis2.context.ServiceGroupContext;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.description.InOnlyAxisOperation;
 import org.apache.axis2.engine.AxisConfiguration;
-
-import javax.xml.namespace.QName;
 
 public class RelatesToBasedServiceDispatcherTest extends TestCase {
 
@@ -44,7 +46,7 @@ public class RelatesToBasedServiceDispatcherTest extends TestCase {
         AxisConfiguration ac = new AxisConfiguration();
         ConfigurationContext cc = new ConfigurationContext(ac);
         AxisService as1 = new AxisService("Service1");
-        AxisServiceGroup sg = new AxisServiceGroup(ac);
+        AxisServiceGroup sg = new AxisServiceGroupImpl(ac);
         sg.addService(as1);
         ServiceGroupContext sgc = cc.createServiceGroupContext(sg);
 

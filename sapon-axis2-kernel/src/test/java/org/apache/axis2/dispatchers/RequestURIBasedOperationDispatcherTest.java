@@ -19,7 +19,10 @@
 
 package org.apache.axis2.dispatchers;
 
+import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
@@ -30,23 +33,21 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.InOnlyAxisOperation;
 import org.apache.axis2.engine.AxisConfiguration;
 
-import javax.xml.namespace.QName;
-
 public class RequestURIBasedOperationDispatcherTest extends TestCase {
 
     public void testFindService() throws AxisFault {
+        ConfigurationContext cc = ConfigurationContextFactory.createEmptyConfigurationContext();
+        AxisConfiguration ac = cc.getAxisConfiguration();
         MessageContext messageContext;
         AxisService as1 = new AxisService("Service1");
 
+        ac.addService(as1);
 
         AxisOperation operation1 = new InOnlyAxisOperation(new QName("operation1"));
         AxisOperation operation2 = new InOnlyAxisOperation(new QName("operation2"));
         as1.addOperation(operation1);
         as1.addOperation(operation2);
 
-        ConfigurationContext cc = ConfigurationContextFactory.createEmptyConfigurationContext();
-        AxisConfiguration ac = cc.getAxisConfiguration();
-        ac.addService(as1);
         messageContext = cc.createMessageContext();
 
         messageContext.setTo(new EndpointReference(

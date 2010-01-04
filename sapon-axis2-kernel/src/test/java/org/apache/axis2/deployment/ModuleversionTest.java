@@ -19,8 +19,6 @@
 
 package org.apache.axis2.deployment;
 
-import java.util.Iterator;
-
 import junit.framework.TestCase;
 
 import org.apache.axis2.AxisFault;
@@ -71,12 +69,11 @@ public class ModuleversionTest extends TestCase {
         axisConfiguration.engageModule("Module1");
         axisConfiguration.engageModule("testModule", "1.93");
 
-        Iterator engageModules = axisConfiguration.getEngagedModules().iterator();
         boolean found1 = false;
         boolean found2 = false;
         boolean found3 = false;
-        while (engageModules.hasNext()) {
-            String name = ((AxisModule)engageModules.next()).getName();
+        for(AxisModule module: axisConfiguration.getEngagedModules()) {
+            String name = module.getName();
             if (name.equals("Module2-0.95")) {
                 found1 = true;
             }

@@ -20,10 +20,12 @@
 package org.apache.axis2.deployment;
 
 import junit.framework.TestCase;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.engine.AxisConfiguration;
 
 /**
@@ -43,8 +45,8 @@ public class SameServiceAddingTest extends TestCase {
                 .getAxisConfiguration();
 
         // First create a ServiceGroup with S1 and S4
-        AxisServiceGroup axisServiceGroup1 = new AxisServiceGroup();
-        axisServiceGroup1.setServiceGroupName("ServiceGroup1");
+        AxisServiceGroup axisServiceGroup1 = new AxisServiceGroupImpl();
+        axisServiceGroup1.setName("ServiceGroup1");
         AxisService service1 = new AxisService();
         service1.setName(SERVICE1);
         axisServiceGroup1.addService(service1);
@@ -55,8 +57,8 @@ public class SameServiceAddingTest extends TestCase {
         config.addServiceGroup(axisServiceGroup1);
 
         // Now create another ServiceGroup with S2 and S4
-        AxisServiceGroup axisServiceGroup2 = new AxisServiceGroup();
-        axisServiceGroup2.setServiceGroupName(SERVICE_GROUP2);
+        AxisServiceGroup axisServiceGroup2 = new AxisServiceGroupImpl();
+        axisServiceGroup2.setName(SERVICE_GROUP2);
         AxisService service2 = new AxisService();
         service2.setName(SERVICE2);
         axisServiceGroup2.addService(service2);

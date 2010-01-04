@@ -154,7 +154,7 @@ public class AxisServiceTest extends TestCase {
         AxisService service = new AxisService();
         service.setName("dummy");
 
-        AxisServiceGroup asg = new AxisServiceGroup();
+        AxisServiceGroup asg = new AxisServiceGroupImpl();
         asg.addService(service);
 
         // Attach a ServiceContextListener

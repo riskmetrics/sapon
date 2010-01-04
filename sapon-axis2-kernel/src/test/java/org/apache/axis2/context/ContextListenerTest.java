@@ -26,6 +26,7 @@ import junit.framework.TestCase;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.description.InOutAxisOperation;
 import org.apache.axis2.engine.AxisConfiguration;
 
@@ -60,7 +61,7 @@ public class ContextListenerTest extends TestCase {
         // Set up metadata
         AxisConfiguration axisConfig = new AxisConfiguration();
         ConfigurationContext configCtx = new ConfigurationContext(axisConfig);
-        AxisServiceGroup serviceGroup = new AxisServiceGroup(axisConfig);
+        AxisServiceGroup serviceGroup = new AxisServiceGroupImpl(axisConfig);
         AxisService service = new AxisService("TestService");
         AxisOperation operation = new InOutAxisOperation(new QName("ns", "op1"));
         service.addOperation(operation);

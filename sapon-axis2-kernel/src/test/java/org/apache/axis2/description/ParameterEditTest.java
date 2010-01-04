@@ -20,6 +20,7 @@
 package org.apache.axis2.description;
 
 import junit.framework.TestCase;
+
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.engine.AxisConfiguration;
@@ -34,8 +35,8 @@ public class ParameterEditTest extends TestCase {
         parameter.setName("enableMTOM");
         axisConfig.addParameter(parameter);
         parameter.setValue("true");
-        AxisServiceGroup serviceGroup = new AxisServiceGroup();
-        serviceGroup.setServiceGroupName("testServiceGroup");
+        AxisServiceGroup serviceGroup = new AxisServiceGroupImpl();
+        serviceGroup.setName("testServiceGroup");
         AxisService service = new AxisService();
         service.setName("service");
         serviceGroup.addService(service);

@@ -19,6 +19,8 @@
 
 package org.apache.axis2.deployment.deployers;
 
+import java.io.FileInputStream;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.Deployer;
@@ -26,8 +28,6 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import java.io.FileInputStream;
 
 /**
  * A custom Deployer instance for testing.  This coordinates with the CustomDeployerTest and
@@ -88,8 +88,12 @@ public class CustomDeployer implements Deployer {
             byte b[]= new byte[x];
             fis.read(b);
             String content = new String(b);
-            if (content.indexOf("George") > -1) georgeDeployed = true;
-            if (content.indexOf("Mary") > -1) maryDeployed = true;
+            if (content.indexOf("George") > -1) {
+				georgeDeployed = true;
+			}
+            if (content.indexOf("Mary") > -1) {
+				maryDeployed = true;
+			}
             deployedItems++;
         } catch (Exception e) {
             throw new DeploymentException(e);

@@ -19,15 +19,6 @@
 
 package org.apache.axis2.addressing;
 
-import junit.framework.TestCase;
-import junit.textui.TestRunner;
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMAttribute;
-import org.apache.axiom.om.OMElement;
-import org.apache.axiom.om.OMFactory;
-import org.apache.axiom.om.OMNamespace;
-
-import javax.xml.namespace.QName;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
@@ -35,6 +26,17 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import javax.xml.namespace.QName;
+
+import junit.framework.TestCase;
+import junit.textui.TestRunner;
+
+import org.apache.axiom.om.OMAbstractFactory;
+import org.apache.axiom.om.OMAttribute;
+import org.apache.axiom.om.OMElement;
+import org.apache.axiom.om.OMFactory;
+import org.apache.axiom.om.OMNamespace;
 
 
 public class EndpointReferenceTypeTest extends TestCase {
@@ -49,7 +51,8 @@ public class EndpointReferenceTypeTest extends TestCase {
     /*
      * @see TestCase#setUp()
      */
-    protected void setUp() throws Exception {
+    @Override
+	protected void setUp() throws Exception {
         super.setUp();
         endpointReference = new EndpointReference(address);
     }
@@ -73,9 +76,10 @@ public class EndpointReferenceTypeTest extends TestCase {
                     "value " + i * 50);
         }
 
-        Map retrievedReferenceParameters = endpointReference.getAllReferenceParameters();
+        Map<QName, OMElement> retrievedReferenceParameters
+        	= endpointReference.getAllReferenceParameters();
         for (int i = 0; i < 10; i++) {
-            OMElement referenceParameter = (OMElement) retrievedReferenceParameters.get(
+            OMElement referenceParameter = retrievedReferenceParameters.get(
                     new QName("http://www.opensouce.lk/" + i, "" + i));
             assertEquals(
                     "Input value differs from what is taken out from AnyContentType",
@@ -135,12 +139,12 @@ public class EndpointReferenceTypeTest extends TestCase {
         epr.addReferenceParameter(rp1Qname, "rp1");
         epr.addReferenceParameter(rp2Qname, "rp2");
 
-        ArrayList addressAttributes = new ArrayList();
+        List<OMAttribute> addressAttributes = new ArrayList<OMAttribute>();
         addressAttributes.add(attr1);
         addressAttributes.add(attr2);
         epr.setAddressAttributes(addressAttributes);
 
-        ArrayList metadataAttributes = new ArrayList();
+        List<OMAttribute> metadataAttributes = new ArrayList<OMAttribute>();
         metadataAttributes.add(attr1);
         metadataAttributes.add(attr2);
         epr.setMetadataAttributes(metadataAttributes);
@@ -154,28 +158,28 @@ public class EndpointReferenceTypeTest extends TestCase {
         EndpointReference deserializedEPR = (EndpointReference) ois.readObject();
 
         assertEquals(epr.getAddress(), deserializedEPR.getAddress());
-        List addrAttrs = deserializedEPR.getAddressAttributes();
-        assertAttributesEqual(attr1, (OMAttribute) addrAttrs.get(0));
-        assertAttributesEqual(attr2, (OMAttribute) addrAttrs.get(1));
+        List<OMAttribute> addrAttrs = deserializedEPR.getAddressAttributes();
+        assertAttributesEqual(attr1, addrAttrs.get(0));
+        assertAttributesEqual(attr2, addrAttrs.get(1));
 
-        List attrs = deserializedEPR.getAttributes();
-        assertAttributesEqual(attr1, (OMAttribute) attrs.get(0));
-        assertAttributesEqual(attr2, (OMAttribute) attrs.get(1));
+        List<OMAttribute> attrs = deserializedEPR.getAttributes();
+        assertAttributesEqual(attr1, attrs.get(0));
+        assertAttributesEqual(attr2, attrs.get(1));
 
-        List metadata = deserializedEPR.getMetaData();
+        List<OMElement> metadata = deserializedEPR.getMetaData();
         assertEquals(md1.toString(), metadata.get(0).toString());
         assertEquals(md2.toString(), metadata.get(1).toString());
-        List mdAttrs = deserializedEPR.getMetadataAttributes();
-        assertAttributesEqual(attr1, (OMAttribute) mdAttrs.get(0));
-        assertAttributesEqual(attr2, (OMAttribute) mdAttrs.get(1));
+        List<OMAttribute> mdAttrs = deserializedEPR.getMetadataAttributes();
+        assertAttributesEqual(attr1, mdAttrs.get(0));
+        assertAttributesEqual(attr2, mdAttrs.get(1));
 
-        List extelts = deserializedEPR.getExtensibleElements();
+        List<OMElement> extelts = deserializedEPR.getExtensibleElements();
         assertEquals(ext1.toString(), extelts.get(0).toString());
         assertEquals(ext2.toString(), extelts.get(1).toString());
 
-        Map m = deserializedEPR.getAllReferenceParameters();
-        assertEquals("rp1", ((OMElement) m.get(rp1Qname)).getText());
-        assertEquals("rp2", ((OMElement) m.get(rp2Qname)).getText());
+        Map<QName, OMElement> m = deserializedEPR.getAllReferenceParameters();
+        assertEquals("rp1", m.get(rp1Qname).getText());
+        assertEquals("rp2", m.get(rp2Qname).getText());
     }
 
     private void assertAttributesEqual(OMAttribute attribute1, OMAttribute attribute2) {

@@ -19,6 +19,8 @@
 
 package org.apache.axis2.deployment;
 
+import java.util.List;
+
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.description.AxisModule;
@@ -26,12 +28,11 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.ParameterInclude;
-import org.apache.axis2.description.ParameterIncludeImpl;
+import org.apache.axis2.description.ParameterIncludeMixin;
+import org.apache.axis2.description.ParameterObserver;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.AxisEvent;
 import org.apache.axis2.engine.AxisObserver;
-
-import java.util.ArrayList;
 
 public class AxisObserverImpl implements AxisObserver {
 
@@ -39,7 +40,7 @@ public class AxisObserverImpl implements AxisObserver {
 
     // The initilization code will go here
     public void init(AxisConfiguration axisConfig) {
-        parameterimpl = new ParameterIncludeImpl();
+        parameterimpl = new ParameterIncludeMixin();
     }
 
     public void serviceUpdate(AxisEvent event, AxisService service) {
@@ -48,17 +49,17 @@ public class AxisObserverImpl implements AxisObserver {
     public void moduleUpdate(AxisEvent event, AxisModule module) {
     }
 
-    public void addParameter(Parameter param) throws AxisFault {
+    public void addParameter(Parameter param) {
     }
 
-    public void removeParameter(Parameter param) throws AxisFault {
+    public void removeParameter(Parameter param) {
     }
 
     public Parameter getParameter(String name) {
         return null;
     }
 
-    public ArrayList getParameters() {
+    public List<Parameter> getParameters() {
         return null;
     }
 
@@ -73,4 +74,12 @@ public class AxisObserverImpl implements AxisObserver {
 
     public void serviceGroupUpdate(AxisEvent event, AxisServiceGroup serviceGroup) {
     }
+
+	@Override
+	public void addParameterObserver(ParameterObserver observer) {
+	}
+
+	@Override
+	public void removeParameterObserver(ParameterObserver observer) {
+	}
 }

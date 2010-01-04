@@ -19,17 +19,19 @@
 
 package org.apache.axis2.addressing;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
-
-import javax.xml.namespace.QName;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 
 public class EndpointReferenceHelperTest extends TestCase {
 
@@ -57,12 +59,12 @@ public class EndpointReferenceHelperTest extends TestCase {
         epr.addReferenceParameter(rp1Qname, "rp1");
         epr.addReferenceParameter(rp2Qname, "rp2");
 
-        ArrayList addressAttributes = new ArrayList();
+        List<OMAttribute> addressAttributes = new ArrayList<OMAttribute>();
         addressAttributes.add(attr1);
         addressAttributes.add(attr2);
         epr.setAddressAttributes(addressAttributes);
 
-        ArrayList metadataAttributes = new ArrayList();
+        List<OMAttribute> metadataAttributes = new ArrayList<OMAttribute>();
         metadataAttributes.add(attr1);
         metadataAttributes.add(attr2);
         epr.setMetadataAttributes(metadataAttributes);
@@ -75,28 +77,28 @@ public class EndpointReferenceHelperTest extends TestCase {
         EndpointReference deser = EndpointReferenceHelper.fromOM(om);
 
         assertEquals(epr.getAddress(), deser.getAddress());
-        List addrAttrs = deser.getAddressAttributes();
+        List<OMAttribute> addrAttrs = deser.getAddressAttributes();
         assertEquals(attr1, addrAttrs.get(0));
         assertEquals(attr2, addrAttrs.get(1));
 
-        List attrs = deser.getAttributes();
+        List<OMAttribute> attrs = deser.getAttributes();
         assertEquals(attr1, attrs.get(0));
         assertEquals(attr2, attrs.get(1));
 
-        List metadata = deser.getMetaData();
+        List<OMElement> metadata = deser.getMetaData();
         assertEquals(md1, metadata.get(0));
         assertEquals(md2, metadata.get(1));
-        List mdAttrs = deser.getMetadataAttributes();
+        List<OMAttribute> mdAttrs = deser.getMetadataAttributes();
         assertEquals(attr1, mdAttrs.get(0));
         assertEquals(attr2, mdAttrs.get(1));
 
-        List extelts = deser.getExtensibleElements();
+        List<OMElement> extelts = deser.getExtensibleElements();
         assertEquals(ext1, extelts.get(0));
         assertEquals(ext2, extelts.get(1));
 
-        Map m = deser.getAllReferenceParameters();
-        assertEquals("rp1", ((OMElement) m.get(rp1Qname)).getText());
-        assertEquals("rp2", ((OMElement) m.get(rp2Qname)).getText());
+        Map<QName, OMElement> m = deser.getAllReferenceParameters();
+        assertEquals("rp1", m.get(rp1Qname).getText());
+        assertEquals("rp2", m.get(rp2Qname).getText());
 
         //Test deserialize using fromOM(EndpointReference, OMElement, String)
         deser = new EndpointReference("");
@@ -123,8 +125,8 @@ public class EndpointReferenceHelperTest extends TestCase {
         assertEquals(ext2, extelts.get(1));
 
         m = deser.getAllReferenceParameters();
-        assertEquals("rp1", ((OMElement) m.get(rp1Qname)).getText());
-        assertEquals("rp2", ((OMElement) m.get(rp2Qname)).getText());
+        assertEquals("rp1", (m.get(rp1Qname)).getText());
+        assertEquals("rp2", (m.get(rp2Qname)).getText());
 
         //Failure test
         try {
@@ -161,7 +163,7 @@ public class EndpointReferenceHelperTest extends TestCase {
         epr.addReferenceParameter(rp1Qname, "rp1");
         epr.addReferenceParameter(rp2Qname, "rp2");
 
-        ArrayList addressAttributes = new ArrayList();
+        List<OMAttribute> addressAttributes = new ArrayList<OMAttribute>();
         addressAttributes.add(attr1);
         addressAttributes.add(attr2);
         epr.setAddressAttributes(addressAttributes);
@@ -185,29 +187,29 @@ public class EndpointReferenceHelperTest extends TestCase {
         EndpointReference deser = EndpointReferenceHelper.fromOM(om);
 
         assertEquals(epr.getAddress(), deser.getAddress());
-        List addrAttrs = deser.getAddressAttributes();
+        List<OMAttribute> addrAttrs = deser.getAddressAttributes();
         assertEquals(attr1, addrAttrs.get(0));
         assertEquals(attr2, addrAttrs.get(1));
 
-        List attrs = deser.getAttributes();
+        List<OMAttribute> attrs = deser.getAttributes();
         assertEquals(attr1, attrs.get(0));
         assertEquals(attr2, attrs.get(1));
 
         //Metadata will be lost unless it is saved as an extensibility element.
-        List metadata = deser.getMetaData();
+        List<OMElement> metadata = deser.getMetaData();
         assertNull(metadata);
 
-        List extelts = deser.getExtensibleElements();
+        List<OMElement> extelts = deser.getExtensibleElements();
         assertEquals(ext1, extelts.get(0));
         assertEquals(ext2, extelts.get(1));
 
         //All reference properties are returned as reference parameters.
-        Map m = deser.getAllReferenceParameters();
+        Map<QName, OMElement> m = deser.getAllReferenceParameters();
         assertEquals(4, m.size());
-        assertEquals("rp1", ((OMElement) m.get(rp1Qname)).getText());
-        assertEquals("rp2", ((OMElement) m.get(rp2Qname)).getText());
-        assertEquals("p1", ((OMElement) m.get(p1Qname)).getText());
-        assertEquals("p2", ((OMElement) m.get(p2Qname)).getText());
+        assertEquals("rp1", m.get(rp1Qname).getText());
+        assertEquals("rp2", m.get(rp2Qname).getText());
+        assertEquals("p1", m.get(p1Qname).getText());
+        assertEquals("p2", m.get(p2Qname).getText());
 
         //Test deserialize using fromOM(EndpointReference, OMElement, String)
         deser = new EndpointReference("");
@@ -233,10 +235,10 @@ public class EndpointReferenceHelperTest extends TestCase {
         //All reference properties are returned as reference parameters.
         m = deser.getAllReferenceParameters();
         assertEquals(4, m.size());
-        assertEquals("rp1", ((OMElement) m.get(rp1Qname)).getText());
-        assertEquals("rp2", ((OMElement) m.get(rp2Qname)).getText());
-        assertEquals("p1", ((OMElement) m.get(p1Qname)).getText());
-        assertEquals("p2", ((OMElement) m.get(p2Qname)).getText());
+        assertEquals("rp1", (m.get(rp1Qname)).getText());
+        assertEquals("rp2", (m.get(rp2Qname)).getText());
+        assertEquals("p1", (m.get(p1Qname)).getText());
+        assertEquals("p2", (m.get(p2Qname)).getText());
 
         //Failure test
         try {

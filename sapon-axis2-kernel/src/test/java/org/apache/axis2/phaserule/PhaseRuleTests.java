@@ -20,7 +20,6 @@
 package org.apache.axis2.phaserule;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
@@ -46,7 +45,7 @@ public class PhaseRuleTests extends TestCase {
     // TODO : Factor out shared data for these tests
 
     public void testBefore() throws AxisFault {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -81,12 +80,12 @@ public class PhaseRuleTests extends TestCase {
         hm1.setRules(rule1);
         ph.addHandler(hm1);
 
-        List handlers = p1.getHandlers();
-        Handler handler = (Handler) handlers.get(0);
+        List<Handler> handlers = p1.getHandlers();
+        Handler handler = handlers.get(0);
         if (handler != h2) {
             fail("Computed Hnadler order is wrong ");
         }
-        handler = (Handler) handlers.get(1);
+        handler = handlers.get(1);
         if (handler != h1) {
             fail("Computed Hnadler order is wrong ");
         }
@@ -94,7 +93,7 @@ public class PhaseRuleTests extends TestCase {
     }
 
     public void testBeforewithNoFirst() throws AxisFault {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -130,12 +129,12 @@ public class PhaseRuleTests extends TestCase {
         hm.setRules(rule);
         ph.addHandler(hm);
 
-        List handlers = p1.getHandlers();
-        Handler handler = (Handler) handlers.get(0);
+        List<Handler> handlers = p1.getHandlers();
+        Handler handler = handlers.get(0);
         if (handler != h2) {
             fail("Computed Handler order is wrong ");
         }
-        handler = (Handler) handlers.get(1);
+        handler = handlers.get(1);
         if (handler != h1) {
             fail("Computed Handler order is wrong ");
         }
@@ -143,7 +142,7 @@ public class PhaseRuleTests extends TestCase {
     }
 
     public void testBeforeAfter() throws Exception {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -202,18 +201,19 @@ public class PhaseRuleTests extends TestCase {
         hm4.setRules(rule4);
         ph.addHandler(hm4);
 
-        List handlers = p1.getHandlers();
+        List<Handler> handlers = p1.getHandlers();
         boolean foundH1 = false;
         boolean foundH4 = false;
 
-        for (Iterator iterator = handlers.iterator(); iterator.hasNext();) {
-            Handler handler = (Handler) iterator.next();
+        for (Handler handler: handlers) {
             if (h3 == handler) {
-                if (!foundH1)
-                    fail("H3 found before H1");
+                if (!foundH1) {
+					fail("H3 found before H1");
+				}
             }
-            if (h1 == handler)
-                foundH1 = true;
+            if (h1 == handler) {
+				foundH1 = true;
+			}
             if (h2 == handler) {
                 if (!foundH4) {
                     fail("H2 found before H4");
@@ -229,7 +229,7 @@ public class PhaseRuleTests extends TestCase {
     }
 
     public void testPhaseFirst() throws AxisFault {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -268,7 +268,7 @@ public class PhaseRuleTests extends TestCase {
     }
 
     public void testPhaseLast() throws AxisFault {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -309,7 +309,7 @@ public class PhaseRuleTests extends TestCase {
 
     public void testPhaseRules() throws Exception {
         // TODO : What is this testing exactly?
-    	List inPhase = new AxisConfiguration().getInFlowPhases();
+    	List<Phase> inPhase = new AxisConfiguration().getInFlowPhases();
         Phase transportIN = new Phase("TransportIn");
         Phase preDispatch = new Phase("PreDispatch");
         DispatchPhase dispatchPhase = new DispatchPhase();
@@ -371,7 +371,7 @@ public class PhaseRuleTests extends TestCase {
     }
 
     public void testSingleHandler() throws Exception {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -414,7 +414,7 @@ public class PhaseRuleTests extends TestCase {
     }
 
     public void testInvalidPhaseFirst() {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -444,7 +444,7 @@ public class PhaseRuleTests extends TestCase {
 
     public void testInvalidPhaseFirst1() {
         try {
-            ArrayList phases = new ArrayList();
+            List<Phase> phases = new ArrayList<Phase>();
             Phase p1 = new Phase("PhaseA");
             phases.add(p1);
             Phase p2 = new Phase("PhaseB");
@@ -483,7 +483,7 @@ public class PhaseRuleTests extends TestCase {
     }
 
     public void testPhaseLastErrors() throws Exception {
-        ArrayList phases = new ArrayList();
+        List<Phase> phases = new ArrayList<Phase>();
         Phase p1 = new Phase("PhaseA");
         phases.add(p1);
         Phase p2 = new Phase("PhaseB");
@@ -513,7 +513,7 @@ public class PhaseRuleTests extends TestCase {
 
     public void testInvalidPhaseLast() {
         try {
-            ArrayList phases = new ArrayList();
+            List<Phase> phases = new ArrayList<Phase>();
             Phase p1 = new Phase("PhaseA");
             phases.add(p1);
             Phase p2 = new Phase("PhaseB");

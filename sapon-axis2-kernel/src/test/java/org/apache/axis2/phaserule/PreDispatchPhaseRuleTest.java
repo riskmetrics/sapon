@@ -43,7 +43,7 @@ public class PreDispatchPhaseRuleTest extends AbstractTestCase {
         //TODO Fix me
         phaserul = new PreDispatchPhaseRuleTest("");
         axisSytem = new AxisConfiguration();
-        List inPhase = axisSytem.getInFlowPhases();
+        List<Phase> inPhase = axisSytem.getInFlowPhases();
         Phase transportIN = new Phase("TransportIn");
         Phase preDispatch = new Phase("PreDispatch");
         DispatchPhase dispatchPhase = new DispatchPhase();

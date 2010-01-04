@@ -19,7 +19,10 @@
 
 package org.apache.axis2.context;
 
+import javax.xml.namespace.QName;
+
 import junit.framework.TestCase;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.description.AxisMessage;
 import org.apache.axis2.description.AxisOperation;
@@ -29,8 +32,6 @@ import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.wsdl.WSDLConstants;
 
-import javax.xml.namespace.QName;
-
 public class ContextHierarchyTest extends TestCase {
     private AxisMessage axisMessage;
     private AxisOperation axisOperation;
@@ -39,7 +40,8 @@ public class ContextHierarchyTest extends TestCase {
     private ConfigurationContext configurationContext;
     private MessageContext msgctx;
 
-    protected void setUp() throws Exception {
+    @Override
+	protected void setUp() throws Exception {
         axisOperation = new InOutAxisOperation(new QName("Temp"));
         axisMessage = axisOperation.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
         axisService = new AxisService("Temp");
@@ -52,7 +54,7 @@ public class ContextHierarchyTest extends TestCase {
 
     public void testCompleteHierarchy() throws AxisFault {
         ServiceGroupContext serviceGroupContext = configurationContext.createServiceGroupContext(
-                axisService.getAxisServiceGroup());
+                axisService.getServiceGroup());
         ServiceContext serviceContext = serviceGroupContext.getServiceContext(axisService);
         OperationContext opContext = axisOperation.findOperationContext(msgctx,
                                                                         serviceContext);
@@ -80,26 +82,26 @@ public class ContextHierarchyTest extends TestCase {
 
         axisConfiguration.addParameter(new Parameter(key, paramValue1));
         assertEquals(paramValue1, msgctx.getParameter(key).getValue());
-        
+
         serviceContext.setProperty(key, propValue2);
         assertEquals(propValue2, msgctx.getProperty(key));
-        
+
         axisService.addParameter(new Parameter(key, paramValue2));
         assertEquals(paramValue2, msgctx.getParameter(key).getValue());
 
         opContext.setProperty(key, propValue3);
         assertEquals(propValue3, msgctx.getProperty(key));
-        
+
         axisOperation.addParameter(new Parameter(key, paramValue3));
         assertEquals(paramValue3, msgctx.getParameter(key).getValue());
-        
+
         msgctx.setProperty(key, propValue4);
         assertEquals(propValue4, msgctx.getProperty(key));
-        
+
         axisMessage.addParameter(new Parameter(key, paramValue4));
         assertEquals(paramValue4, msgctx.getParameter(key).getValue());
 
-        
+
     }
 
     public void testDisconntectedHierarchy() throws AxisFault {
@@ -117,5 +119,5 @@ public class ContextHierarchyTest extends TestCase {
         axisConfiguration.addParameter(new Parameter(key2, value2));
         assertEquals(value2, msgctx.getParameter(key2).getValue());
     }
-    
+
 }

@@ -20,6 +20,7 @@
 package org.apache.axis2.dispatchers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.xml.namespace.QName;
 
@@ -39,12 +40,12 @@ public class ActionBasedOperationDispatchTest extends TestCase {
         messageContext.setAxisService(as);
 
         AxisOperation operation1 = new InOnlyAxisOperation(new QName("operation1"));
-        ArrayList op1actions = new ArrayList();
+        List<String> op1actions = new ArrayList<String>();
         op1actions.add("urn:org.apache.axis2.dispatchers.test:operation1");
         operation1.setWsamappingList(op1actions);
 
         AxisOperation operation2 = new InOnlyAxisOperation(new QName("operation2"));
-        ArrayList op2actions = new ArrayList();
+        List<String> op2actions = new ArrayList<String>();
         op2actions.add("urn:org.apache.axis2.dispatchers.test:operation2");
         operation2.setWsamappingList(op2actions);
 
