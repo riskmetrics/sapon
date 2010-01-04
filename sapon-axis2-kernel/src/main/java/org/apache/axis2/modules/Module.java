@@ -22,8 +22,8 @@ package org.apache.axis2.modules;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisModule;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
 
