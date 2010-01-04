@@ -47,7 +47,7 @@ public class TokenCallbackHandler implements CallbackHandler {
 
             if (callbacks[i] instanceof WSPasswordCallback) {
                 WSPasswordCallback pc = (WSPasswordCallback) callbacks[i];
-                String id = pc.getIdentifer();
+                String id = pc.getIdentifier();
                 
                 if((pc.getUsage() == WSPasswordCallback.SECURITY_CONTEXT_TOKEN || 
                         pc.getUsage() == WSPasswordCallback.CUSTOM_TOKEN) &&

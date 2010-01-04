@@ -23,8 +23,6 @@ package org.apache.axis2.transport.http;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -37,16 +35,13 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.description.PolicyInclude;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.util.ExternalPolicySerializer;
 import org.apache.axis2.util.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.neethi.Policy;
-import org.apache.neethi.PolicyRegistry;
 
 public class ListingAgent extends AbstractAgent {
 
@@ -189,7 +184,7 @@ public class ListingAgent extends AbstractAgent {
      * @param ostream the <code>OutputStream</code>
      */
     public static void copy(InputStream stream, OutputStream ostream) throws IOException {
-        IOUtils.copy(stream, ostream, false);
+    	IOUtils.copy(stream, ostream, false);
     }
 
     public String extractServiceName(String urlString) {
@@ -286,7 +281,7 @@ public class ListingAgent extends AbstractAgent {
                     if (idParam != null) {
                         // Id is set
 
-                        Policy targetPolicy = findPolicy(idParam, axisService);
+                        Policy targetPolicy = axisService.lookupPolicy(idParam);
 
                         if (targetPolicy != null) {
                             XMLStreamWriter writer;
@@ -321,9 +316,7 @@ public class ListingAgent extends AbstractAgent {
                         }
 
                     } else {
-
-                        PolicyInclude policyInclude = axisService.getPolicyInclude();
-                        Policy effecPolicy = policyInclude.getEffectivePolicy();
+                        Policy effecPolicy = axisService.getEffectivePolicy();
 
                         if (effecPolicy != null) {
                             XMLStreamWriter writer;
@@ -394,40 +387,40 @@ public class ListingAgent extends AbstractAgent {
         renderView(LIST_MULTIPLE_SERVICE_JSP_NAME, req, res);
     }
 
-    private Policy findPolicy(String id, AxisDescription des) {
-
-        List policyElements = des.getPolicyInclude().getPolicyElements();
-        PolicyRegistry registry = des.getPolicyInclude().getPolicyRegistry();
-
-        Object policyComponent;
-
-        Policy policy = registry.lookup(id);
-
-        if (policy != null) {
-            return policy;
-        }
-
-        for (Iterator iterator = policyElements.iterator(); iterator.hasNext();) {
-            policyComponent = iterator.next();
-
-            if (policyComponent instanceof Policy) {
-                // policy found for the id
-
-                if (id.equals(((Policy) policyComponent).getId())) {
-                    return (Policy) policyComponent;
-                }
-            }
-        }
-
-        for (AxisDescription child: des.getChildren()) {
-            policy = findPolicy(id, child);
-
-            if (policy != null) {
-                return policy;
-            }
-        }
-
-        return null;
-    }
+//    private Policy findPolicy(String id, AxisDescription des) {
+//
+//        Collection<PolicyComponent> policyElements = des.getAttachedPolicyComponents();
+//        PolicyRegistry registry = des.getPolicyInclude().getPolicyRegistry();
+//
+//        Object policyComponent;
+//
+//        Policy policy = registry.lookup(id);
+//
+//        if (policy != null) {
+//            return policy;
+//        }
+//
+//        for (Iterator iterator = policyElements.iterator(); iterator.hasNext();) {
+//            policyComponent = iterator.next();
+//
+//            if (policyComponent instanceof Policy) {
+//                // policy found for the id
+//
+//                if (id.equals(((Policy) policyComponent).getId())) {
+//                    return (Policy) policyComponent;
+//                }
+//            }
+//        }
+//
+//        for (AxisDescription child: des.getChildren()) {
+//            policy = findPolicy(id, child);
+//
+//            if (policy != null) {
+//                return policy;
+//            }
+//        }
+//
+//        return null;
+//    }
 
 }

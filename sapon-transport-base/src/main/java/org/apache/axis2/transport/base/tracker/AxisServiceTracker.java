@@ -31,6 +31,7 @@ import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
 import org.apache.axis2.description.Parameter;
+import org.apache.axis2.description.ParameterObserver;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.AxisEvent;
 import org.apache.axis2.engine.AxisObserver;
@@ -67,7 +68,7 @@ import org.apache.axis2.engine.AxisObserver;
  * for every {@link AxisServiceTrackerListener#serviceAdded(AxisService)} event and vice-versa.
  * This property is important when the tracker is used to allocate resources for a dynamic set
  * of services.</p>
- * 
+ *
  * <h2>Limitations</h2>
  *
  * <p>The tracker is not able to detect property changes on services. E.g. if a service initially
@@ -127,17 +128,19 @@ public class AxisServiceTracker {
         public ArrayList<Parameter> getParameters() { return null; }
         public boolean isParameterLocked(String parameterName) { return false; }
         public void serviceGroupUpdate(AxisEvent event, AxisServiceGroup serviceGroup) {}
+		public void addParameterObserver(ParameterObserver observer) {}
+		public void removeParameterObserver(ParameterObserver observer) {}
     };
-    
+
     private final AxisConfiguration config;
     final AxisServiceFilter filter;
     private final AxisServiceTrackerListener listener;
-    
+
     /**
      * Object used to synchronize access to {@link #pendingActions} and {@link #services}.
      */
     final Object lock = new Object();
-    
+
     /**
      * Queue for notifications received by the {@link AxisObserver} during startup of the tracker.
      * We need this because the events may already be reflected in the list of services returned
@@ -147,22 +150,22 @@ public class AxisServiceTracker {
      * during startup of the tracker.
      */
     Queue<Runnable> pendingActions;
-    
+
     /**
      * The current list of services. <code>null</code> if the tracker is stopped.
      */
     private Set<AxisService> services;
-    
+
     public AxisServiceTracker(AxisConfiguration config, AxisServiceFilter filter,
             AxisServiceTrackerListener listener) {
         this.config = config;
         this.filter = filter;
         this.listener = listener;
     }
-    
+
     /**
      * Check whether the tracker is started.
-     * 
+     *
      * @return <code>true</code> if the tracker is started
      */
     public boolean isStarted() {
@@ -171,7 +174,7 @@ public class AxisServiceTracker {
 
     /**
      * Start the tracker.
-     * 
+     *
      * @throws IllegalStateException if the tracker has already been started
      */
     public void start() {
@@ -200,7 +203,7 @@ public class AxisServiceTracker {
             action.run();
         }
     }
-    
+
     void serviceAdded(AxisService service) {
         // callListener may be false because the observer got an event for a service that
         // was already in the initial list of services retrieved by AxisConfiguration#getServices.
@@ -212,7 +215,7 @@ public class AxisServiceTracker {
             listener.serviceAdded(service);
         }
     }
-    
+
     void serviceRemoved(AxisService service) {
         // callListener may be false because the observer invokes this method without applying the
         // filter.
@@ -224,10 +227,10 @@ public class AxisServiceTracker {
             listener.serviceRemoved(service);
         }
     }
-    
+
     /**
      * Stop the tracker.
-     * 
+     *
      * @throws IllegalStateException if the tracker is not started
      */
     public void stop() {

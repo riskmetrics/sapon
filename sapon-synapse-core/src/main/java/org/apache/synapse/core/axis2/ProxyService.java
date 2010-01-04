@@ -484,14 +484,14 @@ public class ProxyService implements AspectConfigurable {
 
         for (PolicyInfo pi : policies) {
         	if (pi instanceof ServicePolicyInfo) {
-        		proxyService.getPolicySubject().attachPolicy(
+        		proxyService.attachPolicy(
         				getPolicyFromKey(pi.getPolicyKey(), synCfg));
         	}
         	else if (pi instanceof OperationPolicyInfo) {
         		OperationPolicyInfo opi = (OperationPolicyInfo)pi;
         		AxisOperation op = proxyService.getOperation(opi.getOperation());
         		if (op != null) {
-        			op.getPolicySubject().attachPolicy(
+        			op.attachPolicy(
         					getPolicyFromKey(pi.getPolicyKey(), synCfg));
         		} else {
         			handleException("Couldn't find the operation specified " +
@@ -502,7 +502,7 @@ public class ProxyService implements AspectConfigurable {
         		if (mpi.getOperation() != null) {
         			AxisOperation op = proxyService.getOperation(mpi.getOperation());
         			if (op != null) {
-        				op.getMessage(mpi.getMessageLabel()).getPolicySubject().attachPolicy(
+        				op.getMessage(mpi.getMessageLabel()).attachPolicy(
         						getPolicyFromKey(pi.getPolicyKey(), synCfg));
         			} else {
         				handleException("Couldn't find the operation " +
@@ -516,7 +516,7 @@ public class ProxyService implements AspectConfigurable {
         						||(op instanceof InOnlyAxisOperation && mpi.getType() == MessagePolicyInfo.MESSAGE_TYPE_OUT))) {
 
         					AxisMessage message = op.getMessage(mpi.getMessageLabel());
-        					message.getPolicySubject().attachPolicy(
+        					message.attachPolicy(
         							getPolicyFromKey(pi.getPolicyKey(), synCfg));
         				}
         			}
@@ -524,7 +524,7 @@ public class ProxyService implements AspectConfigurable {
         	} else if (pi instanceof BindingPolicyInfo) {
         		Policy p = getPolicyFromKey(pi.getPolicyKey(), synCfg);
         		try {
-					proxyService.getPolicySubject().attachPolicy(p);
+					proxyService.attachPolicy(p);
 
 					//We need to be able to pull out the policy later, when we
 					//have access to the AxisEndpoints that are available for
@@ -575,7 +575,7 @@ public class ProxyService implements AspectConfigurable {
         }
 
 		if(ensuredSwAElems.size() > 0) {
-			AxisConfiguration axisConfig = proxyService.getAxisConfiguration();
+			AxisConfiguration axisConfig = proxyService.getConfiguration();
 			Builder b = axisCfg.getMessageBuilder("application/xop+xml");
 			if(!(b instanceof MTOMtoSwABuilder)) {
 				b = new MTOMtoSwABuilder();

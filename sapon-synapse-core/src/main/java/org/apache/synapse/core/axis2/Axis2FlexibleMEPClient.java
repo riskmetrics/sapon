@@ -35,7 +35,7 @@ import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.context.ServiceGroupContext;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.transport.http.HTTPConstants;
@@ -253,9 +253,9 @@ public class Axis2FlexibleMEPClient {
             axisCfg, wsAddressingEnabled, wsRMEnabled, wsSecurityEnabled);
         // mark the anon services created to be used in the client side of synapse as hidden
         // from the server side of synapse point of view
-        anoymousService.getParent().addParameter(SynapseConstants.HIDDEN_SERVICE_PARAM, "true");
+        anoymousService.getServiceGroup().addParameter(new Parameter(SynapseConstants.HIDDEN_SERVICE_PARAM, "true"));
         ServiceGroupContext sgc = new ServiceGroupContext(
-            axisCfgCtx, (AxisServiceGroup) anoymousService.getParent());
+            axisCfgCtx, anoymousService.getServiceGroup());
         ServiceContext serviceCtx = sgc.getServiceContext(anoymousService);
 
         boolean outOnlyMessage = "true".equals(synapseOutMessageContext.getProperty(

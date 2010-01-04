@@ -39,6 +39,7 @@ import org.apache.axis2.transport.http.server.AxisHttpResponse;
 import org.apache.axis2.transport.http.server.HttpUtils;
 import org.apache.axis2.transport.http.server.Worker;
 import org.apache.axis2.transport.http.util.RESTUtil;
+import org.apache.axis2.util.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpStatus;
@@ -100,7 +101,7 @@ public class HTTPWorker implements Worker {
                                 if (stream != null) {
                                     OutputStream out = response.getOutputStream();
                                     response.setContentType("text/xml");
-                                    ListingAgent.copy(stream, out);
+                                    IOUtils.copy(stream, out, false);
                                     out.flush();
                                     out.close();
                                     return;

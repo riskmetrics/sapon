@@ -216,7 +216,7 @@ public abstract class AbstractTransportListener implements TransportListener {
             log.warn(msg);
             log.debug("Disabling service " + serviceName + " for the " + transportName +
                     "transport", ex);
-            BaseUtils.markServiceAsFaulty(serviceName, msg, service.getAxisConfiguration());
+            BaseUtils.markServiceAsFaulty(serviceName, msg, service.getConfiguration());
             disableTransportForService(service);
             return;
         } catch (Throwable ex) {
@@ -224,7 +224,7 @@ public abstract class AbstractTransportListener implements TransportListener {
                     " for the " + getTransportName().toUpperCase() + " transport. It will be" +
                     " disabled for this transport and marked as faulty.";
             log.error(msg, ex);
-            BaseUtils.markServiceAsFaulty(serviceName, msg, service.getAxisConfiguration());
+            BaseUtils.markServiceAsFaulty(serviceName, msg, service.getConfiguration());
             disableTransportForService(service);
             return;
         }

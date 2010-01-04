@@ -18,8 +18,8 @@ package org.apache.rampart;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisModule;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.modules.Module;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
@@ -31,8 +31,8 @@ public class Rampart implements Module /* , ModulePolicyExtension */  {
     }
 
     public void engageNotify(AxisDescription axisDescription) throws AxisFault {
-        //Nothing to do here, since RampartMessageData will pick up the 
-        //effective policy from the message context 
+        //Nothing to do here, since RampartMessageData will pick up the
+        //effective policy from the message context
     }
 
     public void shutdown(ConfigurationContext configurationContext) throws AxisFault {

@@ -25,8 +25,8 @@ import org.apache.axis2.addressing.AddressingFaultsHelper;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisOperation;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.handlers.AbstractHandler;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.Utils;
@@ -55,7 +55,7 @@ public class AddressingValidationHandler extends AbstractHandler implements Addr
             // Check that if wsaddressing=required that addressing headers were found inbound
             checkUsingAddressing(msgContext);
         }
-        
+
         // Check that if wsamInvocationPattern flag is in effect that the replyto and faultto are valid.
         if (JavaUtils.isTrue(msgContext.getProperty(ADDR_VALIDATE_INVOCATION_PATTERN), true)) {
             checkWSAMInvocationPattern(msgContext);
@@ -148,11 +148,11 @@ public class AddressingValidationHandler extends AbstractHandler implements Addr
         }
 
         AxisOperation axisOperation = msgContext.getAxisOperation();
-        
+
         if (axisOperation != null) {
             String mep = axisOperation.getMessageExchangePattern();
             int mepConstant = Utils.getAxisSpecifMEPConstant(mep);
-            
+
             if (mepConstant == WSDLConstants.MEP_CONSTANT_IN_OUT ||
                     mepConstant == WSDLConstants.MEP_CONSTANT_IN_OPTIONAL_OUT ||
                     mepConstant == WSDLConstants.MEP_CONSTANT_ROBUST_IN_ONLY) {

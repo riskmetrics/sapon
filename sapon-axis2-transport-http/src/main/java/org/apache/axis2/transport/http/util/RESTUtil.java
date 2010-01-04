@@ -154,8 +154,8 @@ public class RESTUtil {
                 AxisEndpoint axisEndpoint =
                         (AxisEndpoint) msgContext.getProperty(WSDL2Constants.ENDPOINT_LOCAL_NAME);
                 if (axisEndpoint != null) {
-                    AxisBindingOperation axisBindingOperation = (AxisBindingOperation) axisEndpoint
-                            .getBinding().getChild(axisOperation.getName());
+                    AxisBindingOperation axisBindingOperation = axisEndpoint
+                            .getBinding().getBindingOperation(axisOperation.getName());
                     msgContext.setProperty(Constants.AXIS_BINDING_OPERATION, axisBindingOperation);
                 }
                 msgContext.setAxisOperation(axisOperation);

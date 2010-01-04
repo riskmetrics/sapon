@@ -21,8 +21,8 @@ package org.apache.axis2.mex;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisModule;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.modules.Module;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +31,7 @@ import org.apache.neethi.Policy;
 
 /**
  * Metadata Exchange Module to support WS-MEX specification
- * 
+ *
  */
 public class MetadataExchangeModule implements Module {
 
@@ -45,17 +45,17 @@ public class MetadataExchangeModule implements Module {
 
 	public void init(ConfigurationContext configContext, AxisModule module)
 			throws AxisFault {
-	
+
 	}
 
 	public void shutdown(ConfigurationContext configurationContext)
 			throws AxisFault {
-	
+
 
 	}
 
 	public void applyPolicy(Policy policy, AxisDescription axisDescription) throws AxisFault {
-			
+
 	}
 
 	public boolean canSupportAssertion(Assertion assertion) {
