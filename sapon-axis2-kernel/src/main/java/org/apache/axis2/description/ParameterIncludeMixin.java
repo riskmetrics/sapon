@@ -17,7 +17,6 @@
  * under the License.
  */
 
-
 package org.apache.axis2.description;
 
 import java.io.Externalizable;
@@ -25,8 +24,9 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
@@ -38,23 +38,16 @@ import org.apache.axis2.context.externalize.SafeObjectInputStream;
 import org.apache.axis2.context.externalize.SafeObjectOutputStream;
 import org.apache.axis2.context.externalize.SafeSerializable;
 import org.apache.axis2.deployment.DeploymentConstants;
+import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/**
- * Class ParameterIncludeImpl
- */
-public class ParameterIncludeImpl
-    implements ParameterInclude, Externalizable, SafeSerializable {
-
-    /*
-     * setup for logging
-     */
-    private static final Log log = LogFactory.getLog(ParameterIncludeImpl.class);
-    private static boolean DEBUG_ENABLED = log.isTraceEnabled();
-    private static boolean DEBUG_PROPERTY_SET = log.isDebugEnabled();
+public class ParameterIncludeMixin
+    implements ParameterInclude, Externalizable, SafeSerializable
+{
+    private static final Log log = LogFactory.getLog(ParameterIncludeMixin.class);
 
     /**
      * @serial The serialization version ID tracks the version of the class.
@@ -79,34 +72,45 @@ public class ParameterIncludeImpl
     // current revision level of this object
     private static final int revisionID = REVISION_2;
 
+    private final Map<String, Parameter> parameters
+    	= new HashMap<String, Parameter>();
 
-    /**
-     * Field parmeters
-     */
-    protected final HashMap<String, Parameter> parameters;
+    /** List of ParameterObservers who want to be notified of changes */
+    protected List<ParameterObserver> parameterObservers = null;
 
-    /**
-     * Constructor ParameterIncludeImpl.
-     */
-    public ParameterIncludeImpl() {
-        parameters = new HashMap<String, Parameter>();
+    private ParameterInclude parent;
+
+    public void setParent(ParameterInclude parent) {
+    	this.parent = parent;
     }
 
-    /**
-     * Method addParameter
-     *
-     * @param param
-     */
-    public void addParameter(Parameter param) {
-        if (param != null) {
-            parameters.put(param.getName(), param);
-            if (DEBUG_ENABLED) {
-                this.debugParameterAdd(param);
+    public ParameterInclude getParent() {
+    	return parent;
+    }
+
+    public void addParameter(Parameter param) throws AxisFault {
+        if (isParameterLocked(param.getName())) {
+            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
+        }
+
+        parameters.put(param.getName(), param);
+       	if (log.isDebugEnabled()) {
+        	this.debugParameterAdd(param);
+        }
+
+        // Tell anyone who wants to know
+        if (parameterObservers != null) {
+            for (Object parameterObserver : parameterObservers) {
+                ParameterObserver observer = (ParameterObserver)parameterObserver;
+                observer.parameterChanged(param.getName(), param.getValue());
             }
         }
     }
 
     public void removeParameter(Parameter param) throws AxisFault {
+        if (isParameterLocked(param.getName())) {
+            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
+        }
         parameters.remove(param.getName());
     }
 
@@ -169,25 +173,25 @@ public class ParameterIncludeImpl
      * @return Returns parameter.
      */
     public Parameter getParameter(String name) {
-        return parameters.get(name);
-    }
-
-    public ArrayList<Parameter> getParameters() {
-        Collection<Parameter> col = parameters.values();
-        ArrayList<Parameter> para_list = new ArrayList<Parameter>();
-
-        for (Parameter parameter2 : col) {
-            Parameter parameter = parameter2;
-
-            para_list.add(parameter);
+    	Parameter parameter = parameters.get(name);
+        if (parameter == null && parent != null) {
+            return parent.getParameter(name);
+        } else {
+            return parameter;
         }
-
-        return para_list;
     }
 
-    // to check whether the parameter is locked at any level
+    public List<Parameter> getParameters() {
+        return new ArrayList<Parameter>(parameters.values());
+    }
+
     public boolean isParameterLocked(String parameterName) {
-        return false;
+        if (parent != null && parent.isParameterLocked(parameterName)) {
+            return true;
+        } else {
+            Parameter parameter = getParameter(parameterName);
+            return (parameter != null) && parameter.isLocked();
+        }
     }
 
     /* ===============================================================
@@ -227,7 +231,6 @@ public class ParameterIncludeImpl
         // collection of parameters
         //---------------------------------------------------------
         out.writeMap(parameters);
-
     }
 
 
@@ -282,7 +285,7 @@ public class ParameterIncludeImpl
      * @param value
      */
     private void debugParameterAdd(Parameter parameter) {
-        if (DEBUG_PROPERTY_SET) {
+        if (log.isDebugEnabled()) {
             String key = parameter.getName();
             Object value = parameter.getValue();
             String className = (value == null) ? "null" : value.getClass().getName();
@@ -307,6 +310,19 @@ public class ParameterIncludeImpl
             log.debug("  Value Classloader = " + classloader);
             log.debug(  "Call Stack = " + JavaUtils.callStackToString());
             log.debug("==================");
+        }
+    }
+
+    public void addParameterObserver(ParameterObserver observer) {
+        if (parameterObservers == null) {
+			parameterObservers = new ArrayList<ParameterObserver>();
+		}
+        parameterObservers.add(observer);
+    }
+
+    public void removeParameterObserver(ParameterObserver observer) {
+        if (parameterObservers != null) {
+            parameterObservers.remove(observer);
         }
     }
 }
