@@ -21,121 +21,36 @@ package org.apache.axis2.description;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
-import org.apache.axiom.om.util.UUIDGenerator;
+import org.apache.axis2.AxisFault;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyReference;
 
-public class PolicySubject {
+public interface PolicySubject {
 
-	private boolean updated = false;
-	private Date lastUpdatedTime = new Date();
-	
-	private HashMap<String, PolicyComponent> attachedPolicyComponents = new HashMap<String, PolicyComponent>();
+	//TODO: what's the difference between applyPolicy and attachPolicy?
+	void applyPolicy(Policy policy) throws AxisFault;
+	void applyPolicy() throws AxisFault;
 
-	public void attachPolicy(Policy policy) {
-		String key = policy.getName();
-		if (key == null) {
-			key = policy.getId();
-			if (key == null) {
-				key = UUIDGenerator.getUUID();
-				policy.setId(key);
-			}
-		}
-		attachPolicyComponent(key, policy);
-	}
+	void attachPolicy(Policy policy);
+	void attachPolicyReference(PolicyReference reference);
 
-	public void attachPolicyReference(PolicyReference reference) {
-		attachedPolicyComponents.put(reference.getURI(), reference);
-		setLastUpdatedTime(new Date()); 
-	}
+	void attachPolicyComponent(PolicyComponent policyComponent);
+	void attachPolicyComponent(String key, PolicyComponent policyComponent);
+	PolicyComponent getAttachedPolicyComponent(String key);
+	PolicyComponent detachPolicyComponent(String key);
 
-	public void attachPolicyComponents(List<PolicyComponent> policyComponents) {
-		for (Iterator<PolicyComponent> iterator = policyComponents.iterator(); iterator
-				.hasNext();) {
-			attachPolicyComponent((PolicyComponent) iterator.next());
-		}
-	}
+	void attachPolicyComponents(Collection<PolicyComponent> policyComponents);
+	Collection<PolicyComponent> getAttachedPolicyComponents();
+	void clearPolicyComponents();
 
-	public void attachPolicyComponent(PolicyComponent policyComponent) {
-		if (policyComponent instanceof Policy) {
-			attachPolicy((Policy) policyComponent);
-		} else if (policyComponent instanceof PolicyReference) {
-			attachPolicyReference((PolicyReference) policyComponent);
-		} else {
-			throw new IllegalArgumentException(
-					"Invalid top level policy component type");
-		}
+	Iterator<PolicyComponent> getEffectivePolicyComponents();
+	Policy getEffectivePolicy();
 
-	}
+	boolean isPolicyUpdated();
+	void updatePolicy(Policy policy);
+	Date getLastPolicyUpdateTime();
 
-	public void attachPolicyComponent(String key,
-			PolicyComponent policyComponent) {
-		attachedPolicyComponents.put(key, policyComponent);
-		setLastUpdatedTime(new Date());
-		
-		if (!isUpdated()) {
-			setUpdated(true);
-		}
-	}
-
-	public PolicyComponent getAttachedPolicyComponent(String key) {
-		return (PolicyComponent) attachedPolicyComponents.get(key);
-
-	}
-
-	public Collection<PolicyComponent> getAttachedPolicyComponents() {
-		return attachedPolicyComponents.values();
-	}
-
-	public boolean isUpdated() {
-		return updated;
-	}
-
-	public void setUpdated(boolean updated) {
-		this.updated = updated;
-	}
-
-	public void updatePolicy(Policy policy) {
-		String key = (policy.getName() != null) ? policy.getName() : policy
-				.getId();
-		if (key == null) {
-			throw new IllegalArgumentException(
-					"policy doesn't have a name or an id ");
-		}
-		attachedPolicyComponents.put(key, policy);
-		setLastUpdatedTime(new Date());
-		
-		if (!isUpdated()) {
-			setUpdated(true);
-		}
-	}
-
-	public void detachPolicyComponent(String key) {
-		attachedPolicyComponents.remove(key);
-		setLastUpdatedTime(new Date());
-		if (!isUpdated()) {
-			setUpdated(true);
-		}
-	}
-
-	public void clear() {
-		attachedPolicyComponents.clear();
-		setLastUpdatedTime(new Date());
-		if (!isUpdated()) {
-			setUpdated(true);
-		}
-	}
-
-	public Date getLastUpdatedTime() {
-		return lastUpdatedTime;
-	}
-
-	public void setLastUpdatedTime(Date lastUpdatedTime) {
-		this.lastUpdatedTime = lastUpdatedTime;
-	}
 }
