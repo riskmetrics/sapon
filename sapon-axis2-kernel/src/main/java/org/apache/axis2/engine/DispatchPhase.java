@@ -134,9 +134,7 @@ public class DispatchPhase extends Phase {
 	            if (requestResponseTransport != null) {
 	                ((RequestResponseTransport) requestResponseTransport).acknowledgeMessage(msgContext);
 	            }
-	        } else if (mepString.equals(WSDL20_2006Constants.MEP_URI_IN_OUT)
-	                || mepString.equals(WSDL20_2004_Constants.MEP_URI_IN_OUT)
-	                || mepString.equals(WSDL2Constants.MEP_URI_IN_OUT)) { // OR, if 2 way operation but the response is intended to not use the response channel of a 2-way transport
+	        } else if (isMEPInOut(mepString)) { // OR, if 2 way operation but the response is intended to not use the response channel of a 2-way transport
 	            // then we don't need to keep the transport waiting.
 	            Object requestResponseTransport =
 	                    msgContext.getProperty(RequestResponseTransport.TRANSPORT_CONTROL);
@@ -154,6 +152,13 @@ public class DispatchPhase extends Phase {
         msgContext.setExecutionChain(new ArrayList<Phase>(operationChain));
     }
 
+    @SuppressWarnings("deprecation")
+	private boolean isMEPInOut(String mepString) {
+    	return mepString.equals(WSDL20_2006Constants.MEP_URI_IN_OUT)
+        	|| mepString.equals(WSDL20_2004_Constants.MEP_URI_IN_OUT)
+        	|| mepString.equals(WSDL2Constants.MEP_URI_IN_OUT);
+    }
+
     private void loadContexts(AxisService service, MessageContext msgContext) throws AxisFault {
         String scope = service == null ? null : service.getScope();
         ServiceContext serviceContext = msgContext.getServiceContext();
@@ -161,7 +166,7 @@ public class DispatchPhase extends Phase {
         if ((msgContext.getOperationContext() != null)
                 && (serviceContext != null)) {
             msgContext.setServiceGroupContextId(
-                    ((ServiceGroupContext)serviceContext.getParent()).getId());
+                    (serviceContext.getParent()).getId());
             return;
         }
         if (Constants.SCOPE_TRANSPORT_SESSION.equals(scope)) {
@@ -182,9 +187,9 @@ public class DispatchPhase extends Phase {
 //            axisOperation.registerOperationContext(msgContext, operationContext);
             axisOperation.registerMessageContext(msgContext, operationContext);
 
-            serviceContext = (ServiceContext) operationContext.getParent();
+            serviceContext = operationContext.getParent();
             ServiceGroupContext serviceGroupContext =
-                    (ServiceGroupContext) serviceContext.getParent();
+                    serviceContext.getParent();
 
             msgContext.setServiceContext(serviceContext);
             msgContext.setServiceGroupContext(serviceGroupContext);
@@ -297,7 +302,7 @@ public class DispatchPhase extends Phase {
                 return;
             }
         }
-        String serviceGroupName = msgContext.getAxisServiceGroup().getServiceGroupName();
+        String serviceGroupName = msgContext.getAxisServiceGroup().getName();
         ServiceGroupContext serviceGroupContext =
                 sessionContext.getServiceGroupContext(serviceGroupName);
         if (serviceGroupContext != null) {
@@ -320,7 +325,7 @@ public class DispatchPhase extends Phase {
                                        MessageContext msgContext,
                                        SessionContext sessionContext) throws AxisFault {
         ServiceGroupContext serviceGroupContext;
-        AxisServiceGroup axisServiceGroup = service.getAxisServiceGroup();
+        AxisServiceGroup axisServiceGroup = service.getServiceGroup();
         ConfigurationContext configCtx = msgContext.getConfigurationContext();
         serviceGroupContext = configCtx.createServiceGroupContext(axisServiceGroup);
 
@@ -351,7 +356,8 @@ public class DispatchPhase extends Phase {
      * This method will determine if the MEP indicated by 'mepString' specifies
      * a oneway MEP.
      */
-    boolean isOneway(String mepString) {
+    @SuppressWarnings("deprecation")
+	boolean isOneway(String mepString) {
         return (mepString.equals(WSDL20_2006Constants.MEP_URI_IN_ONLY)
                 || mepString.equals(WSDL20_2004_Constants.MEP_URI_IN_ONLY)
                 || mepString.equals(WSDL2Constants.MEP_URI_IN_ONLY));

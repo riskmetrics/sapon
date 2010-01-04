@@ -46,16 +46,18 @@ import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.ModuleDeployer;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.axis2.deployment.util.PhasesInfo;
-import org.apache.axis2.description.AxisDescription;
+import org.apache.axis2.description.AxisDescriptionBase;
 import org.apache.axis2.description.AxisEndpoint;
 import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.description.ModuleConfiguration;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.description.TransportOutDescription;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.phaseresolver.PhaseResolver;
@@ -64,11 +66,12 @@ import org.apache.axis2.util.TargetResolver;
 import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.neethi.Policy;
 
 /**
  * Class AxisConfiguration
  */
-public class AxisConfiguration extends AxisDescription
+public class AxisConfiguration extends AxisDescriptionBase
 	implements ModuleConfigAccessor
 {
     private static final Log log = LogFactory.getLog(AxisConfiguration.class);
@@ -142,6 +145,8 @@ public class AxisConfiguration extends AxisDescription
 
     private AxisConfigurator configurator;
 
+    private Map<String, AxisServiceGroup> children;
+
     /**
      * Constructor AxisConfiguration.
      */
@@ -166,6 +171,7 @@ public class AxisConfiguration extends AxisDescription
                 });
         serviceClassLoader = systemClassLoader;
         moduleClassLoader = systemClassLoader;
+        children = new HashMap<String, AxisServiceGroup>();
 
         this.phasesinfo = new PhasesInfo();
         targetResolvers = new ArrayList<TargetResolver>();
@@ -282,9 +288,9 @@ public class AxisConfiguration extends AxisDescription
      * @throws AxisFault
      */
     public synchronized void addService(AxisService service) throws AxisFault {
-        AxisServiceGroup axisServiceGroup = new AxisServiceGroup();
-        axisServiceGroup.setServiceGroupName(service.getName());
-        axisServiceGroup.setParent(this);
+        AxisServiceGroup axisServiceGroup = new AxisServiceGroupImpl();
+        axisServiceGroup.setName(service.getName());
+        axisServiceGroup.setAxisConfiguration(this);
         axisServiceGroup.addService(service);
         addServiceGroup(axisServiceGroup);
 //        processEndpoints(service, service.getAxisConfiguration());
@@ -292,7 +298,7 @@ public class AxisConfiguration extends AxisDescription
 
     public synchronized void addServiceGroup(AxisServiceGroup axisServiceGroup)
             throws AxisFault {
-        axisServiceGroup.setParent(this);
+        axisServiceGroup.setAxisConfiguration(this);
         notifyObservers(AxisEvent.SERVICE_DEPLOY, axisServiceGroup);
 
         for(final AxisService axisService: axisServiceGroup.getServices()) {
@@ -314,7 +320,7 @@ public class AxisConfiguration extends AxisDescription
 
         ArrayList<AxisService> servicesIAdded = new ArrayList<AxisService>();
         for(final AxisService axisService: axisServiceGroup.getServices()) {
-            processEndpoints(axisService, axisService.getAxisConfiguration());
+            processEndpoints(axisService, axisService.getConfiguration());
 
             Map<String, AxisEndpoint> endpoints = axisService.getEndpoints();
             String serviceName = axisService.getName();
@@ -354,7 +360,7 @@ public class AxisConfiguration extends AxisDescription
         }
         // serviceGroups.put(axisServiceGroup.getServiceGroupName(),
         // axisServiceGroup);
-        addChild(axisServiceGroup);
+        children.put(axisServiceGroup.getName(), axisServiceGroup);
     }
 
     public void addToAllServicesMap(AxisService axisService) throws AxisFault {
@@ -381,7 +387,7 @@ public class AxisConfiguration extends AxisDescription
     }
 
     public AxisServiceGroup removeServiceGroup(String serviceGroupName) throws AxisFault {
-        AxisServiceGroup axisServiceGroup = (AxisServiceGroup) getChild(serviceGroupName);
+        AxisServiceGroup axisServiceGroup = children.get(serviceGroupName);
         if (axisServiceGroup == null) {
             throw new AxisFault(Messages.getMessage("invalidservicegroupname",
                                                     serviceGroupName));
@@ -406,7 +412,7 @@ public class AxisConfiguration extends AxisDescription
             }
 
         }
-        removeChild(serviceGroupName);
+        children.remove(serviceGroupName);
         if (!isClientSide) {
             notifyObservers(AxisEvent.SERVICE_REMOVE, axisServiceGroup);
         }
@@ -560,7 +566,7 @@ public class AxisConfiguration extends AxisDescription
     public synchronized void removeService(String name) throws AxisFault {
         AxisService service = allServices.remove(name);
         if (service != null) {
-            AxisServiceGroup serviceGroup = service.getAxisServiceGroup();
+            AxisServiceGroup serviceGroup = service.getServiceGroup();
             serviceGroup.removeService(name);
             log.debug(Messages.getMessage("serviceremoved", name));
         }
@@ -817,13 +823,11 @@ public class AxisConfiguration extends AxisDescription
     public AxisServiceGroup getServiceGroup(String serviceNameAndGroupString) {
         // return (AxisServiceGroup)
         // serviceGroups.get(serviceNameAndGroupString);
-        return (AxisServiceGroup) getChild(serviceNameAndGroupString);
+        return children.get(serviceNameAndGroupString);
     }
 
-    @SuppressWarnings("unchecked")
 	public Iterable<AxisServiceGroup> getServiceGroups() {
-    	//TODO: can we do this with generics?
-        return (Iterable<AxisServiceGroup>)getChildren();
+        return children.values();
     }
 
     // To get all the services in the system
@@ -954,11 +958,6 @@ public class AxisConfiguration extends AxisDescription
 
     public void setClusterManager(ClusterManager clusterManager) {
         this.clusterManager = clusterManager;
-    }
-
-    @Override
-	public Object getKey() {
-        return toString();
     }
 
     public void stopService(String serviceName) throws AxisFault {
@@ -1251,5 +1250,16 @@ public class AxisConfiguration extends AxisDescription
 			org.apache.axis2.deployment.util.Utils.addEndpointsToService(
 					axisService, axisConfiguration);
 		}
+	}
+
+	@Override
+	public AxisConfiguration getConfiguration() {
+		return this;
+	}
+
+	@Override
+	public Policy getEffectivePolicy() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException();
 	}
 }

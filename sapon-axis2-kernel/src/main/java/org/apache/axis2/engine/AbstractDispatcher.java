@@ -112,8 +112,8 @@ public abstract class AbstractDispatcher extends AbstractHandler {
 
                 if (axisEndpoint != null) {
                     AxisBinding axisBinding = axisEndpoint.getBinding();
-					AxisBindingOperation axisBindingOperation = (AxisBindingOperation) axisBinding
-							.getChild(axisOperation.getName());
+					AxisBindingOperation axisBindingOperation
+						= axisBinding.getBindingOperation(axisOperation.getName());
 					if (axisBindingOperation == null) {
 						String localName = axisOperation.getName().getLocalPart();
 						for (final AxisBindingOperation bindingOp: axisBinding.getChildren()) {
