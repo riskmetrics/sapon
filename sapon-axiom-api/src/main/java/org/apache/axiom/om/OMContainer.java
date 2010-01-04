@@ -32,7 +32,7 @@ public interface OMContainer {
 
     /**
      * Adds the given node as the last child. One must preserve the order of
-     * children, in this operation. Tip : appending the new child is preferred.
+     * children, in this operation. Appending the new child is preferred.
      *
      * @param omNode
      */
