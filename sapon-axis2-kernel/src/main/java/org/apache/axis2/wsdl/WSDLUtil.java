@@ -19,9 +19,9 @@
 
 package org.apache.axis2.wsdl;
 
-import org.apache.axis2.description.WSDL2Constants;
-
 import javax.xml.namespace.QName;
+
+import org.apache.axis2.description.WSDL2Constants;
 
 /**
  * Some utility methods for the WSDL users
@@ -34,7 +34,8 @@ public class WSDLUtil {
      *
      * @param mep
      */
-    public static boolean isInputPresentForMEP(String mep) {
+    @SuppressWarnings("deprecation")
+	public static boolean isInputPresentForMEP(String mep) {
         return WSDLConstants.WSDL20_2006Constants.MEP_URI_IN_OPTIONAL_OUT.equals(mep) ||
                 WSDL2Constants.MEP_URI_IN_ONLY.equals(mep) ||
                 WSDL2Constants.MEP_URI_IN_OUT.equals(mep) ||
