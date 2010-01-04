@@ -21,16 +21,22 @@
 package org.apache.axis2.description;
 
 import java.net.URL;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.engine.AxisConfiguration;
-import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.modules.Module;
+import org.apache.neethi.Policy;
+import org.apache.neethi.PolicyComponent;
+import org.apache.neethi.PolicyReference;
 
 /**
  * <p>This holds the information about a Module. </p>
@@ -41,25 +47,17 @@ import org.apache.axis2.modules.Module;
  * <p>Handler are registered once they are available. They are available to all services if axis2.xml
  * has a module ref="." or available to a single service if services.xml have module ref=".."</p>
  */
-public class AxisModule implements ParameterInclude {
-
-    /**
-     * Field flowInclude
-     */
+public class AxisModule
+	implements ParameterInclude, PolicySubject
+{
     private final FlowInclude flowInclude = new FlowInclude();
 
-    /**
-     * Field parameters
-     */
-    private final ParameterInclude parameters = new ParameterIncludeImpl();
+    private ParameterIncludeMixin parameters = new ParameterIncludeMixin();
     private Module module;
     private ClassLoader moduleClassLoader;
     // To keep the File that module came from
     private URL fileName;
 
-    /**
-     * Field name
-     */
     private String name;
 
     //This is to keep the version number of the module, if the module name is a-b-c-1.3.mar ,
@@ -67,13 +65,8 @@ public class AxisModule implements ParameterInclude {
     private String version;
 
     // to store module operations , which are suppose to be added to a service if it is engaged to a service
-    private HashMap<QName, AxisOperation> operations = new HashMap<QName, AxisOperation>();
+    private Map<QName, AxisOperation> operations = new HashMap<QName, AxisOperation>();
     private AxisConfiguration parent;
-
-    /*
-    * to store policies which are valid for any service for which the module is engaged
-    */
-    private PolicyInclude policyInclude = null;
 
     // Small description about the module
     private String moduleDescription;
@@ -84,12 +77,10 @@ public class AxisModule implements ParameterInclude {
     public static final String VERSION_SNAPSHOT = "SNAPSHOT";
     public static final String MODULE_SERVICE = "moduleService";
 
-    private PolicySubject policySubject = new PolicySubject();
+    private PolicySubjectMixin policySubject = new PolicySubjectMixin();
 
-    /**
-     * Constructor ModuleDescription.
-     */
     public AxisModule() {
+    	this(null);
     }
 
     /**
@@ -105,32 +96,20 @@ public class AxisModule implements ParameterInclude {
         operations.put(axisOperation.getName(), axisOperation);
     }
 
-    /**
-     * @param param : Parameter to be added
-     */
+    @Override
     public void addParameter(Parameter param) throws AxisFault {
-        if (isParameterLocked(param.getName())) {
-            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
-        } else {
-            parameters.addParameter(param);
-        }
+    	parameters.addParameter(param);
     }
 
+    @Override
     public void removeParameter(Parameter param) throws AxisFault {
-        if (isParameterLocked(param.getName())) {
-            throw new AxisFault(Messages.getMessage("paramterlockedbyparent", param.getName()));
-        } else {
-            parameters.removeParameter(param);
-        }
+    	parameters.removeParameter(param);
     }
 
     public void deserializeParameters(OMElement parameterElement) throws AxisFault {
         this.parameters.deserializeParameters(parameterElement);
     }
 
-    /**
-     * @return Returns Flow.
-     */
     public Flow getFaultInFlow() {
         return flowInclude.getFaultInFlow();
     }
@@ -139,16 +118,10 @@ public class AxisModule implements ParameterInclude {
         return flowInclude.getFaultOutFlow();
     }
 
-    /**
-     * @return Returns Flow.
-     */
     public Flow getInFlow() {
         return flowInclude.getInFlow();
     }
 
-    /**
-     * @return Returns Module.
-     */
     public Module getModule() {
         return module;
     }
@@ -165,20 +138,14 @@ public class AxisModule implements ParameterInclude {
         return name;
     }
 
-    public HashMap<QName, AxisOperation> getOperations() {
+    public Map<QName, AxisOperation> getOperations() {
         return operations;
     }
 
-    /**
-     * @return Returns Flow.
-     */
     public Flow getOutFlow() {
         return flowInclude.getOutFlow();
     }
 
-    /**
-     * @return Returns Parameter.
-     */
     public Parameter getParameter(String name) {
         return parameters.getParameter(name);
     }
@@ -193,33 +160,13 @@ public class AxisModule implements ParameterInclude {
 
     // to check whether a given parameter is locked
     public boolean isParameterLocked(String parameterName) {
-
-        // checking the locked value of parent
-        boolean loscked = false;
-
-        if (this.parent != null) {
-            loscked = this.parent.isParameterLocked(parameterName);
-        }
-
-        if (loscked) {
-            return true;
-        } else {
-            Parameter parameter = getParameter(parameterName);
-
-            return (parameter != null) && parameter.isLocked();
-        }
+    	return parameters.isParameterLocked(parameterName);
     }
 
-    /**
-     * @param faultFlow : Arryalist of handlerDescriptions
-     */
     public void setFaultInFlow(Flow faultFlow) {
         flowInclude.setFaultInFlow(faultFlow);
     }
 
-    /**
-     * @param faultFlow : Arryalist of HandlerDescriptions
-     */
     public void setFaultOutFlow(Flow faultFlow) {
         flowInclude.setFaultOutFlow(faultFlow);
     }
@@ -228,9 +175,6 @@ public class AxisModule implements ParameterInclude {
         flowInclude.setInFlow(inFlow);
     }
 
-    /**
-     * @param module : AxisModule
-     */
     public void setModule(Module module) {
         this.module = module;
     }
@@ -252,21 +196,8 @@ public class AxisModule implements ParameterInclude {
 
     public void setParent(AxisConfiguration parent) {
         this.parent = parent;
-    }
-
-    public void setPolicyInclude(PolicyInclude policyInclude) {
-        this.policyInclude = policyInclude;
-    }
-
-    public PolicyInclude getPolicyInclude() {
-        if (policyInclude == null) {
-            policyInclude = new PolicyInclude();
-        }
-        return policyInclude;
-    }
-
-    public PolicySubject getPolicySubject() {
-    	return policySubject;
+        this.policySubject.setParent(parent);
+        this.parameters.setParent(parent);
     }
 
     public String getModuleDescription() {
@@ -301,7 +232,6 @@ public class AxisModule implements ParameterInclude {
         this.fileName = fileName;
     }
 
-
     public String getVersion() {
         return version;
     }
@@ -309,4 +239,94 @@ public class AxisModule implements ParameterInclude {
     public void setVersion(String version) {
         this.version = version;
     }
+
+	@Override
+	public void addParameterObserver(ParameterObserver observer) {
+		parameters.addParameterObserver(observer);
+	}
+
+	@Override
+	public void removeParameterObserver(ParameterObserver observer) {
+		parameters.removeParameterObserver(observer);
+	}
+
+	@Override
+	public void applyPolicy(Policy policy) throws AxisFault {
+		policySubject.applyPolicy(policy);
+	}
+
+	@Override
+	public void applyPolicy() throws AxisFault {
+		policySubject.applyPolicy();
+	}
+
+	@Override
+	public void attachPolicy(Policy policy) {
+		policySubject.attachPolicy(policy);
+	}
+
+	@Override
+	public void attachPolicyComponent(PolicyComponent policyComponent) {
+		policySubject.attachPolicyComponent(policyComponent);
+	}
+
+	@Override
+	public void attachPolicyComponent(String key, PolicyComponent policyComponent) {
+		policySubject.attachPolicyComponent(key, policyComponent);
+	}
+
+	@Override
+	public void attachPolicyComponents(Collection<PolicyComponent> policyComponents) {
+		policySubject.attachPolicyComponents(policyComponents);
+	}
+
+	@Override
+	public void attachPolicyReference(PolicyReference reference) {
+		policySubject.attachPolicyReference(reference);
+	}
+
+	@Override
+	public void clearPolicyComponents() {
+		policySubject.clearPolicyComponents();
+	}
+
+	@Override
+	public PolicyComponent detachPolicyComponent(String key) {
+		return policySubject.detachPolicyComponent(key);
+	}
+
+	@Override
+	public PolicyComponent getAttachedPolicyComponent(String key) {
+		return policySubject.getAttachedPolicyComponent(key);
+	}
+
+	@Override
+	public Collection<PolicyComponent> getAttachedPolicyComponents() {
+		return policySubject.getAttachedPolicyComponents();
+	}
+
+	@Override
+	public Policy getEffectivePolicy() {
+		return policySubject.getEffectivePolicy(null);
+	}
+
+	@Override
+	public Iterator<PolicyComponent> getEffectivePolicyComponents() {
+		return policySubject.getEffectivePolicyComponents();
+	}
+
+	@Override
+	public Date getLastPolicyUpdateTime() {
+		return policySubject.getLastUpdatedTime();
+	}
+
+	@Override
+	public boolean isPolicyUpdated() {
+		return policySubject.isPolicyUpdated();
+	}
+
+	@Override
+	public void updatePolicy(Policy policy) {
+		policySubject.updatePolicy(policy);
+	}
 }
