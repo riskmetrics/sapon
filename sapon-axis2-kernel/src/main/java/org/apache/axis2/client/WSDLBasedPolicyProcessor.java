@@ -30,11 +30,10 @@ import javax.xml.namespace.QName;
 
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
-import org.apache.axis2.description.PolicyInclude;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -79,12 +78,9 @@ public class WSDLBasedPolicyProcessor {
     }
 
     public void configureOperationPolices(AxisOperation op) throws AxisFault {
-    	PolicyInclude policyInclude = op.getPolicyInclude();
-    	Policy policy = policyInclude.getEffectivePolicy();
+    	Policy policy = op.getEffectivePolicy();
     	if (policy != null) {
-    		policy = (Policy)policy.normalize(
-    				policyInclude.getPolicyRegistry(),
-    				false );
+    		policy = (Policy)policy.normalize( false );
 
     		Set<String> namespaceSet = new HashSet<String>();
     		for (List<PolicyComponent> assertionList: policy.getAlternatives()) {
