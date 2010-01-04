@@ -77,7 +77,6 @@ import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.axis2.description.AxisBinding;
 import org.apache.axis2.description.AxisBindingMessage;
 import org.apache.axis2.description.AxisBindingOperation;
-import org.apache.axis2.description.AxisDescription;
 import org.apache.axis2.description.AxisEndpoint;
 import org.apache.axis2.description.AxisMessage;
 import org.apache.axis2.description.AxisModule;
@@ -85,6 +84,7 @@ import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisOperationFactory;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.description.Flow;
 import org.apache.axis2.description.HandlerDescription;
 import org.apache.axis2.description.Parameter;
@@ -721,7 +721,7 @@ public class Utils {
                             }
                         }
                     }
-                    AxisServiceGroup serviceGroup = new AxisServiceGroup(
+                    AxisServiceGroup serviceGroup = new AxisServiceGroupImpl(
                             axisConfig);
                     serviceGroup.setServiceGroupClassLoader(filedata
                             .getClassLoader());
@@ -1028,8 +1028,7 @@ public class Utils {
         Iterator<String> transportInValues = null;
 
         if (axisService.isEnableAllTransports()) {
-            AxisConfiguration axisConfiguration = axisService
-                    .getAxisConfiguration();
+            AxisConfiguration axisConfiguration = axisService.getConfiguration();
             if (axisConfiguration != null) {
                 List<String> transports = new ArrayList<String>();
                 for (Object o : axisConfiguration.getTransportsIn().values()) {
@@ -1335,8 +1334,7 @@ public class Utils {
             axisBinding.setProperty(WSDL2Constants.ATTR_WSOAP_VERSION,
                                     SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI);
 
-            for (final AxisDescription desc: axisService.getChildren()) {
-                final AxisOperation operation = (AxisOperation)desc;
+            for (AxisOperation operation: axisService.getOperations()) {
                 final AxisBindingOperation axisBindingOperation
                 	= new AxisBindingOperation();
 
@@ -1348,8 +1346,7 @@ public class Utils {
                     axisBindingOperation.setProperty(
                             WSDL2Constants.ATTR_WSOAP_ACTION, soapAction);
                 }
-                axisBinding.addChild(axisBindingOperation.getName(),
-                                     axisBindingOperation);
+                axisBinding.addBindingOperation(axisBindingOperation);
                 populateBindingOperation(axisBinding,
                                          axisBindingOperation);
             }
@@ -1380,8 +1377,7 @@ public class Utils {
             axisBinding.setProperty(WSDL2Constants.ATTR_WSOAP_VERSION,
                                     SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI);
 
-            for (final AxisDescription desc: axisService.getChildren()) {
-                final AxisOperation operation = (AxisOperation)desc;
+            for (final AxisOperation operation: axisService.getOperations()) {
                 final AxisBindingOperation axisBindingOperation
                 	= new AxisBindingOperation();
 
@@ -1393,8 +1389,7 @@ public class Utils {
                     axisBindingOperation.setProperty(
                             WSDL2Constants.ATTR_WSOAP_ACTION, soapAction);
                 }
-                axisBinding.addChild(axisBindingOperation.getName(),
-                                     axisBindingOperation);
+                axisBinding.addBindingOperation(axisBindingOperation);
 
                 populateBindingOperation(axisBinding,
                                          axisBindingOperation);
@@ -1423,8 +1418,7 @@ public class Utils {
             axisBinding.setType(WSDL2Constants.URI_WSDL2_HTTP);
             axisBinding.setProperty(WSDL2Constants.ATTR_WHTTP_METHOD, "POST");
 
-            for (final AxisDescription desc: axisService.getChildren()) {
-                final AxisOperation operation = (AxisOperation)desc;
+            for (final AxisOperation operation: axisService.getOperations()) {
                 final AxisBindingOperation axisBindingOperation
                 	= new AxisBindingOperation();
 
@@ -1433,8 +1427,7 @@ public class Utils {
                 axisBindingOperation.setAxisOperation(operation);
                 String httpLocation = operationQName.getLocalPart();
                 axisBindingOperation.setProperty(WSDL2Constants.ATTR_WHTTP_LOCATION, httpLocation);
-                axisBinding.addChild(axisBindingOperation.getName(),
-                                     axisBindingOperation);
+                axisBinding.addBindingOperation(axisBindingOperation);
 
                 populateBindingOperation(axisBinding,
                                          axisBindingOperation);
@@ -1463,8 +1456,9 @@ public class Utils {
             axisBindingInMessage.setAxisMessage(axisInMessage);
 
             axisBindingInMessage.setParent(axisBindingOperation);
-            axisBindingOperation.addChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE,
-                                          axisBindingInMessage);
+            axisBindingOperation.addBindingMessage(
+            		WSDLConstants.MESSAGE_LABEL_IN_VALUE,
+            		axisBindingInMessage);
         }
 
         if (WSDLUtil.isOutputPresentForMEP(axisOperation
@@ -1478,7 +1472,7 @@ public class Utils {
             axisBindingOutMessage.setAxisMessage(axisOutMessage);
 
             axisBindingOutMessage.setParent(axisBindingOperation);
-            axisBindingOperation.addChild(
+            axisBindingOperation.addBindingMessage(
                     WSDLConstants.MESSAGE_LABEL_OUT_VALUE,
                     axisBindingOutMessage);
         }
@@ -1516,8 +1510,7 @@ public class Utils {
                 String[] identifiers = identifier.split("/");
                 int key = identifiers.length;
                 if (key == 1) {
-                    axisBinding.getPolicySubject().attachPolicyComponents(
-                            policyComponents);
+                    axisBinding.attachPolicyComponents(policyComponents);
                 } else if (key == 2 || key == 3) {
                     String opName = identifiers[1];
                     opName = opName.substring(opName.indexOf(":") + 1, opName
@@ -1537,22 +1530,19 @@ public class Utils {
                     }
 
                     if (key == 2) {
-                        bindingOperation.getPolicySubject()
-                                .attachPolicyComponents(policyComponents);
+                        bindingOperation.attachPolicyComponents(policyComponents);
                     } else {
                         if ("in".equals(identifiers[2])) {
                             AxisBindingMessage bindingInMessage =
-                                    (AxisBindingMessage)bindingOperation
-                                            .getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
-                            bindingInMessage.getPolicySubject()
-                                    .attachPolicyComponents(policyComponents);
+                                    bindingOperation
+							        .getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+                            bindingInMessage.attachPolicyComponents(policyComponents);
 
                         } else if ("out".equals(identifiers[2])) {
                             AxisBindingMessage bindingOutMessage =
-                                    (AxisBindingMessage)bindingOperation
-                                            .getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
-                            bindingOutMessage.getPolicySubject()
-                                    .attachPolicyComponents(policyComponents);
+                                    bindingOperation
+							        .getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
+                            bindingOutMessage.attachPolicyComponents(policyComponents);
                         } else {
                             // FIXME faults
                         }
@@ -1641,11 +1631,10 @@ public class Utils {
         return null;
     }
 
-    public static AxisBindingMessage getBindingMessage(AxisBindingOperation bindingOperation,
+    public static AxisBindingMessage getBindingMessage(AxisBindingOperation bindingOp,
                                                        AxisMessage message) {
         String msgName = message.getName();
-        for (final AxisDescription desc: bindingOperation.getChildren()) {
-            AxisBindingMessage bindingMessage = (AxisBindingMessage)desc;
+        for(AxisBindingMessage bindingMessage: bindingOp.getBindingMessages()) {
             if (msgName.equals(bindingMessage.getName())) {
                 return bindingMessage;
             }

@@ -150,16 +150,14 @@ public class AxisConfigBuilder extends DescriptionBuilder {
             Iterable<OMElement> policyElements = config_element.getChildrenWithName(new QName(POLICY_NS_URI,
                                                                                    TAG_POLICY));
             if (policyElements != null) {
-                processPolicyElements(policyElements,
-                                      axisConfig.getPolicySubject());
+                processPolicyElements(policyElements, axisConfig);
             }
 
             // processing <wsp:PolicyReference> .. </..> elements
             Iterable<OMElement> policyRefElements = config_element.getChildrenWithName(new QName(POLICY_NS_URI,
                                                                                       TAG_POLICY_REF));
             if (policyRefElements != null) {
-                processPolicyRefElements(policyElements,
-                                         axisConfig.getPolicySubject());
+                processPolicyRefElements(policyElements, axisConfig);
             }
 
             //to process default module versions

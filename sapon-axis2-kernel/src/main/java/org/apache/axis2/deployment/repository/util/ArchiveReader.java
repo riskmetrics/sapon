@@ -140,7 +140,7 @@ public class ArchiveReader implements DeploymentConstants {
                 ZipEntry entry;
                 while ((entry = zin.getNextEntry()) != null) {
                     if (entry.getName().equalsIgnoreCase(SERVICES_XML)) {
-                        axisServiceGroup.setServiceGroupName(
+                        axisServiceGroup.setName(
                                 DescriptionBuilder.getShortFileName(currentFile.getName()));
                         return buildServiceGroup(zin, currentFile, axisServiceGroup, wsdlServices,
                                                  configCtx);
@@ -176,7 +176,7 @@ public class ArchiveReader implements DeploymentConstants {
                 InputStream in = null;
                 try {
                     in = new FileInputStream(file);
-                    axisServiceGroup.setServiceGroupName(currentFile.getName());
+                    axisServiceGroup.setName(currentFile.getName());
                     return buildServiceGroup(in, currentFile, axisServiceGroup, wsdlServices, configCtx);
                 } catch (FileNotFoundException e) {
                     throw new DeploymentException(

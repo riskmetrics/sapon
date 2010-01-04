@@ -35,6 +35,7 @@ import org.apache.axis2.deployment.util.Utils;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.i18n.Messages;
 import org.apache.commons.logging.Log;
@@ -72,7 +73,7 @@ public class ServiceDeployer implements Deployer {
                     }
                 }
             }
-            AxisServiceGroup serviceGroup = new AxisServiceGroup(axisConfig);
+            AxisServiceGroup serviceGroup = new AxisServiceGroupImpl(axisConfig);
             serviceGroup.setServiceGroupClassLoader(deploymentFileData.getClassLoader());
             List<AxisService> serviceList = archiveReader.processServiceGroup(
                     deploymentFileData.getAbsolutePath(), deploymentFileData,

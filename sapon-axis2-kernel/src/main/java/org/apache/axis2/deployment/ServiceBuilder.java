@@ -111,7 +111,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 							.get(serviceNameatt.getAttributeValue());
 					if (wsdlService != null) {
 						wsdlService.setClassLoader(service.getClassLoader());
-						wsdlService.setParent(service.getAxisServiceGroup());
+						wsdlService.setParent(service.getServiceGroup());
 						service = wsdlService;
 						service.setWsdlFound(true);
 						service.setCustomWsdl(true);
@@ -127,7 +127,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 
 			Iterable<OMElement> itr = service_element.getChildrenWithName(new QName(
 					TAG_PARAMETER));
-			processParameters(itr, service, service.getParent());
+			processParameters(itr, service, service.getServiceGroup());
 
 			// If multiple services in one service group have different values
 			// for the PARENT_FIRST
@@ -288,7 +288,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 					.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY));
 
 			if (policyElements != null) {
-				processPolicyElements(policyElements, service.getPolicySubject());
+				processPolicyElements(policyElements, service);
 			}
 
 			// processing <wsp:PolicyReference> .. </..> elements
@@ -297,7 +297,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 							TAG_POLICY_REF));
 
 			if (policyRefElements != null) {
-				processPolicyRefElements(policyRefElements, service.getPolicySubject());
+				processPolicyRefElements(policyRefElements, service);
 			}
 
 			// processing service scope
@@ -595,7 +595,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 					.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY));
 
 			if (policyElements != null) {
-				processPolicyElements(policyElements, message.getPolicySubject());
+				processPolicyElements(policyElements, message);
 			}
 
 			// processing <wsp:PolicyReference> .. </..> elements
@@ -604,7 +604,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 							TAG_POLICY_REF));
 
 			if (policyRefElements != null) {
-				processPolicyRefElements(policyRefElements, message.getPolicySubject());
+				processPolicyRefElements(policyRefElements, message);
 			}
 
 			Iterable<OMElement> parameters = messageElement.getChildrenWithName(new QName(
@@ -752,7 +752,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 					POLICY_NS_URI, TAG_POLICY));
 
 			if (policyElements != null) {
-				processPolicyElements(policyElements, operation.getPolicySubject());
+				processPolicyElements(policyElements, operation);
 			}
 
 			// processing <wsp:PolicyReference> .. </..> elements
@@ -761,7 +761,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 							TAG_POLICY_REF));
 
 			if (policyRefElements != null) {
-				processPolicyRefElements(policyRefElements, operation.getPolicySubject());
+				processPolicyRefElements(policyRefElements, operation);
 			}
 
 			// Operation Parameters
@@ -866,7 +866,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 	private void processEndpoints(AxisService axisService) throws AxisFault {
 		String endpointName = axisService.getEndpointName();
 		if (endpointName == null || endpointName.length() == 0) {
-			Utils.addEndpointsToService(axisService, service.getAxisConfiguration());
+			Utils.addEndpointsToService(axisService, service.getConfiguration());
 		}
 	}
 

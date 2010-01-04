@@ -38,71 +38,65 @@ import org.apache.axis2.util.Loader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-public class RepositoryListener implements DeploymentConstants {
-    protected static final Log log = LogFactory.getLog(RepositoryListener.class);
+public class RepositoryListener implements DeploymentConstants
+{
+    private static final Log log = LogFactory.getLog(RepositoryListener.class);
 
     protected DeploymentEngine deploymentEngine;
 
-    /** Reference to a WSInfoList */
     protected WSInfoList wsInfoList;
 
     /**
-     * This constructor takes two arguments, a folder name and a reference to Deployment Engine
-     * First, it initializes the system, by loading all the modules in the /modules directory and
-     * then creates a WSInfoList to store information about available modules and services.
+     * This constructor takes two arguments, a folder name and a reference to
+     * Deployment Engine.  First it initializes the system by loading all the
+     * modules in the /modules directory and then creates a WSInfoList to store
+     * information about available modules and services.
      *
      * @param deploymentEngine reference to engine registry for updates
      * @param isClasspath      true if this RepositoryListener should scan the classpath for
      *                         Modules
      */
-    public RepositoryListener(DeploymentEngine deploymentEngine, boolean isClasspath) {
+    public RepositoryListener(DeploymentEngine deploymentEngine,
+    		                  boolean isClasspath)
+    {
         this.deploymentEngine = deploymentEngine;
-        wsInfoList = new WSInfoList(deploymentEngine);
-        init2(isClasspath);
-    }
-
-    public void init2(boolean isClasspath) {
+        this.wsInfoList = new WSInfoList(deploymentEngine);
         if (!isClasspath) {
-            init();
+          init();
         }
         loadClassPathModules();
     }
 
-    /** Finds a list of modules in the folder and adds to wsInfoList. */
+    /**
+     * Finds a list of modules in the folder and adds them to wsInfoList.
+     */
     public void checkModules() {
         File root = deploymentEngine.getModulesDir();
         File[] files = root.listFiles();
+        if (files == null) {
+        	return;
+        }
 
-        if (files != null) {
-            for (File file2 : files) {
-                File file = file2;
-                if (isSourceControlDir(file)) {
-                    continue;
-                }
-                if (!file.isDirectory()) {
-                    if (DeploymentFileData.isModuleArchiveFile(file.getName())) {
-                        addFileToDeploy(file, deploymentEngine.getModuleDeployer(),
-                                        WSInfo.TYPE_MODULE);
-                    }
-                } else {
-                    if (!"lib".equalsIgnoreCase(file.getName())) {
-                        addFileToDeploy(file, deploymentEngine.getModuleDeployer(),
-                                        WSInfo.TYPE_MODULE);
-                    }
-                }
-            }
+        for(File file: files) {
+        	String filename = file.getName();
+        	if (skipFile(file)) {
+        		continue;
+        	}
+        	if (file.isDirectory() && !"lib".equalsIgnoreCase(filename)) {
+    			addFileToDeploy(file,
+    					        deploymentEngine.getModuleDeployer(),
+    					        WSInfo.TYPE_MODULE);
+        	}
+        	else if (DeploymentFileData.isModuleArchiveFile(filename)) {
+        		addFileToDeploy(file,
+        				        deploymentEngine.getModuleDeployer(),
+        					    WSInfo.TYPE_MODULE);
+        	}
         }
     }
 
-
-    protected boolean isSourceControlDir(File file) {
-        if (file.isDirectory()) {
-            String name = file.getName();
-            if (name.equalsIgnoreCase("CVS") || name.equalsIgnoreCase(".svn")) {
-                return true;
-            }
-        }
-        return false;
+    private boolean skipFile(File file) {
+    	return file.isHidden() || file.getName().equals("CVS");
     }
 
     protected void loadClassPathModules() {
@@ -168,8 +162,7 @@ public class RepositoryListener implements DeploymentConstants {
         File root = new File(classPath);
         File[] files = root.listFiles();
         if (files != null) {
-            for (File file2 : files) {
-                File file = file2;
+            for(File file: files) {
                 if (!file.isDirectory()) {
                     if (DeploymentFileData.isModuleArchiveFile(file.getName())) {
                         //adding modules in the class path
@@ -273,10 +266,9 @@ public class RepositoryListener implements DeploymentConstants {
 
             if (directory.exists()) {
                 File[] files = directory.listFiles();
-                if (files != null && files.length > 0) {
-                    for (File file2 : files) {
-                        File file = file2;
-                        if (isSourceControlDir(file)) {
+                if (files != null) {
+                    for(File file: files) {
+                        if (skipFile(file)) {
                             continue;
                         }
                         if (!file.isDirectory() && extension
@@ -298,29 +290,27 @@ public class RepositoryListener implements DeploymentConstants {
         File root = deploymentEngine.getServicesDir();
         File[] files = root.listFiles();
 
-        if (files != null && files.length > 0) {
-            for (File file2 : files) {
-                File file = file2;
-                if (isSourceControlDir(file)) {
+        if (files != null) {
+            for(File file: files) {
+                if (skipFile(file)) {
                     continue;
                 }
-                if (!file.isDirectory()) {
-                    if (DeploymentFileData.isServiceArchiveFile(file.getName())) {
-                        addFileToDeploy(file, deploymentEngine.getServiceDeployer(),
-                                        WSInfo.TYPE_SERVICE);
-                    } else {
-                        String ext = DeploymentFileData.getFileExtension(file.getName());
-                        Deployer deployer = deploymentEngine.getDeployerForExtension(ext);
-                        // If we found a deployer for this type of file, use it.  Otherwise
-                        // ignore the file.
-                        if (deployer != null) {
-                            addFileToDeploy(file, deployer, WSInfo.TYPE_SERVICE);
-                        }
-                    }
+                if (file.isDirectory() && !"lib".equalsIgnoreCase(file.getName())) {
+                    addFileToDeploy(file,
+                    		        deploymentEngine.getServiceDeployer(),
+                                    WSInfo.TYPE_SERVICE);
+                }
+                else if (DeploymentFileData.isServiceArchiveFile(file.getName())) {
+                	addFileToDeploy(file,
+                			        deploymentEngine.getServiceDeployer(),
+                                    WSInfo.TYPE_SERVICE);
                 } else {
-                    if (!"lib".equalsIgnoreCase(file.getName())) {
-                        addFileToDeploy(file, deploymentEngine.getServiceDeployer(),
-                                        WSInfo.TYPE_SERVICE);
+                    String ext = DeploymentFileData.getFileExtension(file.getName());
+                    Deployer deployer = deploymentEngine.getDeployerForExtension(ext);
+                    // If we found a deployer for this type of file, use it.
+                    // Otherwise ignore the file.
+                    if (deployer != null) {
+                    	addFileToDeploy(file, deployer, WSInfo.TYPE_SERVICE);
                     }
                 }
             }

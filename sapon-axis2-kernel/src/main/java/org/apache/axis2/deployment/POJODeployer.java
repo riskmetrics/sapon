@@ -41,6 +41,7 @@ import org.apache.axis2.deployment.util.Utils;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.i18n.Messages;
@@ -174,8 +175,8 @@ public class POJODeployer implements Deployer {
                 }
 
                 if (axisServiceList.size() > 0) {
-                    AxisServiceGroup serviceGroup = new AxisServiceGroup();
-                    serviceGroup.setServiceGroupName(deploymentFileData.getName());
+                    AxisServiceGroup serviceGroup = new AxisServiceGroupImpl();
+                    serviceGroup.setName(deploymentFileData.getName());
                     for (Object anAxisServiceList : axisServiceList) {
                         AxisService axisService = (AxisService)anAxisServiceList;
                         serviceGroup.addService(axisService);

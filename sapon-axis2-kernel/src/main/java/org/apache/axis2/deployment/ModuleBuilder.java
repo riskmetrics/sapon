@@ -151,7 +151,7 @@ public class ModuleBuilder extends DescriptionBuilder {
                     moduleElement.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY));
 
             if (policyElements != null) {
-                processPolicyElements(policyElements, module.getPolicySubject());
+                processPolicyElements(policyElements, module);
             }
 
             // processing <wsp:PolicyReference> .. </..> elements
@@ -159,7 +159,7 @@ public class ModuleBuilder extends DescriptionBuilder {
                     moduleElement.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY_REF));
 
             if (policyRefElements != null) {
-                processPolicyRefElements(policyRefElements, module.getPolicySubject());
+                processPolicyRefElements(policyRefElements, module);
             }
 
             // process INFLOW
@@ -284,7 +284,7 @@ public class ModuleBuilder extends DescriptionBuilder {
                     operationElem.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY));
 
             if (policyElements != null) {
-                processPolicyElements(policyElements, operation.getPolicySubject());
+                processPolicyElements(policyElements, operation);
             }
 
             // processing <wsp:PolicyReference> .. </..> elements
@@ -292,7 +292,7 @@ public class ModuleBuilder extends DescriptionBuilder {
                     operationElem.getChildrenWithName(new QName(POLICY_NS_URI, TAG_POLICY_REF));
 
             if (policyRefElements != null) {
-                processPolicyRefElements(policyRefElements, module.getPolicySubject());
+                processPolicyRefElements(policyRefElements, operation);
             }
 
             // setting Operation phase

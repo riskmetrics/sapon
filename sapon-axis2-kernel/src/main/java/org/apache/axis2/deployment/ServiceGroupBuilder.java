@@ -53,14 +53,13 @@ public class ServiceGroupBuilder extends DescriptionBuilder {
         List<AxisService> serviceList = new ArrayList<AxisService>();
 
         try {
-
             // Processing service level parameters
             Iterable<OMElement> itr = serviceElement.getChildrenWithName(new QName(TAG_PARAMETER));
-            processParameters(itr, axisServiceGroup, axisServiceGroup.getParent());
+            processParameters(itr, axisServiceGroup, axisServiceGroup.getConfiguration());
 
             Iterable<OMElement> moduleConfigs =
                     serviceElement.getChildrenWithName(new QName(TAG_MODULE_CONFIG));
-            processServiceModuleConfig(moduleConfigs, axisServiceGroup.getParent(),
+            processServiceModuleConfig(moduleConfigs, axisServiceGroup.getConfiguration(),
                                        axisServiceGroup);
 
             // processing service-wide modules which required to engage globally
@@ -124,7 +123,7 @@ public class ServiceGroupBuilder extends DescriptionBuilder {
                         throw new DeploymentException(
                                 Messages.getMessage(DeploymentErrorMsgs.MODULE_NOT_FOUND, refName));
                     } else {
-                        axisServiceGroup.addModuleref(refName);
+                        axisServiceGroup.addModuleRef(refName);
                     }
                 }
             }

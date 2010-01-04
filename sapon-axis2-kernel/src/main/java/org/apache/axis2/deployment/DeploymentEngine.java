@@ -58,6 +58,7 @@ import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
+import org.apache.axis2.description.AxisServiceGroupImpl;
 import org.apache.axis2.description.Flow;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.WSDL11ToAxisServiceBuilder;
@@ -257,7 +258,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
 
             for (String fileUrl : files) {
 			if (fileUrl.endsWith(".aar")) {
-			    AxisServiceGroup serviceGroup = new AxisServiceGroup();
+			    AxisServiceGroup serviceGroup = new AxisServiceGroupImpl();
 			    URL servicesURL = new URL(servicesDir, fileUrl);
 			    List<AxisService> servicelist =
 			            populateService(serviceGroup,
@@ -265,7 +266,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
 			                            fileUrl.substring(0, fileUrl.indexOf(".aar")));
 			    addServiceGroup(serviceGroup, servicelist, servicesURL, null, axisConfig);
 			    log.info(Messages.getMessage(DeploymentErrorMsgs.DEPLOYING_WS,
-			                                 org.apache.axis2.util.Utils.getModuleName(serviceGroup.getServiceGroupName()),
+			                                 org.apache.axis2.util.Utils.getModuleName(serviceGroup.getName()),
 			                                 servicesURL.toString()));
 			}
          }
@@ -353,7 +354,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
                                         URL servicesURL,
                                         String serviceName) throws DeploymentException {
         try {
-            serviceGroup.setServiceGroupName(serviceName);
+            serviceGroup.setName(serviceName);
             ClassLoader serviceClassLoader = Utils.createClassLoader(
                     new URL[]{servicesURL},
                     axisConfig.getServiceClassLoader(),
@@ -564,7 +565,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
         axisConfiguration.addServiceGroup(serviceGroup);
         if (currentDeploymentFile != null) {
             addAsWebResources(currentDeploymentFile.getFile(),
-                              serviceGroup.getServiceGroupName(), serviceGroup);
+                              serviceGroup.getName(), serviceGroup);
         }
     }
 
@@ -575,7 +576,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
 //        serviceGroup.setParent(axisConfig);
         // module from services.xml at serviceGroup level
         List<String> groupModules = serviceGroup.getModuleRefs();
-        serviceGroup.setParent(axisConfig);
+        serviceGroup.setAxisConfiguration(axisConfig);
         for (int i = 0; i < groupModules.size(); i++) {
             String moduleName = groupModules.get(i);
             AxisModule module = axisConfig.getModule(moduleName);
@@ -586,7 +587,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
                 throw new DeploymentException(
                         Messages.getMessage(
                                 DeploymentErrorMsgs.BAD_MODULE_FROM_SERVICE,
-                                serviceGroup.getServiceGroupName(), moduleName));
+                                serviceGroup.getName(), moduleName));
             }
         }
 
@@ -822,7 +823,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
                         tempOut.close();
                         tempOut.flush();
                     }
-                    serviceGroup.setFoundWebResources(true);
+                    //serviceGroup.setFoundWebResources(true);
                 }
             }
             zin.close();
@@ -1103,9 +1104,9 @@ public abstract class DeploymentEngine implements DeploymentConstants {
                                                      Map<String, AxisService> wsdlServices) throws AxisFault {
         DeploymentFileData currentDeploymentFile = new DeploymentFileData(null, null);
         currentDeploymentFile.setClassLoader(classLoader);
-        AxisServiceGroup serviceGroup = new AxisServiceGroup();
+        AxisServiceGroup serviceGroup = new AxisServiceGroupImpl();
         serviceGroup.setServiceGroupClassLoader(classLoader);
-        serviceGroup.setServiceGroupName(serviceGroupName);
+        serviceGroup.setName(serviceGroupName);
         AxisConfiguration axisConfig = configCtx.getAxisConfiguration();
         try {
             List<AxisService> serviceList = archiveReader.buildServiceGroup(servicesxml,
@@ -1126,13 +1127,13 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             DeploymentFileData currentDeploymentFile = new DeploymentFileData(serviceFile, null);
             DeploymentClassLoader classLoader = Utils.createClassLoader(serviceFile);
             currentDeploymentFile.setClassLoader(classLoader);
-            AxisServiceGroup serviceGroup = new AxisServiceGroup();
+            AxisServiceGroup serviceGroup = new AxisServiceGroupImpl();
             serviceGroup.setServiceGroupClassLoader(classLoader);
 
             // Drop the extension and take the name
             String fileName = serviceFile.getName();
             String serviceGroupName = fileName.substring(0, fileName.lastIndexOf("."));
-            serviceGroup.setServiceGroupName(serviceGroupName);
+            serviceGroup.setName(serviceGroupName);
             AxisConfiguration axisConfig = configCtx.getAxisConfiguration();
 
             ArchiveReader archiveReader = new ArchiveReader();
