@@ -22,6 +22,7 @@ package org.apache.axis2.description;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +36,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.om.OMText;
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.modules.Module;
@@ -47,87 +49,49 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.neethi.Assertion;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyComponent;
+import org.apache.neethi.PolicyReference;
 
-public abstract class AxisDescription
-	implements ParameterInclude, DescriptionConstants
+public abstract class AxisDescriptionBase
+	implements AxisDescription
 {
+    private static final Log log = LogFactory.getLog(AxisDescriptionBase.class);
 
-    protected AxisDescription parent = null;
-
-    private final ParameterInclude parameterInclude;
-
-    private PolicyInclude policyInclude = null;
-
-    private PolicySubject policySubject = null;
-
-    private final Map<Object, AxisDescription> children;
+    protected ParameterIncludeMixin parameterInclude = new ParameterIncludeMixin();
+    protected PolicySubjectMixin policySubject = new PolicySubjectMixin();
 
     protected Map<String, AxisModule> engagedModules;
-
-    /** List of ParameterObservers who want to be notified of changes */
-    protected List<ParameterObserver> parameterObservers = null;
 
     private final OMFactory omFactory = OMAbstractFactory.getOMFactory();
 
     // Holds the documentation details for each element
     private OMNode documentation;
 
-    // creating a logger instance
-    private static Log log = LogFactory.getLog(AxisDescription.class);
-
-    public AxisDescription() {
-        parameterInclude = new ParameterIncludeImpl();
-        children = new ConcurrentHashMap<Object, AxisDescription>();
-        policySubject = new PolicySubject();
+    protected void setPolicySubjectMixin(PolicySubjectMixin mixin) {
+    	this.policySubject = mixin;
     }
 
-    public void addParameterObserver(ParameterObserver observer) {
-        if (parameterObservers == null) {
-			parameterObservers = new ArrayList<ParameterObserver>();
-		}
-        parameterObservers.add(observer);
+    protected void setParameterIncludeMixin(ParameterIncludeMixin mixin) {
+    	this.parameterInclude = mixin;
     }
 
-    public void removeParameterObserver(ParameterObserver observer) {
-        if (parameterObservers != null) {
-            parameterObservers.remove(observer);
-        }
-    }
-
+    @Override
     public void addParameter(Parameter param) throws AxisFault {
-        if (param == null) {
-            return;
-        }
-
-        if(isParameterLocked(param.getName())) {
-            throw new AxisFault(Messages.getMessage("paramterlockedbyparent",
-                                                    param.getName()));
-        }
-
         parameterInclude.addParameter(param);
-
-        // Tell anyone who wants to know
-        if (parameterObservers != null) {
-            for (Object parameterObserver : parameterObservers) {
-                ParameterObserver observer = (ParameterObserver)parameterObserver;
-                observer.parameterChanged(param.getName(), param.getValue());
-            }
-        }
     }
 
     public void addParameter(String name, Object value) throws AxisFault {
         addParameter(new Parameter(name, value));
     }
 
+    @Override
     public void removeParameter(Parameter param) throws AxisFault {
         parameterInclude.removeParameter(param);
     }
 
-    public void deserializeParameters(OMElement parameterElement)
-            throws AxisFault {
-
+    @Override
+    public void deserializeParameters(OMElement parameterElement) throws AxisFault
+    {
         parameterInclude.deserializeParameters(parameterElement);
-
     }
 
     /**
@@ -137,20 +101,9 @@ public abstract class AxisDescription
      * @param name name of Parameter to retrieve
      * @return the Parameter, if found anywhere in the stack, or null if not
      */
+    @Override
     public Parameter getParameter(String name) {
-        Parameter parameter = parameterInclude.getParameter(name);
-        if (parameter != null) {
-            parameter.setEditable(true);
-            return parameter;
-        }
-        if (parent != null) {
-            parameter = parent.getParameter(name);
-            if (parameter != null) {
-                parameter.setEditable(false);
-            }
-            return parameter;
-        }
-        return null;
+        return parameterInclude.getParameter(name);
     }
 
     public Object getParameterValue(String name) {
@@ -166,18 +119,14 @@ public abstract class AxisDescription
         return param != null && JavaUtils.isTrue(param.getValue());
     }
 
+    @Override
     public List<Parameter> getParameters() {
         return parameterInclude.getParameters();
     }
 
+    @Override
     public boolean isParameterLocked(String parameterName) {
-
-        if (this.parent != null && this.parent.isParameterLocked(parameterName)) {
-            return true;
-        }
-
-        Parameter parameter = getParameter(parameterName);
-        return parameter != null && parameter.isLocked();
+    	return parameterInclude.isParameterLocked(parameterName);
     }
 
     public String getDocumentation() {
@@ -213,79 +162,14 @@ public abstract class AxisDescription
         }
     }
 
-    public void setParent(AxisDescription parent) {
-        this.parent = parent;
-    }
-
-    public AxisDescription getParent() {
-        return parent;
-    }
-
     /**
-     * @param policyInclude PolicyInclude value
-     * @see org.apache.axis2.description.AxisDescription#setPolicyInclude(PolicyInclude)
-     * @deprecated As of release 1.4, if you want to access the policy cache of a particular
-     *             AxisDescription object use {@link #getPolicySubject()} instead.
-     */
-    @Deprecated
-	public void setPolicyInclude(PolicyInclude policyInclude) {
-        this.policyInclude = policyInclude;
-    }
-
-
-    /**
-     * @return the active PolicyInclue
-     * @see org.apache.axis2.description.AxisDescription#getPolicySubject()
-     * @deprecated As of release 1.4, replaced by {@link #getPolicySubject()}
-     */
-    @Deprecated
-	public PolicyInclude getPolicyInclude() {
-        if (policyInclude == null) {
-            policyInclude = new PolicyInclude(this);
-        }
-        return policyInclude;
-    }
-
-
-    // NOTE - These are NOT typesafe!
-    public void addChild(AxisDescription child) {
-        if (child.getKey() == null) {
-            // FIXME: Several classes that extend AxisDescription pass null in their getKey method.
-//            throw new IllegalArgumentException("Please specify a key in the child");
-        } else {
-            children.put(child.getKey(), child);
-        }
-    }
-
-
-    public void addChild(Object key, AxisDescription child) {
-        children.put(key, child);
-    }
-
-    public Iterable<? extends AxisDescription> getChildren() {
-        return children.values();
-    }
-
-    public AxisDescription getChild(Object key) {
-        if (key == null) {
-            // FIXME: Why are folks sending in null?
-            return null;
-        }
-        return children.get(key);
-    }
-
-    public void removeChild(Object key) {
-        children.remove(key);
-    }
-
-    /**
-     * This method sets the policy as the default of this AxisDescription instance. Further more
-     * this method does the followings. <p/> (1) Engage whatever modules necessary to execute new
-     * the effective policy of this AxisDescription instance. (2) Disengage whatever modules that
-     * are not necessary to execute the new effective policy of this AxisDescription instance. (3)
-     * Check whether each module can execute the new effective policy of this AxisDescription
-     * instance. (4) If not throw an AxisFault to notify the user. (5) Else notify each module about
-     * the new effective policy.
+     * Set the given policy as this AxisDescription's default. Furthermore:
+     * <ol>
+     * 	<li>Engage modules necessary for executing the new effective policy.</li>
+     *  <li>Disengage modules that are not necessary for executing the new effective policy</li>
+     *  <li>Check whether each module can execute the new effective policy</li>
+     *  <li>Notify each module about the new effective policy.</li>
+     * </ol>
      *
      * @param policy the new policy of this AxisDescription instance. The effective policy is the
      *               merge of this argument with effective policy of parent of this
@@ -296,8 +180,8 @@ public abstract class AxisDescription
      */
     public void applyPolicy(Policy policy) throws AxisFault {
         // sets AxisDescription policy
-        getPolicySubject().clear();
-        getPolicySubject().attachPolicy(policy);
+        policySubject.clearPolicyComponents();
+        policySubject.attachPolicy(policy);
 
         /*
            * now we try to engage appropriate modules based on the merged policy
@@ -313,7 +197,7 @@ public abstract class AxisDescription
      * @throws AxisFault an error occurred applying the policy
      */
     public void applyPolicy() throws AxisFault {
-        AxisConfiguration configuration = getAxisConfiguration();
+        AxisConfiguration configuration = getConfiguration();
         if (configuration == null) {
             return;
         }
@@ -323,10 +207,13 @@ public abstract class AxisDescription
             engageModulesForPolicy(applicablePolicy, configuration);
         }
 
-        for (final AxisDescription child: getChildren()) {
-            child.applyPolicy();
-        }
+        //TODO: make sure implementations apply policy recursively.
+//        for (final AxisDescription child: getChildren()) {
+//            child.applyPolicy();
+//        }
     }
+
+
 
     private boolean canSupportAssertion(Assertion assertion, List<AxisModule> moduleList) {
 
@@ -412,22 +299,6 @@ public abstract class AxisDescription
         }
     }
 
-    public AxisConfiguration getAxisConfiguration() {
-
-        if (this instanceof AxisConfiguration) {
-            return (AxisConfiguration)this;
-        }
-
-        if (this.parent != null) {
-            return this.parent.getAxisConfiguration();
-        }
-
-        return null;
-    }
-
-    public abstract Object getKey();
-
-
     /**
      * Engage a Module at this level
      *
@@ -451,10 +322,8 @@ public abstract class AxisDescription
 			engagedModules = new ConcurrentHashMap<String, AxisModule>();
 		}
         String moduleName = axisModule.getName();
-        for (Object o : engagedModules.values()) {
-            AxisModule tempAxisModule = ((AxisModule)o);
+        for (AxisModule tempAxisModule: engagedModules.values()) {
             String tempModuleName = tempAxisModule.getName();
-
             if (moduleName.equals(tempModuleName)) {
                 String existing = tempAxisModule.getVersion();
                 if (!Utils.checkVersion(axisModule.getVersion(), existing)) {
@@ -526,12 +395,12 @@ public abstract class AxisDescription
         // Base version does nothing
     }
 
-    private Policy getApplicablePolicy(AxisDescription axisDescription) {
+    private static Policy getApplicablePolicy(AxisDescription axisDescription) {
         if (axisDescription instanceof AxisMessage) {
             AxisMessage axisMessage = (AxisMessage)axisDescription;
             AxisOperation axisOperation = axisMessage.getAxisOperation();
             if (axisOperation != null) {
-                AxisService axisService = axisOperation.getAxisService();
+                AxisService axisService = axisOperation.getService();
                 if (axisService != null) {
                     if (axisService.getEndpointName() != null) {
                         AxisEndpoint axisEndpoint =
@@ -539,15 +408,14 @@ public abstract class AxisDescription
                         if (axisEndpoint != null) {
                             AxisBinding axisBinding = axisEndpoint.getBinding();
                             AxisBindingOperation axisBindingOperation =
-                                    (AxisBindingOperation)axisBinding
-                                            .getChild(axisOperation.getName());
+                                    axisBinding.getBindingOperation(axisOperation.getName());
                             String direction = axisMessage.getDirection();
                             AxisBindingMessage axisBindingMessage;
                             if (WSDLConstants.WSDL_MESSAGE_DIRECTION_IN.equals(direction)
                                 && WSDLUtil
                                     .isInputPresentForMEP(axisOperation
                                             .getMessageExchangePattern())) {
-                                axisBindingMessage = (AxisBindingMessage)axisBindingOperation
+                                axisBindingMessage = axisBindingOperation
                                         .getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
                                 return axisBindingMessage.getEffectivePolicy();
 
@@ -556,7 +424,7 @@ public abstract class AxisDescription
                                        && WSDLUtil
                                     .isOutputPresentForMEP(axisOperation
                                             .getMessageExchangePattern())) {
-                                axisBindingMessage = (AxisBindingMessage)axisBindingOperation
+                                axisBindingMessage = axisBindingOperation
                                         .getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE);
                                 return axisBindingMessage.getEffectivePolicy();
                             }
@@ -570,8 +438,84 @@ public abstract class AxisDescription
         return null;
     }
 
-    public PolicySubject getPolicySubject() {
-        return policySubject;
-    }
+	@Override
+	public void addParameterObserver(ParameterObserver observer) {
+		parameterInclude.addParameterObserver(observer);
+	}
+
+	@Override
+	public void removeParameterObserver(ParameterObserver observer) {
+		parameterInclude.removeParameterObserver(observer);
+	}
+
+	@Override
+	public void attachPolicy(Policy policy) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void attachPolicyComponent(PolicyComponent policyComponent) {
+		policySubject.attachPolicyComponent(policyComponent);
+	}
+
+	@Override
+	public void attachPolicyComponent(String key, PolicyComponent policyComponent) {
+		policySubject.attachPolicyComponent(key, policyComponent);
+	}
+
+	@Override
+	public void attachPolicyComponents(Collection<PolicyComponent> policyComponents) {
+		policySubject.attachPolicyComponents(policyComponents);
+	}
+
+	@Override
+	public void attachPolicyReference(PolicyReference reference) {
+		policySubject.attachPolicyReference(reference);
+	}
+
+	@Override
+	public PolicyComponent detachPolicyComponent(String key) {
+		return policySubject.detachPolicyComponent(key);
+	}
+
+	@Override
+	public PolicyComponent getAttachedPolicyComponent(String key) {
+		return policySubject.getAttachedPolicyComponent(key);
+	}
+
+	@Override
+	public Collection<PolicyComponent> getAttachedPolicyComponents() {
+		return policySubject.getAttachedPolicyComponents();
+	}
+
+	@Override
+	public void clearPolicyComponents() {
+		policySubject.clearPolicyComponents();
+	}
+
+	protected Policy getEffectivePolicy(AxisService axisService) {
+		return policySubject.getEffectivePolicy(axisService);
+	}
+
+	@Override
+	public Iterator<PolicyComponent> getEffectivePolicyComponents() {
+		return policySubject.getEffectivePolicyComponents();
+	}
+
+	@Override
+	public Date getLastPolicyUpdateTime() {
+		return policySubject.getLastUpdatedTime();
+	}
+
+	@Override
+	public boolean isPolicyUpdated() {
+		return policySubject.isPolicyUpdated();
+	}
+
+	@Override
+	public void updatePolicy(Policy policy) {
+		policySubject.updatePolicy(policy);
+	}
 
 }
