@@ -62,16 +62,17 @@ public class Java2WSDLUtils {
     public static StringBuffer namespaceFromClassName(String className,
                                                       ClassLoader classLoader,
                                                       NamespaceGenerator nsGen) throws Exception {
-        Class clazz = Class.forName(className,
+        Class<?> clazz = Class.forName(className,
                 true,
                 classLoader);
         Package pkg = clazz.getPackage();
         String name;
 
-        if (pkg != null)
-            name = pkg.getName();
-        else
-            name = packageNameFromClass(className);
+        if (pkg != null) {
+			name = pkg.getName();
+		} else {
+			name = packageNameFromClass(className);
+		}
 
         return nsGen.namespaceFromPackageName(name);
     }
@@ -104,16 +105,15 @@ public class Java2WSDLUtils {
 
 
     public static String getPackageName(String className, ClassLoader classLoader) throws Exception {
-        Class clazz = Class.forName(className,
-                true,
-                classLoader);
+        Class<?> clazz = Class.forName(className, true, classLoader);
         Package pkg = clazz.getPackage();
         String name;
 
-        if (pkg != null)
-            name = pkg.getName();
-        else
-            name = packageNameFromClass(className);
+        if (pkg != null) {
+			name = pkg.getName();
+		} else {
+			name = packageNameFromClass(className);
+		}
         return name;
     }
 
@@ -121,8 +121,9 @@ public class Java2WSDLUtils {
         String ret = "";
         int lastDot = name.lastIndexOf('.');
 
-        if (lastDot != -1)
-            ret = name.substring(0, lastDot);
+        if (lastDot != -1) {
+			ret = name.substring(0, lastDot);
+		}
         return ret;
     }
 }

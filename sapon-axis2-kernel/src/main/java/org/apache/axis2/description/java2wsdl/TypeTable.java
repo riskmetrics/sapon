@@ -19,9 +19,6 @@
 
 package org.apache.axis2.description.java2wsdl;
 
-import org.apache.axiom.om.OMElement;
-
-import javax.xml.namespace.QName;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
@@ -29,115 +26,116 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import javax.xml.namespace.QName;
+
+import org.apache.axiom.om.OMElement;
+
 public class TypeTable {
-    
-    private static HashMap  simpleTypetoxsd;
+
+    private static final Map<String, QName> simpleTypeToXSD
+    	= new HashMap<String, QName>();
     public static final QName ANY_TYPE = new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "anyType", "xs");
 
-    private HashMap complexTypeMap;
+    private Map<String, QName> complexTypeMap;
 
     public TypeTable() {
-        //complex type table is resetted every time this is
-        //instantiated
-        complexTypeMap = new HashMap();
+        //complex type table is reset every time this is instantiated
+        complexTypeMap = new HashMap<String, QName>();
     }
 
-    /* statically populate the simple type map  - this is not likely to
-    * change and we need not populate it over and over */
     static{
           populateSimpleTypes();
     }
 
-    /* populate the simpletype hashmap */
     private static void populateSimpleTypes() {
-        simpleTypetoxsd = new HashMap();
-        //todo pls use the types from org.apache.ws.commons.schema.constants.Constants
-        simpleTypetoxsd.put("int",
+        //TODO: use the types from org.apache.ws.commons.schema.constants.Constants
+        simpleTypeToXSD.put("int",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "int", "xs"));
-        simpleTypetoxsd.put("java.lang.String",
+        simpleTypeToXSD.put("java.lang.String",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "string", "xs"));
-        simpleTypetoxsd.put("boolean",
+        simpleTypeToXSD.put("boolean",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "boolean", "xs"));
-        simpleTypetoxsd.put("float",
+        simpleTypeToXSD.put("float",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "float", "xs"));
-        simpleTypetoxsd.put("double",
+        simpleTypeToXSD.put("double",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "double", "xs"));
-        simpleTypetoxsd.put("short",
+        simpleTypeToXSD.put("short",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "short", "xs"));
-        simpleTypetoxsd.put("long",
+        simpleTypeToXSD.put("long",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "long", "xs"));
-        simpleTypetoxsd.put("byte",
+        simpleTypeToXSD.put("byte",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "byte", "xs"));
-        simpleTypetoxsd.put("char",
+        simpleTypeToXSD.put("char",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "string", "xs"));
-        simpleTypetoxsd.put("java.lang.Integer",
+        simpleTypeToXSD.put("java.lang.Integer",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "int", "xs"));
-        simpleTypetoxsd.put("java.lang.Double",
+        simpleTypeToXSD.put("java.lang.Double",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "double", "xs"));
-        simpleTypetoxsd.put("java.lang.Float",
+        simpleTypeToXSD.put("java.lang.Float",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "float", "xs"));
-        simpleTypetoxsd.put("java.lang.Long",
+        simpleTypeToXSD.put("java.lang.Long",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "long", "xs"));
-        simpleTypetoxsd.put("java.lang.Character",
+        simpleTypeToXSD.put("java.lang.Character",
                 ANY_TYPE);
-        simpleTypetoxsd.put("java.lang.Boolean",
+        simpleTypeToXSD.put("java.lang.Boolean",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "boolean", "xs"));
-        simpleTypetoxsd.put("java.lang.Byte",
+        simpleTypeToXSD.put("java.lang.Byte",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "byte", "xs"));
-        simpleTypetoxsd.put("java.lang.Short",
+        simpleTypeToXSD.put("java.lang.Short",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "short", "xs"));
-        simpleTypetoxsd.put("java.util.Date",
+        simpleTypeToXSD.put("java.util.Date",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "date", "xs"));
-        simpleTypetoxsd.put("java.util.Calendar",
+        simpleTypeToXSD.put("java.util.Calendar",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "dateTime", "xs"));
 
         // SQL date time
-         simpleTypetoxsd.put("java.sql.Date",
+         simpleTypeToXSD.put("java.sql.Date",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "date", "xs"));
-         simpleTypetoxsd.put("java.sql.Time",
+         simpleTypeToXSD.put("java.sql.Time",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "time", "xs"));
-        simpleTypetoxsd.put("java.sql.Timestamp",
+        simpleTypeToXSD.put("java.sql.Timestamp",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "dateTime", "xs"));
 
-         //consider BigDecimal, BigInteger, Day, Duration, Month, MonthDay,
+        //consider BigDecimal, BigInteger, Day, Duration, Month, MonthDay,
         //Time, Year, YearMonth as SimpleType as well
-        simpleTypetoxsd.put("java.math.BigDecimal",
+        simpleTypeToXSD.put("java.math.BigDecimal",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "decimal", "xs"));
-        simpleTypetoxsd.put("java.math.BigInteger",
+        simpleTypeToXSD.put("java.math.BigInteger",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "integer", "xs"));
-        simpleTypetoxsd.put("org.apache.axis2.databinding.types.Day",
+        simpleTypeToXSD.put("org.apache.axis2.databinding.types.Day",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "gDay", "xs"));
-        simpleTypetoxsd.put("org.apache.axis2.databinding.types.Duration",
+        simpleTypeToXSD.put("org.apache.axis2.databinding.types.Duration",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "duration", "xs"));
-        simpleTypetoxsd.put("org.apache.axis2.databinding.types.Month",
+        simpleTypeToXSD.put("org.apache.axis2.databinding.types.Month",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "gMonth", "xs"));
-        simpleTypetoxsd.put("org.apache.axis2.databinding.types.MonthDay",
+        simpleTypeToXSD.put("org.apache.axis2.databinding.types.MonthDay",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "gMonthDay", "xs"));
-        simpleTypetoxsd.put("org.apache.axis2.databinding.types.Time",
+        simpleTypeToXSD.put("org.apache.axis2.databinding.types.Time",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "time", "xs"));
-        simpleTypetoxsd.put("org.apache.axis2.databinding.types.Year",
+        simpleTypeToXSD.put("org.apache.axis2.databinding.types.Year",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "gYear", "xs"));
-        simpleTypetoxsd.put("org.apache.axis2.databinding.types.YearMonth",
-                new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "gYearMonth", "xs"));       
+        simpleTypeToXSD.put("org.apache.axis2.databinding.types.YearMonth",
+                new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "gYearMonth", "xs"));
 
-        simpleTypetoxsd.put("java.lang.Object",
+        simpleTypeToXSD.put("java.lang.Object",
                 ANY_TYPE);
 
         // Any types
-        simpleTypetoxsd.put(OMElement.class.getName(),
+        simpleTypeToXSD.put(OMElement.class.getName(),
                 ANY_TYPE);
-        simpleTypetoxsd.put(ArrayList.class.getName(),
+        simpleTypeToXSD.put(ArrayList.class.getName(),
                 ANY_TYPE);
-        simpleTypetoxsd.put(Vector.class.getName(),
+        simpleTypeToXSD.put(Vector.class.getName(),
                 ANY_TYPE);
-        simpleTypetoxsd.put(List.class.getName(),
+        simpleTypeToXSD.put(List.class.getName(),
                 ANY_TYPE);
-         simpleTypetoxsd.put(HashMap.class.getName(),
+        simpleTypeToXSD.put(HashMap.class.getName(),
                  ANY_TYPE);
-         simpleTypetoxsd.put(Hashtable.class.getName(),
+        simpleTypeToXSD.put(Hashtable.class.getName(),
                  ANY_TYPE);
-        //byteArrat
-        simpleTypetoxsd.put("base64Binary",
+
+        //byteArray
+        simpleTypeToXSD.put("base64Binary",
                 new QName(Java2WSDLConstants.URI_2001_SCHEMA_XSD, "base64Binary", "xs"));
     }
 
@@ -147,7 +145,7 @@ public class TypeTable {
      * @return   the name of the simple type or null if it is not a simple type
      */
     public QName getSimpleSchemaTypeName(String typeName) {
-        QName qName = (QName) simpleTypetoxsd.get(typeName);
+        QName qName = simpleTypeToXSD.get(typeName);
         if(qName == null){
             if((typeName.startsWith("java.lang")||typeName.startsWith("javax.")) &&
                     !Exception.class.getName().equals(typeName)){
@@ -163,8 +161,8 @@ public class TypeTable {
      * @return  true if the type is a simple type
      */
     public boolean isSimpleType(String typeName) {
-        
-        if (simpleTypetoxsd.keySet().contains(typeName)){
+
+        if (simpleTypeToXSD.keySet().contains(typeName)){
             return true;
         }else if(typeName.startsWith("java.lang")||typeName.startsWith("javax.")){
             return true;
@@ -176,7 +174,7 @@ public class TypeTable {
      * Return the complex type map
      * @return  the map with complex types
      */
-    public Map getComplexSchemaMap() {
+    public Map<String, QName> getComplexSchemaMap() {
         return complexTypeMap;
     }
 
@@ -185,11 +183,11 @@ public class TypeTable {
     }
 
     public QName getComplexSchemaType(String name) {
-        return (QName) complexTypeMap.get(name);
+        return complexTypeMap.get(name);
     }
 
     /**
-     * Get the qname for a type
+     * Get the QName for a type
      * first try the simple types if not try the complex types
      * @param typeName  name of the type
      * @return  the Qname for this type

@@ -19,6 +19,19 @@
 
 package org.apache.axis2.description.java2wsdl;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.jws.WebMethod;
+import javax.jws.WebResult;
+import javax.xml.namespace.QName;
+
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.deployment.util.Utils;
 import org.apache.axis2.description.AxisMessage;
@@ -34,21 +47,11 @@ import org.apache.ws.commons.schema.XmlSchemaElement;
 import org.apache.ws.commons.schema.XmlSchemaSequence;
 import org.apache.ws.commons.schema.utils.NamespaceMap;
 
-import javax.jws.WebMethod;
-import javax.jws.WebResult;
-import javax.xml.namespace.QName;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-
 public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
 
     private static final Log log = LogFactory.getLog(DocLitBareSchemaGenerator.class);
-    private HashMap processedParameters = new LinkedHashMap();
+    private Map<String, Method> processedParameters
+    	= new LinkedHashMap<String, Method>();
 
     public DocLitBareSchemaGenerator(ClassLoader loader,
                                      String className,
@@ -59,18 +62,19 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
                 schematargetNamespacePrefix, service);
     }
 
-    protected Method[] processMethods(Method[] declaredMethods) throws Exception {
-        ArrayList list = new ArrayList();
+    @Override
+	protected Method[] processMethods(Method[] declaredMethods) throws Exception {
+        List<Method> list = new ArrayList<Method>();
         //short the elements in the array
-        Arrays.sort(declaredMethods , new MathodComparator());
+        Arrays.sort(declaredMethods, METHOD_COMPARATOR);
 
         // since we do not support overload
-        HashMap uniqueMethods = new LinkedHashMap();
+        Map<String, Method> uniqueMethods = new LinkedHashMap<String, Method>();
         XmlSchemaComplexType methodSchemaType;
         XmlSchemaSequence sequence;
 
-        for (int i = 0; i < declaredMethods.length; i++) {
-            Method jMethod = declaredMethods[i];
+        for (Method declaredMethod : declaredMethods) {
+            Method jMethod = declaredMethod;
             WebMethod methodAnnon = jMethod.getAnnotation(WebMethod.class);
             if (methodAnnon != null) {
                 if (methodAnnon.exclude()) {
@@ -117,7 +121,7 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
             //create the schema type for the method wrapper
 
             uniqueMethods.put(methodName, jMethod);
-            Class [] paras = jMethod.getParameterTypes();
+            Class<?>[] paras = jMethod.getParameterTypes();
             String parameterNames[] = methodTable.getParameterNames(methodName);
             AxisMessage inMessage = axisOperation.getMessage(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
             if (inMessage != null) {
@@ -133,7 +137,7 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
                         axisOperation);
                 inMessage.setPartName(methodName);
                 for (int j = 0; j < paras.length; j++) {
-                    Class methodParameter = paras[j];
+                    Class<?> methodParameter = paras[j];
                     String parameterName = getParameterName(parameterAnnotation, j, parameterNames);
                     if (generateRequestSchema(methodParameter , parameterName,jMethod, sequence)) {
                         break;
@@ -145,7 +149,7 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
 
                     methodSchemaType = createSchemaTypeForMethodPart(methodName);
                     methodSchemaType.setParticle(sequence);
-                    Class methodParameter = paras[0];
+                    Class<?> methodParameter = paras[0];
                     inMessage.setElementQName(typeTable.getQNamefortheType(methodName));
                     service.addMessageElementQNameToOperationMapping(methodSchemaType.getQName(),
                             axisOperation);
@@ -156,8 +160,8 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
                     }
                 } else {
                     String parameterName = getParameterName(parameterAnnotation, 0, parameterNames);
-                    Class methodParameter = paras[0];
-                    Method processMethod = (Method) processedParameters.get(parameterName);
+                    Class<?> methodParameter = paras[0];
+                    Method processMethod = processedParameters.get(parameterName);
                     if (processMethod != null) {
                         throw new AxisFault("Inavalid Java class," +
                                 " there are two methods [" + processMethod.getName() + " and " +
@@ -167,7 +171,6 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
                         generateSchemaForType(null, methodParameter, parameterName);
                         inMessage.setElementQName(typeTable.getQNamefortheType(parameterName));
                         inMessage.setPartName(parameterName);
-                        inMessage.setWrapped(false);
                         service.addMessageElementQNameToOperationMapping(typeTable.getQNamefortheType(parameterName),
                                 axisOperation);
                     }
@@ -175,7 +178,7 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
             }
 
             // for its return type
-            Class returnType = jMethod.getReturnType();
+            Class<?> returnType = jMethod.getReturnType();
 
             if (!"void".equals(jMethod.getReturnType().getName())) {
                 AxisMessage outMessage = axisOperation.getMessage(
@@ -200,7 +203,6 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
                     }
                 } else {
                     generateSchemaForType(null, returnType, methodName + RESULT);
-                    outMessage.setWrapped(false);
                 }
                 outMessage.setElementQName(typeTable.getQNamefortheType(methodName + RESULT));
                 outMessage.setName(methodName + "ResponseMessage");
@@ -213,11 +215,11 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
                 service.addOperation(axisOperation);
             }
         }
-        return (Method[]) list.toArray(new Method[list.size()]);
+        return list.toArray(new Method[list.size()]);
     }
 
 
-    private boolean generateRequestSchema(Class methodParameter,
+    private boolean generateRequestSchema(Class<?> methodParameter,
                                           String parameterName,
                                           Method jMethod,
                                           XmlSchemaSequence sequence) throws Exception {
@@ -230,7 +232,7 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
         return false;
     }
 
-    private QName generateSchemaForType(XmlSchemaSequence sequence, Class type, String partName)
+    private QName generateSchemaForType(XmlSchemaSequence sequence, Class<?> type, String partName)
             throws Exception {
 
         boolean isArrayType = false;
@@ -324,10 +326,11 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
         return complexType;
     }
 
-    protected XmlSchema getXmlSchema(String targetNamespace) {
+    @Override
+	protected XmlSchema getXmlSchema(String targetNamespace) {
         XmlSchema xmlSchema;
 
-        if ((xmlSchema = (XmlSchema) schemaMap.get(targetNamespace)) == null) {
+        if ((xmlSchema = schemaMap.get(targetNamespace)) == null) {
             String targetNamespacePrefix;
 
             if (targetNamespace.equals(schemaTargetNameSpace) &&

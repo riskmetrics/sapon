@@ -36,7 +36,7 @@ public interface SchemaGenerator {
 
     Method[] getMethods();
 
-    void setExcludeMethods(List excludeMethods);
+    void setExcludeMethods(List<String> excludeMethods);
 
     String getSchemaTargetNameSpace();
 
@@ -44,24 +44,19 @@ public interface SchemaGenerator {
 
     void setElementFormDefault(String elementFormDefault);
 
-    void setExtraClasses(List extraClasses);
-
     void setUseWSDLTypesNamespace(boolean useWSDLTypesNamespace);
 
-    void setPkg2nsmap(Map pkg2nsmap);
+    void setPkg2nsmap(Map<String, String> pkg2nsmap);
 
     String getTargetNamespace();
 
-    void setNonRpcMethods(List nonRpcMethods);
+    void setNonRpcMethods(List<String> nonRpcMethods);
 
     void setAxisService(AxisService service);
 
     String getCustomSchemaLocation();
-
-
     void setCustomSchemaLocation(String customSchemaLocation);
 
     String getMappingFileLocation() ;
-
     void setMappingFileLocation(String mappingFileLocation) ;
 }
