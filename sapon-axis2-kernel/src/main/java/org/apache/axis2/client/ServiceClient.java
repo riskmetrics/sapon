@@ -179,7 +179,7 @@ public class ServiceClient {
             axisService.setClientSide(true);
             removeAxisService = false;
         }
-        AxisServiceGroup axisServiceGroup = axisService.getAxisServiceGroup();
+        AxisServiceGroup axisServiceGroup = axisService.getServiceGroup();
         ServiceGroupContext sgc = configContext.createServiceGroupContext(axisServiceGroup);
         serviceContext = sgc.getServiceContext(axisService);
     }
@@ -718,7 +718,7 @@ public class ServiceClient {
         // if a configuration context was created for this client there'll also
         //  be a service group, so discard that
         if (!createConfigCtx) {
-            String serviceGroupName = axisService.getAxisServiceGroup().getServiceGroupName();
+            String serviceGroupName = axisService.getServiceGroup().getName();
             AxisConfiguration axisConfiguration = configContext.getAxisConfiguration();
             AxisServiceGroup asg = axisConfiguration.getServiceGroup(serviceGroupName);
             if ((asg != null) && removeAxisService) {
@@ -761,7 +761,7 @@ public class ServiceClient {
             axisService.setClientSide(true);
             axisConfig.addService(axisService);
         }
-        AxisServiceGroup axisServiceGroup = axisService.getAxisServiceGroup();
+        AxisServiceGroup axisServiceGroup = axisService.getServiceGroup();
         ServiceGroupContext serviceGroupContext =
                 configContext.createServiceGroupContext(axisServiceGroup);
         this.serviceContext = serviceGroupContext.getServiceContext(axisService);
