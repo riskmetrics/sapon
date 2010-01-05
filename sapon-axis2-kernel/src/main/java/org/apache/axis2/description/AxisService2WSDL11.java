@@ -149,7 +149,6 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 		return WSDL2Constants.MEP_URI_IN_ONLY.equals(MEP)
 				|| WSDL2Constants.MEP_URI_IN_OPTIONAL_OUT.equals(MEP)
 				|| WSDL2Constants.MEP_URI_OUT_OPTIONAL_IN.equals(MEP)
-				//|| WSDL2Constants.MEP_URI_ROBUST_OUT_ONLY.equals(MEP)
 				|| WSDL2Constants.MEP_URI_ROBUST_IN_ONLY.equals(MEP)
 				|| WSDL2Constants.MEP_URI_IN_OUT.equals(MEP);
 	}

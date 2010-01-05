@@ -63,9 +63,6 @@ import org.apache.commons.logging.LogFactory;
 public class OperationContext extends AbstractContext<ServiceContext>
     implements Externalizable, SafeSerializable {
 
-    /*
-     * setup for logging
-     */
     private static final Log log = LogFactory.getLog(OperationContext.class);
 
     private final boolean debugEnabled = log.isDebugEnabled();

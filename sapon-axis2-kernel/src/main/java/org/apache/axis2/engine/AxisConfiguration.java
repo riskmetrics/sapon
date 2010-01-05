@@ -107,9 +107,6 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     private final Map<String, String> faultyModules;
 
-    /**
-     * To store faulty services
-     */
     private final Map<String, String> faultyServices;
 
     private List<Phase> inFaultPhases;
@@ -147,9 +144,6 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     private Map<String, AxisServiceGroup> children;
 
-    /**
-     * Constructor AxisConfiguration.
-     */
     public AxisConfiguration() {
         moduleConfigmap = new HashMap<String, ModuleConfiguration>();
         globalModuleList = new ArrayList<String>();
@@ -281,12 +275,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         observersList.add(axisObserver);
     }
 
-    /**
-     * Method addService.
-     *
-     * @param service
-     * @throws AxisFault
-     */
     public synchronized void addService(AxisService service) throws AxisFault {
         AxisServiceGroup axisServiceGroup = new AxisServiceGroupImpl();
         axisServiceGroup.setName(service.getName());
@@ -420,12 +408,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         return axisServiceGroup;
     }
 
-    /**
-     * Method addTransportIn.
-     *
-     * @param transport
-     * @throws AxisFault
-     */
     public void addTransportIn(TransportInDescription transport) throws AxisFault {
         if (transport.getReceiver() == null) {
             throw new AxisFault(
@@ -435,12 +417,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         transportsIn.put(transport.getName(), transport);
     }
 
-    /**
-     * Method addTransportOut.
-     *
-     * @param transport
-     * @throws AxisFault
-     */
     public void addTransportOut(TransportOutDescription transport)
             throws AxisFault {
         if (transport.getSender() == null) {
@@ -557,12 +533,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         }
     }
 
-    /**
-     * Method removeService.
-     *
-     * @param name
-     * @throws AxisFault
-     */
     public synchronized void removeService(String name) throws AxisFault {
         AxisService service = allServices.remove(name);
         if (service != null) {
@@ -618,9 +588,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         return this.outPhases;
     }
 
-    /**
-     * @return Returns ArrayList.
-     */
     public List<Phase> getInFaultFlowPhases() {
         return inFaultPhases;
     }
@@ -679,15 +646,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         return messageFormatters.get(contentType);
     }
 
-//    /**
-//     *
-//     * @deprecate Please use String version instead
-//     * @param qname
-//     * @return
-//     */
-//    public AxisModule getModule(QName qname) {
-//        return getModule(qname.getLocalPart());
-//    }
 
     /**
      * Method getModule. First it will check whether the given module is there
@@ -747,16 +705,10 @@ public class AxisConfiguration extends AxisDescriptionBase
         return moduleConfigmap.get(moduleName);
     }
 
-    /**
-     * @return Returns HashMap.
-     */
     public Map<String, AxisModule> getModules() {
         return allModules;
     }
 
-    /**
-     * @return Returns ArrayList.
-     */
     public List<Phase> getOutFaultFlowPhases() {
         return outFaultPhases;
     }
@@ -769,12 +721,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         return axis2Repository;
     }
 
-    /**
-     * Method getService.
-     *
-     * @param name
-     * @return Returns AxisService.
-     */
     public AxisService getService(String name) throws AxisFault {
         AxisService axisService = allServices.get(name);
         if (axisService != null) {
@@ -885,9 +831,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         this.outPhases = outPhases;
     }
 
-    /**
-     * @param list
-     */
     public void setInFaultPhases(List<Phase> list) {
         inFaultPhases = list;
     }
@@ -901,9 +844,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         this.moduleClassLoader = classLoader;
     }
 
-    /**
-     * @param list
-     */
     public void setOutFaultPhases(List<Phase> list) {
         outFaultPhases = list;
     }

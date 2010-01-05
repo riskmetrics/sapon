@@ -28,9 +28,10 @@ import org.apache.axis2.description.Parameter;
 /**
  * A Handler represents a piece of message processing functionality in Axis2.
  *
- * Handlers are combined into chains and phases in order to provide customizable functionality
- * such as security, reliability, etc.  Handlers must be multi-thread safe and should keep all
- * their state in Context objects (see the org.apache.axis2.context package).
+ * Handlers are combined into chains and phases in order to provide
+ * customizable functionality such as security, reliability, etc.  Handlers
+ * must be multi-thread safe and should keep all their state in Context objects
+ * (see the org.apache.axis2.context package).
  */
 public interface Handler {
 
