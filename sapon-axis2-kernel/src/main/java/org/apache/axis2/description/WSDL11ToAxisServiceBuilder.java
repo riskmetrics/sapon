@@ -98,7 +98,6 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.neethi.Constants;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyReference;
-import org.apache.ws.commons.schema.utils.NamespaceMap;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -307,7 +306,7 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
 
             // setting target name space
             axisService.setTargetNamespace(wsdl4jDefinition.getTargetNamespace());
-            axisService.setNamespaceMap(new NamespaceMap(wsdl4jDefinition.getNamespaces()));
+            axisService.setNamespaceMap(new HashMap<String, String>(wsdl4jDefinition.getNamespaces()));
 
             Map<String, ?> importsMap = wsdl4jDefinition.getImports();
 

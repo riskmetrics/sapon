@@ -106,7 +106,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.neethi.PolicyComponent;
 import org.apache.ws.commons.schema.XmlSchema;
-import org.apache.ws.commons.schema.utils.NamespaceMap;
 
 public class Utils {
 
@@ -517,7 +516,7 @@ public class Utils {
             }
         }
         // adding name spaces
-        NamespaceMap map = new NamespaceMap();
+        Map<String, String> map = new HashMap<String, String>();
         map.put(Java2WSDLConstants.AXIS2_NAMESPACE_PREFIX,
                 Java2WSDLConstants.AXIS2_XSD);
         map.put(Java2WSDLConstants.DEFAULT_SCHEMA_NAMESPACE_PREFIX,
