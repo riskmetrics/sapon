@@ -44,9 +44,6 @@ public class Phase implements Handler {
 
     private static boolean isDebugEnabled = LoggingControl.debugLoggingAllowed && log.isDebugEnabled();
 
-    /**
-     * Field handlers
-     */
     private List<Handler> handlers;
 
     /**
@@ -54,24 +51,12 @@ public class Phase implements Handler {
      */
     private boolean isOneHandler;
 
-    /**
-     * Field phaseName
-     */
     private String phaseName;
 
-    /**
-     * Field phaseFirstSet
-     */
     private boolean phaseFirstSet;
 
-    /**
-     * Field phaseLastSet
-     */
     private boolean phaseLastSet;
 
-    /**
-     * Default constructor
-     */
     public Phase() {
         this(null);
     }
@@ -193,6 +178,14 @@ public class Phase implements Handler {
 
     public void init(HandlerDescription handlerdesc) {
         // Default version does nothing
+    }
+
+    public Phase copy() throws PhaseException {
+    	Phase out = new Phase(getPhaseName());
+        for(Handler handler: getHandlers()) {
+        	out.addHandler(handler.getHandlerDesc());
+        }
+    	return out;
     }
 
     private void insertHandler(HandlerDescription handlerDesc) throws PhaseException {

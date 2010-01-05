@@ -26,7 +26,6 @@ import java.util.List;
 
 import org.apache.axis2.deployment.DeploymentErrorMsgs;
 import org.apache.axis2.deployment.DeploymentException;
-import org.apache.axis2.engine.Handler;
 import org.apache.axis2.engine.Phase;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.phaseresolver.PhaseException;
@@ -60,13 +59,17 @@ public class PhasesInfo
     {
     	List<Phase> beforePhases = new ArrayList<Phase>();
     	for(Phase phase: phases) {
-    		if(phaseName.equals(phase.getPhaseName())) {
-    			if(include) {
-    				beforePhases.add(copyPhase(phase));
+    		try {
+    			if(phaseName.equals(phase.getPhaseName())) {
+    				if(include) {
+    					beforePhases.add(phase.copy());
+    				}
+    				return beforePhases;
     			}
-    			return beforePhases;
+    			beforePhases.add(phase.copy());
+    		} catch(PhaseException e) {
+    			throw new DeploymentException(e);
     		}
-    		beforePhases.add(copyPhase(phase));
     	}
     	return Collections.emptyList();
     }
@@ -77,14 +80,18 @@ public class PhasesInfo
     	List<Phase> afterPhases = new ArrayList<Phase>();
     	boolean foundPhase = false;
     	for(Phase phase: phases) {
-    		if(foundPhase) {
-    			afterPhases.add(copyPhase(phase));
-    		}
-    		else if(phaseName.equals(phase.getPhaseName())) {
-    			if(include) {
-    				afterPhases.add(copyPhase(phase));
+    		try {
+    			if(foundPhase) {
+    				afterPhases.add(phase.copy());
     			}
-    			foundPhase = true;
+    			else if(phaseName.equals(phase.getPhaseName())) {
+    				if(include) {
+    					afterPhases.add(phase.copy());
+    				}
+    				foundPhase = true;
+    			}
+    		} catch(PhaseException e) {
+    			throw new DeploymentException(e);
     		}
     	}
     	return afterPhases;
@@ -203,19 +210,6 @@ public class PhasesInfo
     public void setOutFaultPhases(List<Phase> outFaultPhases) {
         this.outFaultPhases.clear();
         this.outFaultPhases.addAll(outFaultPhases);
-    }
-
-
-    private Phase copyPhase(Phase phase) throws DeploymentException {
-        Phase newPhase = new Phase(phase.getPhaseName());
-        for(Handler handler: phase.getHandlers()) {
-            try {
-                newPhase.addHandler(handler.getHandlerDesc());
-            } catch (PhaseException e) {
-                throw new DeploymentException(e);
-            }
-        }
-        return newPhase;
     }
 
 //  private HandlerDescription makeHandler(OMElement handlerElement) {

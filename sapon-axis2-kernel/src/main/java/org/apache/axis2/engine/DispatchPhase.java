@@ -42,6 +42,7 @@ import org.apache.axis2.description.AxisServiceGroup;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.WSDL2Constants;
 import org.apache.axis2.i18n.Messages;
+import org.apache.axis2.phaseresolver.PhaseException;
 import org.apache.axis2.transport.RequestResponseTransport;
 import org.apache.axis2.transport.TransportListener;
 import org.apache.axis2.transport.http.HTTPConstants;
@@ -56,6 +57,15 @@ public class DispatchPhase extends Phase {
 
     public DispatchPhase(String phaseName) {
         super(phaseName);
+    }
+
+    @Override
+    public Phase copy() throws PhaseException {
+    	Phase out = new DispatchPhase(getPhaseName());
+    	for(Handler handler: getHandlers()) {
+    		out.addHandler(handler.getHandlerDesc());
+    	}
+    	return out;
     }
 
     @Override
