@@ -540,60 +540,6 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 		}
 	}
 
-	private void addPolicyAsExtElement(int type, PolicySubject policySubject,
-			OMElement parentElement) throws Exception {
-		Collection<PolicyComponent> policyComponents
-			= policySubject.getAttachedPolicyComponents();
-
-        for (PolicyComponent policyComponent: policyComponents) {
-            if (policyComponent instanceof Policy) {
-                OMElement child = PolicyUtil.getPolicyComponentAsOMElement(
-                        policyComponent, serializer);
-
-//                OMNode firstChildElem = parentElement.getFirstElement();
-
-                // if (firstChildElem == null) {
-                // parentElement.addChild(child);
-                // } else {
-                // firstChildElem.insertSiblingBefore(child);
-                // }
-                // there is a problem with the OM insertSiblingBefore element
-                // with
-                // drops the already exists elements.
-                // since there is no any techical problem of adding policy
-                // elements after other
-                // children temporaliy fix this as it is.
-                // one OM fix this issue we can revert this change.
-                parentElement.addChild(child);
-
-            } else if (policyComponent instanceof PolicyReference) {
-                OMElement child = PolicyUtil
-                        .getPolicyComponentAsOMElement(policyComponent);
-                OMElement firstChildElem = parentElement.getFirstElement();
-
-                if (firstChildElem == null) {
-                    parentElement.addChild(child);
-                } else {
-                    firstChildElem.insertSiblingBefore(child);
-                }
-
-                String key = ((PolicyReference)policyComponent).getURI();
-
-                if (key.startsWith("#")) {
-                    key = key.substring(key.indexOf("#") + 1);
-                }
-
-                Policy p = null; //TODO: we need to find the policy.
-
-                if (p == null) {
-                    throw new Exception("Policy not found for uri : " + key);
-                }
-
-                stagePolicy(p);
-            }
-        }
-	}
-
 	private void writeFullPolicies()
 		throws Exception
 	{
@@ -804,8 +750,6 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 						addPolicyAsExtElement(axisBindingInMessage, input);
 						addExtensionElement(fac, input, SOAP_BODY, SOAP_USE,
 								use, null, targetNamespace, soap);
-						// addPolicyAsExtElement(PolicyInclude.BINDING_INPUT_POLICY,
-						// inaxisMessage.getPolicyInclude(), input);
 						operation.addChild(input);
 						writeSoapHeaders(inaxisMessage, fac, input, soap12);
 					}
@@ -824,8 +768,6 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 						addPolicyAsExtElement(axisBindingOutMessage, output);
 						addExtensionElement(fac, output, SOAP_BODY, SOAP_USE,
 								use, null, targetNamespace, soap);
-						// addPolicyAsExtElement(PolicyInclude.BINDING_OUTPUT_POLICY,
-						// outAxisMessage.getPolicyInclude(), output);
 						operation.addChild(output);
 						writeSoapHeaders(outAxisMessage, fac, output, soap12);
 					}
@@ -912,9 +854,6 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 			addExtensionElement(fac, operation, OPERATION_LOCAL_NAME,
 					SOAP_ACTION, soapAction, STYLE, style, soap12);
 
-			// addPolicyAsExtElement(PolicyInclude.BINDING_OPERATION_POLICY,
-			// axisOperation.getPolicyInclude(), operation);
-
 			String MEP = axisOperation.getMessageExchangePattern();
 			if (isInMEP(MEP)) {
 				AxisBindingMessage axisBindingInMessage = axisBindingOperation
@@ -949,8 +888,6 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 						addPolicyAsExtElement(axisBindingOutMessage, output);
 						addExtensionElement(fac, output, SOAP_BODY, SOAP_USE,
 								use, null, targetNamespace, soap12);
-						// addPolicyAsExtElement(PolicyInclude.BINDING_OUTPUT_POLICY,
-						// outAxisMessage.getPolicyInclude(), output);
 						operation.addChild(output);
 						writeSoapHeaders(outAxisMessage, fac, output, soap12);
 					}
@@ -1071,10 +1008,10 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 		Collection<PolicyComponent> attachPolicyComponents = policySubject
 				.getAttachedPolicyComponents();
 
-        for (Object policyElement : attachPolicyComponents) {
-            if (policyElement instanceof Policy) {
+        for (PolicyComponent policyComponent : attachPolicyComponents) {
+            if (policyComponent instanceof Policy) {
                 PolicyReference policyReference =
-                        PolicyUtil.createPolicyReference((Policy)policyElement);
+                        PolicyUtil.createPolicyReference((Policy)policyComponent);
                 OMElement policyRefElement =
                         PolicyUtil.getPolicyComponentAsOMElement(policyReference, serializer);
 
@@ -1089,11 +1026,11 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 //                    key = key.substring(key.indexOf("#") + 1);
 //                }
 //                stagePolicy(key, (Policy)policyElement);
-                stagePolicy((Policy)policyElement);
+                stagePolicy((Policy)policyComponent);
 
-            } else if (policyElement instanceof PolicyReference) {
+            } else if (policyComponent instanceof PolicyReference) {
                 OMElement child =
-                        PolicyUtil.getPolicyComponentAsOMElement((PolicyComponent)policyElement,
+                        PolicyUtil.getPolicyComponentAsOMElement(policyComponent,
                                                                  serializer);
                 OMElement firstChildElem = wsdlElement.getFirstElement();
 
@@ -1103,7 +1040,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
                     firstChildElem.insertSiblingBefore(child);
                 }
 
-                String key = ((PolicyReference)policyElement).getURI();
+                String key = ((PolicyReference)policyComponent).getURI();
                 if (key.startsWith("#")) {
                     key = key.substring(key.indexOf("#") + 1);
                 }
