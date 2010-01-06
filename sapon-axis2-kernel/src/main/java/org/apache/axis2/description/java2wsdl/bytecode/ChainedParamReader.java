@@ -39,7 +39,7 @@ import java.util.Map;
 public class ChainedParamReader {
     private List<ParamReader> chain = new ArrayList<ParamReader>();
     private List<Class<?>> clsChain = new ArrayList<Class<?>>();
-    private Map methodToParamMap = new HashMap();
+    private Map<Method, String[]> methodToParamMap = new HashMap<Method, String[]>();
 
     /**
      * Processes a given class's parameter names.
@@ -64,7 +64,7 @@ public class ChainedParamReader {
      * @param ctor
      * @return Returns array of names, one per parameter, or null
      */
-    public String[] getParameterNames(Constructor ctor) {
+    public String[] getParameterNames(Constructor<?> ctor) {
         //there is no need for the constructor chaining.
         return (chain.get(0)).getParameterNames(ctor);
     }
@@ -83,7 +83,7 @@ public class ChainedParamReader {
     public String[] getParameterNames(Method method) {
         //go find the one from the cache first
         if (methodToParamMap.containsKey(method)) {
-            return (String[]) methodToParamMap.get(method);
+            return methodToParamMap.get(method);
         }
 
         String[] ret = null;
@@ -96,9 +96,9 @@ public class ChainedParamReader {
             }
         }
         //if we here, it means we need to create new chain.
-        Class cls = clsChain.get(chain.size() - 1);
+        Class<?> cls = clsChain.get(chain.size() - 1);
         while (cls != null && cls != java.lang.Object.class && cls.getSuperclass() != null) {
-            Class superClass = cls.getSuperclass();
+            Class<?> superClass = cls.getSuperclass();
             try {
                 ParamReader _reader = new ParamReader(superClass);
                 chain.add(_reader);

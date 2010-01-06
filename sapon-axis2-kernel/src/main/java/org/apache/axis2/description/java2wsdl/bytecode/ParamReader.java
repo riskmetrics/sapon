@@ -43,8 +43,8 @@ import java.util.Map;
 public class ParamReader
         extends ClassReader {
     private String methodName;
-    private Map methods = new HashMap();
-    private Class[] paramTypes;
+    private Map<String, MethodInfo> methods = new HashMap<String, MethodInfo>();
+    private Class<?>[] paramTypes;
 
     /**
      * Processes a class file, given it's class.  We'll use the defining
@@ -53,7 +53,7 @@ public class ParamReader
      * @param c
      * @throws java.io.IOException
      */
-    public ParamReader(Class c) throws IOException {
+    public ParamReader(Class<?> c) throws IOException {
         this(getBytes(c));
     }
 
@@ -106,7 +106,8 @@ public class ParamReader
 
     }
 
-    public void readCode() throws IOException {
+    @Override
+	public void readCode() throws IOException {
         readShort(); // max stack
         int maxLocals = readShort(); // max locals
 
@@ -131,7 +132,7 @@ public class ParamReader
      * @param ctor
      * @return Returns String[] array of names, one per parameter, or null
      */
-    public String[] getParameterNames(Constructor ctor) {
+    public String[] getParameterNames(Constructor<?> ctor) {
         paramTypes = ctor.getParameterTypes();
         return getParameterNames(ctor, paramTypes);
     }
@@ -150,9 +151,9 @@ public class ParamReader
         return getParameterNames(method, paramTypes);
     }
 
-    protected String[] getParameterNames(Member member, Class [] paramTypes) {
+    protected String[] getParameterNames(Member member, Class<?>[] paramTypes) {
         // look up the names for this method
-        MethodInfo info = (MethodInfo) methods.get(getSignature(member, paramTypes));
+        MethodInfo info = methods.get(getSignature(member, paramTypes));
 
         // we know all the local variable names, but we only need to return
         // the names of the parameters.
@@ -186,7 +187,8 @@ public class ParamReader
 
     private static class MethodInfo {
         String[] names;
-        int maxLocals;
+        @SuppressWarnings("unused")
+		int maxLocals;
 
         public MethodInfo(int maxLocals) {
             this.maxLocals = maxLocals;
@@ -197,7 +199,7 @@ public class ParamReader
     private MethodInfo getMethodInfo() {
         MethodInfo info = null;
         if (methods != null && methodName != null) {
-            info = (MethodInfo) methods.get(methodName);
+            info = methods.get(methodName);
         }
         return info;
     }

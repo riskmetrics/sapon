@@ -67,7 +67,7 @@ public class ClassReader extends ByteArrayInputStream {
     private int[] cpoolIndex;
     private Object[] cpool;
 
-    private Map attrMethods;
+    private Map<String, Method> attrMethods;
 
     /**
      * Loads the bytecode for a given class, by using the class's defining
@@ -78,7 +78,7 @@ public class ClassReader extends ByteArrayInputStream {
      * @return Returns a byte array containing the bytecode
      * @throws IOException
      */
-    protected static byte[] getBytes(Class c) throws IOException {
+    protected static byte[] getBytes(Class<?> c) throws IOException {
         InputStream fin = c.getResourceAsStream('/' + c.getName().replace('.', '/') + ".class");
         if (fin == null) {
             throw new IOException("Unable to load bytecode for class " + c.getName()
@@ -104,14 +104,14 @@ public class ClassReader extends ByteArrayInputStream {
         return desc.replace('/', '.');
     }
 
-    protected static Map findAttributeReaders(Class c) {
-        HashMap map = new HashMap();
+    protected static Map<String, Method> findAttributeReaders(Class<?> c) {
+        Map<String, Method> map = new HashMap<String, Method>();
         Method[] methods = c.getMethods();
 
-        for (int i = 0; i < methods.length; i++) {
-            String name = methods[i].getName();
-            if (name.startsWith("read") && methods[i].getReturnType() == void.class) {
-                map.put(name.substring(4), methods[i]);
+        for (Method method : methods) {
+            String name = method.getName();
+            if (name.startsWith("read") && method.getReturnType() == void.class) {
+                map.put(name.substring(4), method);
             }
         }
 
@@ -119,45 +119,47 @@ public class ClassReader extends ByteArrayInputStream {
     }
 
 
-    protected static String getSignature(Member method, Class[] paramTypes) {
+    protected static String getSignature(Member method, Class<?>[] paramTypes) {
         // compute the method descriptor
 
         StringBuffer b = new StringBuffer((method instanceof Method) ? method.getName() : "<init>");
         b.append('(');
 
-        for (int i = 0; i < paramTypes.length; i++) {
-            addDescriptor(b, paramTypes[i]);
+        for (Class<?> paramType : paramTypes) {
+            addDescriptor(b, paramType);
         }
 
         b.append(')');
         if (method instanceof Method) {
             addDescriptor(b, ((Method) method).getReturnType());
-        } else if (method instanceof Constructor) {
+        } else if (method instanceof Constructor<?>) {
             addDescriptor(b, void.class);
         }
 
         return b.toString();
     }
 
-    private static void addDescriptor(StringBuffer b, Class c) {
+    private static void addDescriptor(StringBuffer b, Class<?> c) {
         if (c.isPrimitive()) {
-            if (c == void.class)
-                b.append('V');
-            else if (c == int.class)
-                b.append('I');
-            else if (c == boolean.class)
-                b.append('Z');
-            else if (c == byte.class)
-                b.append('B');
-            else if (c == short.class)
-                b.append('S');
-            else if (c == long.class)
-                b.append('J');
-            else if (c == char.class)
-                b.append('C');
-            else if (c == float.class)
-                b.append('F');
-            else if (c == double.class) b.append('D');
+            if (c == void.class) {
+				b.append('V');
+			} else if (c == int.class) {
+				b.append('I');
+			} else if (c == boolean.class) {
+				b.append('Z');
+			} else if (c == byte.class) {
+				b.append('B');
+			} else if (c == short.class) {
+				b.append('S');
+			} else if (c == long.class) {
+				b.append('J');
+			} else if (c == char.class) {
+				b.append('C');
+			} else if (c == float.class) {
+				b.append('F');
+			} else if (c == double.class) {
+				b.append('D');
+			}
         } else if (c.isArray()) {
             b.append('[');
             addDescriptor(b, c.getComponentType());
@@ -187,8 +189,9 @@ public class ClassReader extends ByteArrayInputStream {
     protected void skipFully(int n) throws IOException {
         while (n > 0) {
             int c = (int) skip(n);
-            if (c <= 0)
-                throw new EOFException("Error looking for paramter names in bytecode: unexpected end of file");
+            if (c <= 0) {
+				throw new EOFException("Error looking for paramter names in bytecode: unexpected end of file");
+			}
             n -= c;
         }
     }
@@ -199,24 +202,24 @@ public class ClassReader extends ByteArrayInputStream {
             Member m = (Member) cpool[index];
             if (m == null) {
                 pos = cpoolIndex[index];
-                Class owner = resolveClass(readShort());
+                Class<?> owner = resolveClass(readShort());
                 NameAndType nt = resolveNameAndType(readShort());
                 String signature = nt.name + nt.type;
                 if (nt.name.equals("<init>")) {
-                    Constructor[] ctors = owner.getConstructors();
-                    for (int i = 0; i < ctors.length; i++) {
-                        String sig = getSignature(ctors[i], ctors[i].getParameterTypes());
+                    Constructor<?>[] ctors = owner.getConstructors();
+                    for (Constructor<?> ctor : ctors) {
+                        String sig = getSignature(ctor, ctor.getParameterTypes());
                         if (sig.equals(signature)) {
-                            cpool[index] = m = ctors[i];
+                            cpool[index] = m = ctor;
                             return m;
                         }
                     }
                 } else {
                     Method[] methods = owner.getDeclaredMethods();
-                    for (int i = 0; i < methods.length; i++) {
-                        String sig = getSignature(methods[i], methods[i].getParameterTypes());
+                    for (Method method : methods) {
+                        String sig = getSignature(method, method.getParameterTypes());
                         if (sig.equals(signature)) {
-                            cpool[index] = m = methods[i];
+                            cpool[index] = m = method;
                             return m;
                         }
                     }
@@ -236,7 +239,7 @@ public class ClassReader extends ByteArrayInputStream {
             Field f = (Field) cpool[i];
             if (f == null) {
                 pos = cpoolIndex[i];
-                Class owner = resolveClass(readShort());
+                Class<?> owner = resolveClass(readShort());
                 NameAndType nt = resolveNameAndType(readShort());
                 cpool[i] = f = owner.getDeclaredField(nt.name);
             }
@@ -273,10 +276,10 @@ public class ClassReader extends ByteArrayInputStream {
     }
 
 
-    protected final Class resolveClass(int i) throws IOException, ClassNotFoundException {
+    protected final Class<?> resolveClass(int i) throws IOException, ClassNotFoundException {
         int oldPos = pos;
         try {
-            Class c = (Class) cpool[i];
+            Class<?> c = (Class<?>) cpool[i];
             if (c == null) {
                 pos = cpoolIndex[i];
                 String name = resolveUtf8(readShort());
@@ -378,7 +381,7 @@ public class ClassReader extends ByteArrayInputStream {
 
             String attrName = resolveUtf8(nameIndex);
 
-            Method m = (Method) attrMethods.get(attrName);
+            Method m = attrMethods.get(attrName);
 
             if (m != null) {
                 try {
@@ -423,7 +426,7 @@ public class ClassReader extends ByteArrayInputStream {
         readAttributes();
     }
 
-    protected ClassReader(byte buf[], Map attrMethods) {
+    protected ClassReader(byte buf[], Map<String, Method> attrMethods) {
         super(buf);
 
         this.attrMethods = attrMethods;

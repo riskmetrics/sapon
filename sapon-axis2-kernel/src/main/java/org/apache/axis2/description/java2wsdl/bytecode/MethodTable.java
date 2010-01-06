@@ -21,15 +21,16 @@ package org.apache.axis2.description.java2wsdl.bytecode;
 
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.Map;
 
 public class MethodTable {
 
-    private HashMap nameToMethodMap;
+    private Map<String, Method> nameToMethodMap;
     private ChainedParamReader cpr;
 
-    public MethodTable(Class cls) throws Exception {
+    public MethodTable(Class<?> cls) throws Exception {
         cpr = new ChainedParamReader(cls);
-        nameToMethodMap = new HashMap();
+        nameToMethodMap = new HashMap<String, Method>();
         loadMethods(cls);
     }
 
@@ -39,16 +40,15 @@ public class MethodTable {
      * @param cls
      * @throws Exception
      */
-    private void loadMethods(Class cls) throws Exception {
+    private void loadMethods(Class<?> cls) throws Exception {
         Method [] methods = cls.getMethods();
-        for (int i = 0; i < methods.length; i++) {
-            Method method = methods[i];
+        for (Method method : methods) {
             nameToMethodMap.put(method.getName(), method);
         }
     }
 
     public String [] getParameterNames(String methodName) {
-        Method method = (Method) nameToMethodMap.get(methodName);
+        Method method = nameToMethodMap.get(methodName);
         if (method == null) {
             return null;
         }
