@@ -13,7 +13,7 @@
     
     <artifactId>addressing</artifactId>
     <version>SNAPSHOT</version>
-    <packaging>mar</packaging>
+    <packaging>jar</packaging>
     <name>Sapon Axis2 Addressing</name>
     <description>Sapon's modified Axis2 WS-Addressing implementation</description>
 
@@ -27,18 +27,5 @@
             <artifactId>axis2-kernel</artifactId>
         </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.riskmetrics.sapon</groupId>
-                <artifactId>sapon-mar-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <configuration>
-                    <includeDependencies>false</includeDependencies>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>
