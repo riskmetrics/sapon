@@ -26,8 +26,8 @@
             <artifactId>synapse-commons</artifactId>
         </dependency>
         <dependency>
-        	<groupId>com.riskmetrics.sapon</groupId>
-        	<artifactId>axis2-kernel</artifactId>
+            <groupId>com.riskmetrics.sapon</groupId>
+            <artifactId>axis2-kernel</artifactId>
         </dependency>
         <dependency>
             <groupId>com.riskmetrics.sapon</groupId>
@@ -47,34 +47,4 @@
         </dependency>
     </dependencies>
     
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy</id>
-                        <phase>generate-test-resources</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>com.riskmetrics.sapon</groupId>
-                                    <artifactId>addressing</artifactId>
-                                    <version>SNAPSHOT</version>
-                                    <type>mar</type>
-                                    <overWrite>true</overWrite>
-                                    <outputDirectory>src/test/resources/test_repos/synapse/modules</outputDirectory>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build> 
-       
 </project>
