@@ -27,20 +27,12 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 
-/** Class OMAttributeImpl */
 public class OMAttributeImpl implements OMAttribute {
-    /** Field localName */
-    private String localName;
 
-    /** Field value */
+	private String localName;
     private String value;
-
-    /** Field type */
     private String type;
-
-    /** Field namespace */
     private OMNamespace namespace;
-
     private QName qName;
 
     /** <code>OMFactory</code> that created this <code>OMAttribute</code> */
@@ -69,21 +61,20 @@ public class OMAttributeImpl implements OMAttribute {
         this.factory = factory;
     }
 
-    /** @return Returns QName. */
     public QName getQName() {
         if (qName != null) {
             return qName;
         }
 
         if (namespace != null) {
-            // Guard against QName implementation sillyness.
+            // QName throws IllegalArgumentException for null prefixes.
             if (namespace.getPrefix() == null) {
                 this.qName = new QName(namespace.getNamespaceURI(), localName);
             } else {
-                this.qName =  new QName(namespace.getNamespaceURI(), localName, namespace.getPrefix());
+                this.qName = new QName(namespace.getNamespaceURI(), localName, namespace.getPrefix());
             }
         } else {
-            this.qName =  new QName(localName);
+            this.qName = new QName(localName);
         }
         return this.qName;
     }
@@ -180,19 +171,14 @@ public class OMAttributeImpl implements OMAttribute {
     }
 
     /**
-     * Checks for the equality of two <code>OMAttribute</code> instances. Thus the object to compare
-     * this with may be an instance of <code>OMAttributeImpl</code> (an instance of this class) or
-     * an instance of <code>AttrImpl</code>. The method returns false for any object of type other
-     * than <code>OMAttribute</code>.
+     * Checks the equality of two <code>OMAttribute</code> instances.  Returns
+     * false for any object not implementing <code>OMAttribute</code>.
      *
-     * <p>We check for the equality of namespaces first (note that if the namespace of this instance is null
-     * then for the <code>obj</code> to be equal its namespace must also be null). This condition solely
-     * doesn't determine the equality. So we check for the equality of names and values (note that the value
-     * can also be null in which case the same argument holds as that for the namespace) of the two instances.
-     * If all three conditions are met then we say the two instances are equal.
+     * <p>Equal OMAttributes have equal namespaces, localNames, and values.</p>
      *
-     * Note: We ignore the owner when checking for the equality. This is simply because the owner is
-     * introduced just to keep things simple for the programmer and not as part of an attribute itself.
+     * <p>We ignore the owner when checking for equality because the owner
+     * is introduced solely to keep things simple for the programmer and is
+     * not logically a part of an attribute itself.</p>
      *
      * @param obj The object to compare with this instance.
      * @return True if obj is equal to this or else false.
@@ -203,19 +189,19 @@ public class OMAttributeImpl implements OMAttribute {
 			return false;
 		}
         OMAttribute other = (OMAttribute)obj;
-        //first check namespace then localName then value to improve performance
-        return (namespace == null ? other.getNamespace() == null :
-                namespace.equals(other.getNamespace()) &&
-                localName.equals(other.getLocalName()) &&
-                (value == null ? other.getAttributeValue() == null :
-                        value.equals(other.getAttributeValue())));
 
+        return (namespace == null ? other.getNamespace() == null
+        		                  : namespace.equals(other.getNamespace()))
+        	&& localName.equals(other.getLocalName())
+        	&& (value == null ? other.getAttributeValue() == null
+        			          : value.equals(other.getAttributeValue()));
     }
 
     @Override
 	public int hashCode() {
-        return localName.hashCode() ^ (value != null ? value.hashCode() : 0) ^
-                (namespace != null ? namespace.hashCode() : 0);
+        return localName.hashCode()
+        	 ^ (value != null ? value.hashCode() : 0)
+        	 ^ (namespace != null ? namespace.hashCode() : 0);
     }
 
 }
