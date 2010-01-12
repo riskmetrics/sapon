@@ -2122,7 +2122,7 @@ public class AxisService extends AxisDescriptionBase
 		String endpointName = axisService.getEndpointName();
 		if ((endpointName == null || endpointName.length() == 0)
 				&& axisService.getConfiguration() != null) {
-			Utils.addEndpointsToService(axisService, axisService.getConfiguration());
+			Utils.expandServiceEndpoints(axisService);
 		}
 
 		return axisService;
