@@ -30,8 +30,8 @@ import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 
 public class NamespaceContextImpl
-        implements
-        NamespaceContext {
+	implements NamespaceContext
+{
     protected Map<String, String> namespaces;
 
     public NamespaceContextImpl(Map<String, String> map) {

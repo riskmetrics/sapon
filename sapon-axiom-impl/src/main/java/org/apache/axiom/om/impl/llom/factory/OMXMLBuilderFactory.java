@@ -19,25 +19,18 @@
 
 package org.apache.axiom.om.impl.llom.factory;
 
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 
-import javax.xml.stream.XMLStreamReader;
-
-/** Class OMXMLBuilderFactory */
-public class OMXMLBuilderFactory {
-    /** Field PARSER_XPP */
+public class OMXMLBuilderFactory
+{
     public static final String PARSER_XPP = "XPP";
-
-    /** Field PARSER_STAX */
     public static final String PARSER_STAX = "StAX";
-
-    /** Field MODEL_SOAP_SPECIFIC */
     public static final String MODEL_SOAP_SPECIFIC = "SOAP_SPECIFIC";
-
-    /** Field MODEL_OM */
     public static final String MODEL_OM = "OM_ONLY";
 
     /**

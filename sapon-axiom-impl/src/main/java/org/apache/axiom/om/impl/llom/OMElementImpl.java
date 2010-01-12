@@ -64,40 +64,30 @@ import org.apache.axiom.om.util.StAXUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** Class OMElementImpl */
 public class OMElementImpl extends OMNodeImpl
-        implements OMElement, OMConstants, OMContainerEx {
-
+	implements OMElement, OMConstants, OMContainerEx
+{
     private static final Log log = LogFactory.getLog(OMElementImpl.class);
     private static boolean DEBUG_ENABLED = log.isDebugEnabled();
 
     public static final OMNamespace DEFAULT_DEFAULT_NS_OBJECT = new OMNamespaceImpl("", "");
 
-    /** Field ns */
     protected OMNamespace ns;
-
-    /** Field localName */
     protected String localName;
+    protected Map<QName, OMAttribute> attributes = null;
+
+    protected OMNode firstChild;
+    protected OMNode lastChild;
 
     protected QName qName;
 
-    /** Field firstChild */
-    protected OMNode firstChild;
-
-    /** Field namespaces */
     protected Map<String, OMNamespace> namespaces = null;
 
-    /** Field attributes */
-    protected Map<QName, OMAttribute> attributes = null;
-
-    /** Field noPrefixNamespaceCounter */
-    protected int noPrefixNamespaceCounter = 0;
-    protected OMNode lastChild;
     private int lineNumber;
 
     /**
-     * Constructor OMElementImpl. A null namespace indicates that the default namespace in scope is
-     * used
+     * Constructor OMElementImpl. A null namespace indicates that the default
+     * namespace in scope is used
      */
     public OMElementImpl(String localName, OMNamespace ns, OMContainer parent,
                          OMXMLParserWrapper builder, OMFactory factory) {
@@ -439,8 +429,7 @@ public class OMElementImpl extends OMNodeImpl
         return ns;
     }
 
-    // Constant
-    static final OMNamespaceImpl xmlns =
+    public static final OMNamespaceImpl xmlns =
             new OMNamespaceImpl(OMConstants.XMLNS_URI,
                                 OMConstants.XMLNS_PREFIX);
 
@@ -865,44 +854,38 @@ public class OMElementImpl extends OMNodeImpl
     }
 
     /**
-     * Returns the concatination string of TRIMMED values of all OMText  child nodes of this
-     * element. This is included purely to improve usability.
+     * Convenience method that returns the concatenation of all trimmed OMText
+     * child nodes of this element.
      */
     public String getTrimmedText() {
-        String childText = null;
-        StringBuffer buffer = null;
-        OMNode child = this.getFirstOMChild();
+        String out = null;
+        StringBuffer outBuffer = null;
 
+        OMNode child = this.getFirstOMChild();
         while (child != null) {
             if (child.getType() == OMNode.TEXT_NODE) {
                 OMText textNode = (OMText) child;
                 String textValue = textNode.getText();
                 if (textValue != null && textValue.length() != 0) {
-                    if (childText == null) {
-                        // This is the first non empty text node. Just save the string.
-                        childText = textValue.trim();
+                    if (out == null) {
+                        out = textValue.trim();
                     } else {
-                        // We've already seen a non empty text node before. Concatenate using
-                        // a StringBuffer.
-                        if (buffer == null) {
-                            // This is the first text node we need to append. Initialize the
-                            // StringBuffer.
-                            buffer = new StringBuffer(childText);
-                        }
-                        buffer.append(textValue.trim());
+                    	if(outBuffer == null) {
+                    		outBuffer = new StringBuffer(out);
+                    	}
+                        outBuffer.append(textValue.trim());
                     }
                 }
             }
             child = child.getNextOMSibling();
         }
 
-        if (childText == null) {
-            // We didn't see any text nodes. Return an empty string.
-            return "";
-        } else if (buffer != null) {
-            return buffer.toString();
+        if(outBuffer != null) {
+        	return outBuffer.toString();
+        } else if(out != null) {
+        	return out;
         } else {
-            return childText;
+        	return "";
         }
     }
 

@@ -20,6 +20,13 @@
 package org.apache.axiom.om.impl.llom;
 
 
+import java.io.IOException;
+import java.io.InputStream;
+
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMConstants;
 import org.apache.axiom.om.OMContainer;
@@ -35,12 +42,6 @@ import org.apache.axiom.om.impl.builder.XOPBuilder;
 import org.apache.axiom.om.impl.util.OMSerializerUtil;
 import org.apache.axiom.om.util.TextHelper;
 import org.apache.axiom.om.util.UUIDGenerator;
-
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.IOException;
-import java.io.InputStream;
 
 public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
     /** Field nameSpace used when serializing Binary stuff as MTOM optimized. */
@@ -75,11 +76,6 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
     protected OMAttribute attribute;
     private static final String EMTPY_STRING = "";
 
-    /**
-     * Constructor OMTextImpl.
-     *
-     * @param s
-     */
     public OMTextImpl(String s, OMFactory factory) {
         this(s, TEXT_NODE, factory);
     }
@@ -102,7 +98,7 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
     public OMTextImpl(OMContainer parent, String text, OMFactory factory) {
         this(parent, text, TEXT_NODE, factory);
     }
-    
+
     /**
      * Construct OMTextImpl that is a copy of the source OMTextImpl
      * @param parent
@@ -114,28 +110,28 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
         // Copy the value of the text
         this.value = source.value;
         this.nodeType = source.nodeType;
-        
+
         // Clone the charArray (if it exists)
         if (source.charArray != null) {
             this.charArray = new char[source.charArray.length];
             System.arraycopy(source.charArray, 0, this.charArray, 0, source.charArray.length);
         }
-        
+
         // Turn off calcNS...the namespace will need to be recalculated
         // in the new tree's context.
         this.calcNS = false;
         this.textNS = null;
-        
+
         // Copy the optimized related settings.
         this.optimize = source.optimize;
         this.mimeType = source.mimeType;
         this.isBinary = source.isBinary;
-        
+
         // TODO
-        // Do we need a deep copy of the data-handler 
+        // Do we need a deep copy of the data-handler
         this.contentID = source.contentID;
         this.dataHandlerObject = source.dataHandlerObject;
-        
+
         this.localName = source.localName;
         if (source.attribute != null) {
             this.attribute = factory.createOMAttribute(source.attribute.getLocalName(),
@@ -166,7 +162,9 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
     public OMTextImpl(OMContainer parent, QName text, int nodeType,
                       OMFactory factory) {
         super(parent, factory, true);
-        if (text == null) throw new IllegalArgumentException("QName text arg cannot be null!");
+        if (text == null) {
+			throw new IllegalArgumentException("QName text arg cannot be null!");
+		}
         this.calcNS = true;
         this.textNS =
                 ((OMElementImpl) parent).handleNamespace(text.getNamespaceURI(), text.getPrefix());
@@ -237,7 +235,8 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
      * @param writer
      * @throws XMLStreamException
      */
-    public void internalSerialize(XMLStreamWriter writer) throws XMLStreamException {
+    @Override
+	public void internalSerialize(XMLStreamWriter writer) throws XMLStreamException {
         internalSerializeLocal(writer);
     }
 
@@ -401,7 +400,8 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
         return this.contentID;
     }
 
-    public void internalSerializeAndConsume(XMLStreamWriter writer)
+    @Override
+	public void internalSerializeAndConsume(XMLStreamWriter writer)
             throws XMLStreamException {
         internalSerializeLocal(writer);
     }
@@ -522,13 +522,14 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
     public void discard() throws OMException {
         if (done) {
             this.detach();
-        } 
+        }
     }
 
     /* (non-Javadoc)
       * @see org.apache.axiom.om.OMNode#buildAll()
       */
-    public void buildWithAttachments() {
+    @Override
+	public void buildWithAttachments() {
         if (!this.done) {
             this.build();
         }
@@ -536,7 +537,7 @@ public class OMTextImpl extends OMNodeImpl implements OMText, OMConstants {
             this.getDataHandler();
         }
     }
-    
+
     public void setContentID(String cid) {
         this.contentID = cid;
     }

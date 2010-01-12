@@ -19,6 +19,12 @@
 
 package org.apache.axiom.om.impl.llom;
 
+import java.io.OutputStream;
+import java.io.Writer;
+
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.axiom.om.OMComment;
 import org.apache.axiom.om.OMContainer;
 import org.apache.axiom.om.OMDocType;
@@ -40,33 +46,22 @@ import org.apache.axiom.om.util.StAXUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-import java.io.OutputStream;
-import java.io.Writer;
-
-/** Class OMNodeImpl */
 public abstract class OMNodeImpl implements OMNode, OMNodeEx {
-    
+
     private static final Log log = LogFactory.getLog(OMNodeImpl.class);
     private static boolean DEBUG_ENABLED = log.isDebugEnabled();
-    
-    /** Field parent */
+
     protected OMContainerEx parent;
 
-    /** Field nextSibling */
     protected OMNodeImpl nextSibling;
 
-    /** Field previousSibling */
     protected OMNodeImpl previousSibling;
-    /** Field builder */
+
     public OMXMLParserWrapper builder;
 
-    /** Field done */
     protected boolean done = false;
 
-    /** Field nodeType */
-    protected int nodeType;
+    protected int nodeType; //TODO: why is the nodeType mutable?
 
     protected OMFactory factory;
 
@@ -92,7 +87,6 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
             this.parent = (OMContainerEx) parent;
             parent.addChild(this);
         }
-
     }
 
     /**
@@ -105,24 +99,17 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
         return parent;
     }
 
-    /**
-     * Method setParent.
-     *
-     * @param element
-     */
-    public void setParent(OMContainer element) {
-
+    public void setParent(OMContainer element)
+    {
         if ((this.parent) == element) {
             return;
         }
 
-        //If we are asked to assign a new parent in place
-        //of an existing one. We should detach this node
-        //from the previous parent.
+        if (this.parent != null) {
+            this.detach();
+        }
+
         if (element != null) {
-            if (this.parent != null) {
-                this.detach();
-            }
             this.parent = (OMContainerEx) element;
         } else {
             this.parent = null;
@@ -130,7 +117,7 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
     }
 
     /**
-     * Returns the next sibling. This can be an OMAttribute or OMText or OMElement for others.
+     * Returns the next sibling.
      *
      * @return Returns OMNode.
      * @throws org.apache.axiom.om.OMException
@@ -143,11 +130,6 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
         return nextSibling;
     }
 
-    /**
-     * Method setNextOMSibling.
-     *
-     * @param node
-     */
     public void setNextOMSibling(OMNode node) {
         if (node == null || node.getOMFactory() instanceof OMLinkedListImplFactory) {
             this.nextSibling = (OMNodeImpl) node;
@@ -159,9 +141,9 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
 
 
     /**
-     * Indicates whether parser has parsed this information item completely or not. If some
-     * information is not available in the item, one has to check this attribute to make sure that,
-     * this item has been parsed completely or not.
+     * Indicates whether parser has parsed this information item completely or
+     * not. If some information is not available in the item, one has to check
+     * this attribute to make sure that this item has been parsed completely.
      *
      * @return Returns boolean.
      */
@@ -186,14 +168,15 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
     }
 
     /**
-     * Removes this information item and its children, from the model completely.
+     * Removes this information item and its children from the model completely.
      *
      * @throws OMException
      */
     public OMNode detach() throws OMException {
         if (parent == null) {
+        	//TODO: shouldn't this just be a noop?
             throw new OMException(
-                    "Elements that doesn't have a parent can not be detached");
+                    "Element that doesn't have a parent cannot be detached");
         }
         OMNodeImpl nextSibling = (OMNodeImpl) getNextOMSibling();
         if (previousSibling == null) {
@@ -258,7 +241,7 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
         }
         if (sibling instanceof OMNodeImpl) {
             OMNodeImpl siblingImpl = (OMNodeImpl) sibling;
-            
+
             if (previousSibling == null) {
                 parent.setFirstChild(siblingImpl);
                 siblingImpl.nextSibling = this;
@@ -270,7 +253,6 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
                 siblingImpl.setPreviousOMSibling(previousSibling);
             }
             previousSibling = siblingImpl;
-
         }
     }
 
@@ -331,8 +313,7 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
             }
         }
         while (!done) {
-
-            builder.next();    
+            builder.next();
             if (builder.isCompleted() && !done) {
                 if (DEBUG_ENABLED) {
                     log.debug("Builder is complete.  Setting OMNode to complete.");
@@ -356,13 +337,13 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
         }
     }
 
-    
+
     public void close(boolean build) {
         if (build) {
             this.build();
         }
         this.done = true;
-        
+
         // If this is a StAXBuilder, close it.
         if (builder instanceof StAXBuilder &&
             !((StAXBuilder) builder).isClosed()) {
@@ -379,10 +360,10 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
      *
      */
     public void serialize(XMLStreamWriter xmlWriter) throws XMLStreamException {
-        
+
         // If the input xmlWriter is not an MTOMXMLStreamWriter, then wrapper it
         MTOMXMLStreamWriter writer = xmlWriter instanceof MTOMXMLStreamWriter ?
-                (MTOMXMLStreamWriter) xmlWriter : 
+                (MTOMXMLStreamWriter) xmlWriter :
                     new MTOMXMLStreamWriter(xmlWriter);
         internalSerialize(writer);
         writer.flush();
@@ -398,7 +379,7 @@ public abstract class OMNodeImpl implements OMNode, OMNodeEx {
     public void serializeAndConsume(XMLStreamWriter xmlWriter) throws XMLStreamException {
         // If the input xmlWriter is not an MTOMXMLStreamWriter, then wrapper it
         MTOMXMLStreamWriter writer = xmlWriter instanceof MTOMXMLStreamWriter ?
-                (MTOMXMLStreamWriter) xmlWriter : 
+                (MTOMXMLStreamWriter) xmlWriter :
                     new MTOMXMLStreamWriter(xmlWriter);
         internalSerializeAndConsume(writer);
         writer.flush();

@@ -25,21 +25,22 @@ import org.apache.axiom.om.OMNode;
 /**
  * Interface OMContainerEx
  * <p/>
- * Internal Implementation detail. Adding special interface to stop folks from accidently using
- * OMContainer. Please use at your own risk. May corrupt the data integrity.
+ * Internal implementation detail. Adding special interface to stop folks
+ * from accidentally using OMContainer. USE AT YOUR OWN RISK.
+ * May corrupt data integrity.
  */
 public interface OMContainerEx extends OMContainer {
-    public void setComplete(boolean state);
+    void setComplete(boolean state);
 
     /**
-     * forcefully set the first element in this parent element
+     * Forcefully set the first element in this parent element
      * @param omNode
      */
-    public void setFirstChild(OMNode omNode);
+    void setFirstChild(OMNode omNode);
 
     /**
-     * forcefully set the last element in this parent element
+     * Forcefully set the last element in this parent element
      * @param omNode
      */
-    public void setLastChild(OMNode omNode);
+    void setLastChild(OMNode omNode);
 }

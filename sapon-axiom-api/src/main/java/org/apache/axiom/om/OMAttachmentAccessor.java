@@ -21,15 +21,14 @@ package org.apache.axiom.om;
 import javax.activation.DataHandler;
 
 /**
- * This interface is applied to objects that
- * can access attachments.
+ * This interface is applied to objects that can access attachments.
  */
 public interface OMAttachmentAccessor {
 
     /**
-     * @param blobContentID (without the surrounding angle brackets and "cid:" prefix)
-     * @return The DataHandler of the mime part referred by the Content-Id or *null* if the mime
-     *         part referred by the content-id does not exist
+     * @param blobContentID (no surrounding angle brackets or "cid:" prefix)
+     * @return The DataHandler of the mime part referred by the Content-Id or
+     *         *null* if the mime part referred to by the cid does not exist.
      */
-    public DataHandler getDataHandler(String blobcid);
+    DataHandler getDataHandler(String blobcid);
 }

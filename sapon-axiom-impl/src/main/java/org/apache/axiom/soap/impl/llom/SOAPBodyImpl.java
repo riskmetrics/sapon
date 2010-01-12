@@ -19,6 +19,8 @@
 
 package org.apache.axiom.soap.impl.llom;
 
+import javax.xml.stream.XMLStreamConstants;
+
 import org.apache.axiom.om.OMConstants;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
@@ -35,14 +37,11 @@ import org.apache.axiom.soap.SOAPFault;
 import org.apache.axiom.soap.SOAPProcessingException;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 
-import javax.xml.stream.XMLStreamConstants;
-
-/** Class SOAPBodyImpl */
 public abstract class SOAPBodyImpl extends SOAPElement
-        implements SOAPBody, OMConstants {
-    /** Field hasSOAPFault */
+	implements SOAPBody, OMConstants
+{
     private boolean hasSOAPFault = false;
-    
+
     private boolean enableLookAhead = true;
     private boolean lookAheadAttempted = false;
     private boolean lookAheadSuccessful = false;
@@ -50,25 +49,20 @@ public abstract class SOAPBodyImpl extends SOAPElement
     private OMNamespace lookAheadNS = null;
 
     protected SOAPBodyImpl(String localName, OMNamespace ns,
-                           SOAPFactory factory) {
+                           SOAPFactory factory)
+    {
         super(localName, ns, factory);
     }
 
-    /** @param envelope  */
     public SOAPBodyImpl(SOAPEnvelope envelope, SOAPFactory factory)
-            throws SOAPProcessingException {
+    	throws SOAPProcessingException
+    {
         super(envelope, SOAPConstants.BODY_LOCAL_NAME, true, factory);
-
     }
 
-    /**
-     * Constructor SOAPBodyImpl
-     *
-     * @param envelope
-     * @param builder
-     */
     public SOAPBodyImpl(SOAPEnvelope envelope, OMXMLParserWrapper builder,
-                        SOAPFactory factory) {
+                        SOAPFactory factory)
+    {
         super(envelope, SOAPConstants.BODY_LOCAL_NAME, builder, factory);
     }
 
@@ -103,8 +97,8 @@ public abstract class SOAPBodyImpl extends SOAPElement
                     (SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(ns.getNamespaceURI()) ||
                      SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(ns.getNamespaceURI()))) {
                     hasSOAPFault = true;
-                }                                                             
-            } 
+                }
+            }
             return hasSOAPFault;
         }
     }
@@ -118,22 +112,19 @@ public abstract class SOAPBodyImpl extends SOAPElement
         OMElement element = getFirstElement();
         if (hasSOAPFault) {
             return (SOAPFault) element;
-        } else if (element != null
-                &&
-                SOAPConstants.SOAPFAULT_LOCAL_NAME.equals(
-                        element.getLocalName())
-                &&
-                (SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(
-                        element.getNamespace().getNamespaceURI())
-                        ||
-                        SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(
-                                element.getNamespace().getNamespaceURI()))) {     //added this line
+        } else if (isSOAPFault(element)) {
             hasSOAPFault = true;
             return (SOAPFault) element;
         } else {
             return null;
         }
+    }
 
+    private boolean isSOAPFault(OMElement element) {
+    	return element != null
+        	&& SOAPConstants.SOAPFAULT_LOCAL_NAME.equals(element.getLocalName())
+        	&& (   SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(element.getNamespace().getNamespaceURI())
+                || SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(element.getNamespace().getNamespaceURI()));
     }
 
     /**
@@ -151,22 +142,25 @@ public abstract class SOAPBodyImpl extends SOAPElement
         hasSOAPFault = true;
     }
 
-    protected void checkParent(OMElement parent) throws SOAPProcessingException {
+    @Override
+	protected void checkParent(OMElement parent) throws SOAPProcessingException {
         if (!(parent instanceof SOAPEnvelopeImpl)) {
             throw new SOAPProcessingException(
                     "Expecting an implementation of SOAP Envelope as the parent. But received some other implementation");
         }
     }
 
-    public OMNode detach() throws OMException {
+    @Override
+	public OMNode detach() throws OMException {
         throw new SOAPProcessingException(
                 "Can not detach SOAP Body, SOAP Envelope must have a Body !!");
     }
 
-    /* 
+    /*
      * Overridden so that we can detect when a child element is built
      */
-    public void buildNext() {
+    @Override
+	public void buildNext() {
         if (builder != null) {
             int token = builder.next();
             if (token == XMLStreamConstants.START_ELEMENT) {
@@ -174,10 +168,10 @@ public abstract class SOAPBodyImpl extends SOAPElement
             }
         }
     }
-    
+
     private boolean hasLookahead() {
         if (!enableLookAhead) {
-           return false; 
+           return false;
         }
         if (lookAheadAttempted) {
             return lookAheadSuccessful;
@@ -193,13 +187,13 @@ public abstract class SOAPBodyImpl extends SOAPElement
                 this.lookAheadLocalName = soapBuilder.getName();
                 String ns = soapBuilder.getNamespace();
                 ns = (ns == null) ? "" : ns;
-                this.lookAheadNS = factory.createOMNamespace(ns, 
+                this.lookAheadNS = factory.createOMNamespace(ns,
                                                              soapBuilder.getPrefix());
             }
         }
         return lookAheadSuccessful;
     }
-    
+
     public OMNamespace getFirstElementNS() {
         if (hasLookahead()) {
             return this.lookAheadNS;
@@ -209,10 +203,10 @@ public abstract class SOAPBodyImpl extends SOAPElement
                 return null;
             } else {
                 return element.getNamespace();
-            } 
+            }
         }
     }
-    
+
     public String getFirstElementLocalName() {
         if (hasLookahead()) {
             return this.lookAheadLocalName;
@@ -222,14 +216,15 @@ public abstract class SOAPBodyImpl extends SOAPElement
                 return null;
             } else {
                 return element.getLocalName();
-            } 
+            }
         }
     }
 
-    public void addChild(OMNode child) {
+    @Override
+	public void addChild(OMNode child) {
         this.enableLookAhead = false;
         super.addChild(child);
     }
-    
-    
+
+
 }

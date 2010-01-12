@@ -54,39 +54,33 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * Note  - This class also implements the streaming constants interface to get access to the StAX
- * constants
+ * Note  - This class also implements the streaming constants interface to get
+ * access to the StAX constants
  */
 public class OMStAXWrapper
-    implements OMXMLStreamReader, XMLStreamConstants {
+    implements OMXMLStreamReader, XMLStreamConstants
+{
 
     private static final Log log = LogFactory.getLog(OMStAXWrapper.class);
     private static boolean DEBUG_ENABLED = log.isDebugEnabled();
 
-    /** Field navigator */
     private OMNavigator navigator;
 
-    /** Field builder */
     private OMXMLParserWrapper builder;
 
-    /** Field parser */
     private XMLStreamReader parser;
     private boolean _isClosed = false;              // Indicate if parser is closed
     private boolean _releaseParserOnClose = false;  // Defaults to legacy behavior, which is keep the reference
 
 
-    /** Field rootNode */
     private OMNode rootNode;
 
-    /** Field isFirst */
     private boolean isFirst = true;
 
     // Navigable means the output should be taken from the navigator.
     // As soon as the navigator returns a null navigable will be reset
     // to false and the subsequent events will be taken from the builder
     // or the parser directly.
-
-    /** Field NAVIGABLE */
     private static final short NAVIGABLE = 0;
     private static final short SWITCH_AT_NEXT = 1;
     private static final short COMPLETED = 2;
@@ -101,8 +95,6 @@ public class OMStAXWrapper
     private OMText xopIncludeText = null;
     private boolean xopIncludeStart = false;
 
-
-    /** Field state */
     private short state;
 
     /** Field currentEvent Default set to START_DOCUMENT */
@@ -112,8 +104,6 @@ public class OMStAXWrapper
     // This means that unless the user explicitly states
     // that he wants things not to be cached, everything will
     // be cached.
-
-    /** Field switchingAllowed */
     boolean switchingAllowed = false;
 
     // namespaceURI interning
@@ -121,27 +111,20 @@ public class OMStAXWrapper
     // due to performance impacts
     boolean namespaceURIInterning = false;
 
-    /** Field elementStack */
     private Stack<OMNode> nodeStack = null;
 
     // keeps the next event. The parser actually keeps one step ahead to
     // detect the end of navigation. (at the end of the stream the navigator
     // returns a null
-
-    /** Field nextNode */
     private OMNode nextNode = null;
 
     // holder for the current node. Needs this to generate events from the current node
-
-    /** Field currentNode */
     private OMNode currentNode = null;
 
     // needs this to refer to the last known node
-
-    /** Field lastNode */
     private OMNode lastNode = null;
 
-    /** Track depth to ensure we stop generating events when we are done with the root node. */
+    //Track depth to ensure we stop generating events when we are done with the root node.
     int depth = 0;
 
     private boolean needToThrowEndDocument = false;

@@ -132,14 +132,6 @@ public class ElementHelper {
         return null;
     }
 
-    /**
-     * @deprecated use {@link #getContentID(XMLStreamReader)} instead (see WSCOMMONS-429)
-     */
-    @Deprecated
-	public static String getContentID(XMLStreamReader parser, String charsetEncoding) {
-        return getContentID(parser);
-    }
-
     public static String getContentID(XMLStreamReader parser) {
         if (parser.getAttributeCount() > 0 &&
                 parser.getAttributeLocalName(0).equals("href")) {

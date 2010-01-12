@@ -48,23 +48,23 @@ import org.apache.axiom.om.impl.llom.OMProcessingInstructionImpl;
 import org.apache.axiom.om.impl.llom.OMSourcedElementImpl;
 import org.apache.axiom.om.impl.llom.OMTextImpl;
 
-/** Class OMLinkedListImplFactory */
-public class OMLinkedListImplFactory implements OMFactory {
-
+public class OMLinkedListImplFactory
+	implements OMFactory
+{
     private static final String uriAndPrefixSeparator = ";";
-
 
     // Pooling of OMNamespace objects is disabled.  See the comment in OMNamespace.
     private static boolean POOL_OMNAMESPACES = false;
 
     /**
-     * This is a map of namespaces with the namespace URI as the key and Namespace object itself as
-     * the value.
-     * OMFactories are shared across threads.  The Hashtable is necessary to prevent concurrent modification exceptions.
+     * This is a map of namespaces with the namespace URI as the key and
+     * Namespace object itself as the value.
+	 *
+     * OMFactories are shared across threads.  The Hashtable is necessary to
+     * prevent concurrent modification exceptions.
      */
     protected Map<String, OMNamespace> namespaceTable
     	= new Hashtable<String, OMNamespace>(5);
-
 
     /**
      * Method createOMElement.
@@ -167,7 +167,7 @@ public class OMLinkedListImplFactory implements OMFactory {
         // small objects is unnecessary.  In addition,
         // the objects are never freed from the pool, which means that the
         // the table will grow very large over time.  For this reason, the
-        // pooling of OMNamespaces is disabbled.
+        // pooling of OMNamespaces is disabled.
 
         if (POOL_OMNAMESPACES) {
             String key = uri;

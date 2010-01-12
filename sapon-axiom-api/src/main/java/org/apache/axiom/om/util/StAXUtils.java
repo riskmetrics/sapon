@@ -200,16 +200,6 @@ public class StAXUtils {
         isFactoryPerClassLoader = value;
     }
 
-    /**
-     * @deprecated
-     * Returns an XMLOutputFactory instance for reuse.
-     *
-     * @param factory An XMLOutputFactory instance that is available for reuse.
-     */
-    @Deprecated
-	public static void releaseXMLOutputFactory(XMLOutputFactory factory) {
-    }
-
     public static XMLStreamWriter createXMLStreamWriter(final OutputStream out)
             throws XMLStreamException {
         final XMLOutputFactory outputFactory = getXMLOutputFactory();
@@ -270,13 +260,6 @@ public class StAXUtils {
         } catch (PrivilegedActionException pae) {
             throw (XMLStreamException) pae.getException();
         }
-    }
-
-    /**
-     * @deprecated
-     */
-    @Deprecated
-	public static void reset() {
     }
 
     // This has package access since it is used from within anonymous inner classes

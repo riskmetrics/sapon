@@ -49,8 +49,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * <p>Element backed by an arbitrary data source. When necessary, this element will be expanded by
- * creating a parser from the data source.</p>
+ * <p>Element backed by an arbitrary data source. When necessary, this element
+ * will be expanded by creating a parser from the data source.</p>
  * <p/>
  * <p>Whenever methods are added to the base {@link OMElementImpl}
  * class the corresponding methods must be added to this class (there's a unit test to verify that
@@ -60,7 +60,9 @@ import org.apache.commons.logging.LogFactory;
  * #forceExpand()} method) before the base class method is called. This will typically involve a
  * heavy overhead penalty, so should be avoided if possible.</p>
  */
-public class OMSourcedElementImpl extends OMElementImpl implements OMSourcedElement {
+public class OMSourcedElementImpl extends OMElementImpl
+	implements OMSourcedElement
+{
 
     /** Data source for element data. */
     private OMDataSource dataSource;
@@ -237,91 +239,90 @@ public class OMSourcedElementImpl extends OMElementImpl implements OMSourcedElem
      * tree on demand, this first creates a builder
      */
     private void forceExpand() {
-        if (!isExpanded) {
+        if (isExpanded) {
+        	return;
+        }
 
-            if (isDebugEnabled) {
-                log.debug("forceExpand: expanding element " +
-                        getPrintableName());
-                if(forceExpandLog.isDebugEnabled()){
-                	// When using an OMSourcedElement, it can be particularly difficult to
-                	// determine why an expand occurs... a stack trace should help debugging this
-                	Exception e = new Exception("Debug Stack Trace");
-                	forceExpandLog.debug("forceExpand stack", e);
-                }
+        if (isDebugEnabled) {
+            log.debug("forceExpand: expanding element " + getPrintableName());
+            if(forceExpandLog.isDebugEnabled()){
+            	// When using an OMSourcedElement, it can be particularly difficult to
+            	// determine why an expand occurs... a stack trace should help debugging this
+            	Exception e = new Exception("Debug Stack Trace");
+            	forceExpandLog.debug("forceExpand stack", e);
             }
+        }
 
-            // Get the XMLStreamReader
-            readerFromDS = getDirectReader();
+        // Get the XMLStreamReader
+        readerFromDS = getDirectReader();
 
-            // Advance past the START_DOCUMENT to the start tag.
-            // Remember the character encoding.
-            String characterEncoding = readerFromDS.getCharacterEncodingScheme();
-            if (characterEncoding != null) {
-                characterEncoding = readerFromDS.getEncoding();
+        // Advance past the START_DOCUMENT to the start tag.
+        // Remember the character encoding.
+        String characterEncoding = readerFromDS.getCharacterEncodingScheme();
+        if (characterEncoding != null) {
+            characterEncoding = readerFromDS.getEncoding();
+        }
+        try {
+            if (readerFromDS.getEventType() != XMLStreamConstants.START_ELEMENT) {
+                while (readerFromDS.next() != XMLStreamConstants.START_ELEMENT) {
+					;
+				}
             }
-            try {
-                if (readerFromDS.getEventType() != XMLStreamConstants.START_ELEMENT) {
-                    while (readerFromDS.next() != XMLStreamConstants.START_ELEMENT) {
-						;
-					}
-                }
-            } catch (XMLStreamException e) {
-                log.error("forceExpand: error parsing data soruce document for element " +
-                        getLocalName(), e);
-                throw new RuntimeException("Error parsing data source document:" +
-                        e.getMessage());
+        } catch (XMLStreamException e) {
+            log.error("forceExpand: error parsing data soruce document for element " +
+                    getLocalName(), e);
+            throw new RuntimeException("Error parsing data source document:" +
+                    e.getMessage());
+        }
+
+        // Make sure element local name and namespace matches what was expected
+        if (!readerFromDS.getLocalName().equals(getLocalName())) {
+            log.error("forceExpand: expected element name " +
+                    getLocalName() + ", found " + readerFromDS.getLocalName());
+            throw new RuntimeException("Element name from data source is " +
+                    readerFromDS.getLocalName() + ", not the expected " + getLocalName());
+        }
+        String readerURI = readerFromDS.getNamespaceURI();
+        readerURI = (readerURI == null) ? "" : readerURI;
+        String uri = (getNamespace() == null) ? "" :
+            ((getNamespace().getNamespaceURI() == null) ? "" : getNamespace().getNamespaceURI());
+        if (!readerURI.equals(uri)) {
+            log.error("forceExpand: expected element namespace " +
+                    getLocalName() + ", found " + uri);
+            throw new RuntimeException("Element namespace from data source is " +
+                    readerURI + ", not the expected " + uri);
+        }
+
+        // Get the current prefix and the reader's prefix
+        String readerPrefix = readerFromDS.getPrefix();
+        readerPrefix = (readerPrefix == null) ? "" : readerPrefix;
+        String prefix = null;
+
+        OMNamespace ns = getNamespace();
+        if (ns == null || ns instanceof DeferredNamespace) {
+            // prefix is not available until after expansion
+        } else {
+            prefix = ns.getPrefix();
+        }
+
+        // Set the builder for this element
+        isExpanded = true;
+        super.setBuilder(new StAXOMBuilder(getOMFactory(),
+                                           readerFromDS,
+                                           this,
+                                           characterEncoding));
+        setComplete(false);
+
+        // Update the prefix if necessary.  This must be done after
+        // isParserSet to avoid a recursive call
+        if (!readerPrefix.equals(prefix) ||
+             getNamespace() == null ||
+             ns instanceof DeferredNamespace) {
+            if (log.isDebugEnabled()) {
+                log.debug(
+                        "forceExpand: changing prefix from " + prefix + " to " + readerPrefix);
             }
-
-            // Make sure element local name and namespace matches what was expected
-            if (!readerFromDS.getLocalName().equals(getLocalName())) {
-                log.error("forceExpand: expected element name " +
-                        getLocalName() + ", found " + readerFromDS.getLocalName());
-                throw new RuntimeException("Element name from data source is " +
-                        readerFromDS.getLocalName() + ", not the expected " + getLocalName());
-            }
-            String readerURI = readerFromDS.getNamespaceURI();
-            readerURI = (readerURI == null) ? "" : readerURI;
-            String uri = (getNamespace() == null) ? "" :
-                ((getNamespace().getNamespaceURI() == null) ? "" : getNamespace().getNamespaceURI());
-            if (!readerURI.equals(uri)) {
-                log.error("forceExpand: expected element namespace " +
-                        getLocalName() + ", found " + uri);
-                throw new RuntimeException("Element namespace from data source is " +
-                        readerURI + ", not the expected " + uri);
-            }
-
-            // Get the current prefix and the reader's prefix
-            String readerPrefix = readerFromDS.getPrefix();
-            readerPrefix = (readerPrefix == null) ? "" : readerPrefix;
-            String prefix = null;
-
-            OMNamespace ns = getNamespace();
-            if (ns == null || ns instanceof DeferredNamespace) {
-                // prefix is not available until after expansion
-            } else {
-                prefix = ns.getPrefix();
-            }
-
-            // Set the builder for this element
-            isExpanded = true;
-            super.setBuilder(new StAXOMBuilder(getOMFactory(),
-                                               readerFromDS,
-                                               this,
-                                               characterEncoding));
-            setComplete(false);
-
-            // Update the prefix if necessary.  This must be done after
-            // isParserSet to avoid a recursive call
-            if (!readerPrefix.equals(prefix) ||
-                 getNamespace() == null ||
-                 ns instanceof DeferredNamespace) {
-                if (log.isDebugEnabled()) {
-                    log.debug(
-                            "forceExpand: changing prefix from " + prefix + " to " + readerPrefix);
-                }
-                setNamespace(new OMNamespaceImpl(readerURI, readerPrefix));
-            }
-
+            setNamespace(new OMNamespaceImpl(readerURI, readerPrefix));
         }
     }
 

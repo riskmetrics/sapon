@@ -19,6 +19,10 @@
 
 package org.apache.axiom.soap.impl.llom;
 
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import org.apache.axiom.om.OMConstants;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
@@ -40,16 +44,10 @@ import org.apache.axiom.soap.SOAPProcessingException;
 import org.apache.axiom.soap.SOAPVersion;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 
-import javax.xml.namespace.QName;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-/** Class SOAPEnvelopeImpl */
 public class SOAPEnvelopeImpl extends SOAPElement
         implements SOAPEnvelope, OMConstants {
 
     /**
-     * Constructor
      * @param builder the OMXMLParserWrapper building this envelope
      * @param factory the SOAPFactory building this envelope
      */
@@ -59,7 +57,6 @@ public class SOAPEnvelopeImpl extends SOAPElement
     }
 
     /**
-     * Constructor
      * @param ns OMNamespace for this envelope
      * @param factory SOAPFactory associated with this envelope
      */
@@ -85,14 +82,14 @@ public class SOAPEnvelopeImpl extends SOAPElement
         OMElement e = getFirstElement();
         if (e instanceof SOAPHeader) {
             return (SOAPHeader)e;
-        } 
-        
+        }
+
         return null;
     }
 
     /**
      * Check that a node is allowed as a child of a SOAP envelope.
-     * 
+     *
      * @param child
      */
     private void checkChild(OMNode child) {
@@ -103,16 +100,17 @@ public class SOAPEnvelopeImpl extends SOAPElement
                     SOAP12Constants.FAULT_CODE_SENDER);
         }
     }
-    
+
     /**
      * Add a SOAPHeader or SOAPBody object
      * @param child an OMNode to add - must be either a SOAPHeader or a SOAPBody
      */
-    public void addChild(OMNode child) {
+    @Override
+	public void addChild(OMNode child) {
         // SOAP 1.1 allows for arbitrary elements after SOAPBody so do NOT check for
         // node types when appending to SOAP 1.1 envelope.
         if (getVersion() instanceof SOAP12Version) {
-            checkChild((OMNode)child);
+            checkChild(child);
         }
 
         if (child instanceof SOAPHeader) {
@@ -145,9 +143,9 @@ public class SOAPEnvelopeImpl extends SOAPElement
                 }
             }
         }
-        super.addChild(child);        
+        super.addChild(child);
     }
-    
+
     /**
      * Returns the <CODE>SOAPBody</CODE> object associated with this <CODE>SOAPEnvelope</CODE>
      * object. <P> This SOAPBody will just be a container for all the BodyElements in the
@@ -158,7 +156,6 @@ public class SOAPEnvelopeImpl extends SOAPElement
      * @throws OMException if there is a problem obtaining the <CODE>SOAPBody</CODE> object
      */
     public SOAPBody getBody() throws OMException {
-        //check for the first element
         OMElement element = getFirstElement();
         if (element != null) {
             if (SOAPConstants.BODY_LOCAL_NAME.equals(element.getLocalName())) {
@@ -187,7 +184,8 @@ public class SOAPEnvelopeImpl extends SOAPElement
      *
      * @throws OMException
      */
-    public OMNode detach() throws OMException {
+    @Override
+	public OMNode detach() throws OMException {
 //        throw new OMException("Root Element can not be detached");
         // I'm confused why this threw an exception as above. One should be able to create
         // a SOAP envelope and be able to detach from the its parent document.
@@ -197,11 +195,13 @@ public class SOAPEnvelopeImpl extends SOAPElement
         return this;
     }
 
-    protected void checkParent(OMElement parent) throws SOAPProcessingException {
+    @Override
+	protected void checkParent(OMElement parent) throws SOAPProcessingException {
         // here do nothing as SOAPEnvelope doesn't have a parent !!!
     }
 
-    protected void internalSerialize(XMLStreamWriter writer2, boolean cache)
+    @Override
+	protected void internalSerialize(XMLStreamWriter writer2, boolean cache)
             throws XMLStreamException {
         MTOMXMLStreamWriter writer = (MTOMXMLStreamWriter) writer2;
         if (!writer.isIgnoreXMLDeclaration()) {
@@ -259,18 +259,18 @@ public class SOAPEnvelopeImpl extends SOAPElement
         }
         child.getNextOMSibling();
     }
-    
-    public boolean hasFault() {      
+
+    public boolean hasFault() {
         QName payloadQName = this.getPayloadQName_Optimized();
         if (payloadQName != null) {
             if (SOAPConstants.SOAPFAULT_LOCAL_NAME.equals(payloadQName.getLocalPart())) {
                 String ns = payloadQName.getNamespaceURI();
                 return (ns != null &&
                     (SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(ns) ||
-                     SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(ns)));                                                         
-            } 
+                     SOAP12Constants.SOAP_ENVELOPE_NAMESPACE_URI.equals(ns)));
+            }
         }
-        
+
         // Fallback: Get the body and get the fault information from the body
         SOAPBody body = this.getBody();
         return (body == null) ? false : body.hasFault();
@@ -288,13 +288,13 @@ public class SOAPEnvelopeImpl extends SOAPElement
     public OMNamespace getSOAPBodyFirstElementNS() {
         QName payloadQName = this.getPayloadQName_Optimized();
         if (payloadQName != null) {
-            return this.factory.createOMNamespace(payloadQName.getNamespaceURI(), 
+            return this.factory.createOMNamespace(payloadQName.getNamespaceURI(),
                                                   payloadQName.getPrefix());
         }
         SOAPBody body = this.getBody();
         return (body == null) ? null : body.getFirstElementNS();
     }
-    
+
     /**
      * Use a parser property to fetch the first element in the body.
      * Returns null if this optimized property is not set or not available.
@@ -310,10 +310,10 @@ public class SOAPEnvelopeImpl extends SOAPElement
                     getReaderProperty(SOAPConstants.SOAPBODY_FIRST_CHILD_ELEMENT_QNAME);
                 return payloadQName;
             } catch (Throwable e) {
-                // The parser may not support this property. 
+                // The parser may not support this property.
                 // In such cases, processing continues below in the fallback approach
             }
-            
+
         }
         return null;
     }
