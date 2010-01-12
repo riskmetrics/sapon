@@ -44,9 +44,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * The methods in this class are used to process {@link EndpointReference} objects
- * according to the rules of the 2005/08 (Final) and 2004/08 (submission) WS-Addressing
- * specifications.
+ * The methods in this class are used to process {@link EndpointReference}
+ * objects according to the rules of the 2005/08 (Final) and
+ * 2004/08 (submission) WS-Addressing specifications.
  */
 public class EndpointReferenceHelper {
 

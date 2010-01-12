@@ -32,12 +32,13 @@ import org.apache.axis2.engine.MessageReceiver;
 import org.apache.axis2.i18n.Messages;
 
 /**
- * The RawXMLINOutMessageReceiver MessageReceiver hands over the raw request received to
- * the service implementation class as an OMElement. The implementation class is expected
- * to return back the OMElement to be returned to the caller. This is a synchronous
- * MessageReceiver, and finds the service implementation class to invoke by referring to
- * the "ServiceClass" parameter value specified in the service.xml and looking at the
- * methods of the form OMElement <<methodName>>(OMElement request)
+ * The RawXMLINOutMessageReceiver MessageReceiver hands over the raw request
+ * received to the service implementation class as an OMElement. The
+ * implementation class is expected to return back the OMElement to be returned
+ * to the caller. This is a synchronous MessageReceiver, and finds the service
+ * implementation class to invoke by referring to the "ServiceClass" parameter
+ * value specified in the service.xml and looking at the methods of the form
+ * OMElement <<methodName>>(OMElement request)
  *
  * @see RawXMLINOnlyMessageReceiver
  * @see RawXMLINOutAsyncMessageReceiver
