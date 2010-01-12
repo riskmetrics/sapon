@@ -405,7 +405,7 @@ public class ServiceBuilder extends DescriptionBuilder {
 				processDataLocatorConfig(dataLocatorElement, service);
 			}
 
-			processEndpoints(service);
+			expandEndpoints(service);
 			processPolicyAttachments(service_element, service);
 
 
@@ -863,10 +863,10 @@ public class ServiceBuilder extends DescriptionBuilder {
 		this.wsdlServiceMap = wsdlServiceMap;
 	}
 
-	private void processEndpoints(AxisService axisService) throws AxisFault {
+	private void expandEndpoints(AxisService axisService) throws AxisFault {
 		String endpointName = axisService.getEndpointName();
 		if (endpointName == null || endpointName.length() == 0) {
-			Utils.addEndpointsToService(axisService, service.getConfiguration());
+			Utils.expandServiceEndpoints(axisService);
 		}
 	}
 

@@ -46,11 +46,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
-import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -114,18 +111,14 @@ public class Utils {
     private static Log log = LogFactory.getLog(Utils.class);
 
     public static void addFlowHandlers(Flow flow, ClassLoader clsLoader)
-            throws AxisFault {
-        int count = flow.getHandlerCount();
-
-        for (int j = 0; j < count; j++) {
-            HandlerDescription handlermd = flow.getHandler(j);
-            Handler handler;
-
+            throws AxisFault
+    {
+        for(HandlerDescription handlermd: flow.handlers()) {
             final Class<?> handlerClass = getHandlerClass(
                     handlermd.getClassName(), clsLoader);
-
             try {
-                handler = AccessController.doPrivileged(new PrivilegedExceptionAction<Handler>() {
+                Handler handler = AccessController.doPrivileged(
+                		new PrivilegedExceptionAction<Handler>() {
                             public Handler run() throws InstantiationException,
                                     IllegalAccessException {
                                 return (Handler)handlerClass.newInstance();
@@ -211,10 +204,9 @@ public class Utils {
             String entryName;
             while ((entry = zin.getNextEntry()) != null) {
                 entryName = entry.getName();
-                /**
-                 * id the entry name start with /lib and end with .jar then
-                 * those entry name will be added to the arraylist
-                 */
+
+                //id the entry name start with /lib and end with .jar then
+                //those entry name will be added to the arraylist
                 if ((entryName != null)
                     && entryName.toLowerCase().startsWith("lib/")
                     && entryName.toLowerCase().endsWith(".jar")) {
@@ -626,12 +618,13 @@ public class Utils {
     }
 
     /**
-     * Modules can contain services in some cases.  This method will deploy all the services
-     * for a given AxisModule into the current AxisConfiguration.
+     * Modules can contain services in some cases.  This method will deploy all
+     * the services for a given AxisModule into the current AxisConfiguration.
      * <p>
-     * The code looks for an "aars/" directory inside the module (either .mar or exploded),
-     * and an "aars.list" file inside that to figure out which services to deploy.  Note that all
-     * services deployed this way will have access to the Module's classes.
+     * The code looks for an "aars/" directory inside the module (either .mar
+     * or exploded), and an "aars.list" file inside that to figure out which
+     * services to deploy.  Note that all services deployed this way will have
+     * access to the Module's classes.
      * </p>
      *
      * @param module the AxisModule to search for services
@@ -745,94 +738,6 @@ public class Utils {
     }
 
     /**
-     * Normalize a uri containing ../ and ./ paths.
-     *
-     * @param uri The uri path to normalize
-     * @return The normalized uri
-     */
-    public static String normalize(String uri) {
-        if ("".equals(uri)) {
-            return uri;
-        }
-        int leadingSlashes;
-        for (leadingSlashes = 0; leadingSlashes < uri.length()
-                                 && uri.charAt(leadingSlashes) == '/'; ++leadingSlashes) {
-            // FIXME: this block is empty!!
-        }
-        boolean isDir = (uri.charAt(uri.length() - 1) == '/');
-        StringTokenizer st = new StringTokenizer(uri, "/");
-        LinkedList<String> clean = new LinkedList<String>();
-        while (st.hasMoreTokens()) {
-            String token = st.nextToken();
-            if ("..".equals(token)) {
-                if (!clean.isEmpty() && !"..".equals(clean.getLast())) {
-                    clean.removeLast();
-                    if (!st.hasMoreTokens()) {
-                        isDir = true;
-                    }
-                } else {
-                    clean.add("..");
-                }
-            } else if (!".".equals(token) && !"".equals(token)) {
-                clean.add(token);
-            }
-        }
-        StringBuffer sb = new StringBuffer();
-        while (leadingSlashes-- > 0) {
-            sb.append('/');
-        }
-        for (Iterator<String> it = clean.iterator(); it.hasNext();) {
-            sb.append(it.next());
-            if (it.hasNext()) {
-                sb.append('/');
-            }
-        }
-        if (isDir && sb.length() > 0 && sb.charAt(sb.length() - 1) != '/') {
-            sb.append('/');
-        }
-        return sb.toString();
-    }
-
-    public static String getPath(String parent, String childPath) {
-        Stack<String> parentStack = new Stack<String>();
-        Stack<String> childStack = new Stack<String>();
-        if (parent != null) {
-            String[] values = parent.split("/");
-            if (values.length > 0) {
-                for (String value : values) {
-                    parentStack.push(value);
-                }
-            }
-        }
-        String[] values = childPath.split("/");
-        if (values.length > 0) {
-            for (String value : values) {
-                childStack.push(value);
-            }
-        }
-        String filepath = "";
-        while (!childStack.isEmpty()) {
-            String value = childStack.pop();
-            if ("..".equals(value)) {
-                parentStack.pop();
-            } else if (!"".equals(value)) {
-                if ("".equals(filepath)) {
-                    filepath = value;
-                } else {
-                    filepath = value + "/" + filepath;
-                }
-            }
-        }
-        while (!parentStack.isEmpty()) {
-            String value = parentStack.pop();
-            if (!"".equals(value)) {
-                filepath = value + "/" + filepath;
-            }
-        }
-        return filepath;
-    }
-
-    /**
      * Get names of all *.jar files inside the lib/ directory of a given jar URL
      *
      * @param url base URL of a JAR to search
@@ -904,10 +809,9 @@ public class Utils {
                 return createDeploymentClassLoader(urls2, serviceClassLoader,
                                                    null);
             } catch (Exception e) {
-                log
-                        .warn("Exception extracting jars into temporary directory : "
-                              + e.getMessage()
-                              + " : switching to alternate class loading mechanism");
+                log.warn("Exception extracting jars into temporary directory : "
+                			+ e.getMessage()
+                			+ " : switching to alternate class loading mechanism");
                 log.debug(e.getMessage(), e);
             }
         }
@@ -1020,41 +924,50 @@ public class Utils {
         return serviceName;
     }
 
-    public static void addEndpointsToService(AxisService axisService)
-            throws AxisFault {
+    private static String capitalizeFirst(String in) {
+    	StringBuffer out = new StringBuffer(in);
+    	out.setCharAt(0, Character.toUpperCase(out.charAt(0)));
+    	for(int i=1; i < out.length(); i++) {
+    		out.setCharAt(i, Character.toLowerCase(out.charAt(i)));
+    	}
+    	return out.toString();
+    }
 
-        String serviceName = axisService.getName();
-        Iterator<String> transportInValues = null;
+    private static boolean isTrueParam(AxisService service, String param) {
+		Parameter testParameter = service.getParameter(param);
+		return testParameter != null
+			&& JavaUtils.isTrueExplicitly(testParameter.getValue());
+    }
 
+    public static void expandServiceEndpoints(AxisService axisService)
+    	throws AxisFault
+    {
+    	List<String> transportInNames = null;
         if (axisService.isEnableAllTransports()) {
-            AxisConfiguration axisConfiguration = axisService.getConfiguration();
-            if (axisConfiguration != null) {
-                List<String> transports = new ArrayList<String>();
-                for (Object o : axisConfiguration.getTransportsIn().values()) {
-                    TransportInDescription transportInDescription = (TransportInDescription)o;
-                    transports.add(transportInDescription.getName());
-                }
-                transportInValues = transports.iterator();
-            }
-        } else {
-            transportInValues = axisService.getExposedTransports().iterator();
+        	Collection<TransportInDescription> transportInVals
+					= axisService.getConfiguration().getTransportsIn().values();
+        	transportInNames = new ArrayList<String>(transportInVals.size());
+        	for (TransportInDescription tid: transportInVals) {
+        		transportInNames.add(tid.getName());
+        	}
+		} else {
+			transportInNames = axisService.getExposedTransports();
+		}
+
+        if (transportInNames == null) {
+        	return;
         }
 
         Map<QName, AxisBinding> bindingCache = new HashMap<QName, AxisBinding>();
 
-        if (transportInValues != null) {
-            for (; transportInValues.hasNext();) {
-                String transportName = transportInValues.next();
-                String protocol = transportName.substring(0, 1).toUpperCase()
-                                  + transportName.substring(1, transportName.length())
-                        .toLowerCase();
+        for (String transportName: transportInNames) {
+            String protocol = capitalizeFirst(transportName);
 
-                //TODO do we use this method , we need to disable Http, SOAP11,SOAP12
-                // Bindings according to parameters if we are using this
-                /*
-                     * populates soap11 endpoint
-                     */
-                String soap11EndpointName = serviceName + protocol
+            // populates soap11 endpoint
+            boolean disableSOAP11 = isTrueParam(axisService,
+                    org.apache.axis2.Constants.Configuration.DISABLE_SOAP11);
+            if (!disableSOAP11) {
+                String soap11EndpointName = axisService.getName() + protocol
                                             + "Soap11Endpoint";
 
                 AxisEndpoint httpSoap11Endpoint = new AxisEndpoint();
@@ -1067,11 +980,13 @@ public class Utils {
                                         httpSoap11Endpoint);
                 // setting soap11 endpoint as the default endpoint
                 axisService.setEndpointName(soap11EndpointName);
+            }
 
-                /*
-                     * generating Soap12 endpoint
-                     */
-                String soap12EndpointName = serviceName + protocol
+            // generating Soap12 endpoint
+            boolean disableSOAP12 = isTrueParam(axisService,
+                    org.apache.axis2.Constants.Configuration.DISABLE_SOAP12);
+            if (!disableSOAP12) {
+                String soap12EndpointName = axisService.getName() + protocol
                                             + "Soap12Endpoint";
                 AxisEndpoint httpSoap12Endpoint = new AxisEndpoint();
                 httpSoap12Endpoint.setName(soap12EndpointName);
@@ -1081,124 +996,36 @@ public class Utils {
                                        bindingCache);
                 axisService.addEndpoint(httpSoap12Endpoint.getName(),
                                         httpSoap12Endpoint);
-
-                /*
-                     * generating Http endpoint
-                     */
-                if ("http".equals(transportName)) {
-                    String httpEndpointName = serviceName + protocol
-                                              + "Endpoint";
-                    AxisEndpoint httpEndpoint = new AxisEndpoint();
-                    httpEndpoint.setName(httpEndpointName);
-                    httpEndpoint.setParent(axisService);
-                    httpEndpoint.setTransportInDescription(transportName);
-                    populateHttpEndpoint(axisService, httpEndpoint, bindingCache);
-                    axisService.addEndpoint(httpEndpoint.getName(),
-                                            httpEndpoint);
-                }
             }
-        }
-    }
 
-    public static void addEndpointsToService(AxisService axisService,
-                                             AxisConfiguration axisConfiguration) throws AxisFault {
-
-        String serviceName = axisService.getName();
-        Iterator<String> transportInValues = null;
-
-        if (axisConfiguration != null) {
-            List<String> transports = new ArrayList<String>();
-            for (Object o : axisConfiguration.getTransportsIn().values()) {
-                TransportInDescription transportInDescription = (TransportInDescription)o;
-                transports.add(transportInDescription.getName());
+            // generating Http endpoint
+            boolean disableREST = isTrueParam(axisService,
+                    org.apache.axis2.Constants.Configuration.DISABLE_REST);
+            if (("http".equals(transportName)
+                 || "https".equals(transportName)) && !disableREST) {
+                String httpEndpointName = axisService.getName() + protocol
+                                          + "Endpoint";
+                AxisEndpoint httpEndpoint = new AxisEndpoint();
+                httpEndpoint.setName(httpEndpointName);
+                httpEndpoint.setParent(axisService);
+                httpEndpoint.setTransportInDescription(transportName);
+                populateHttpEndpoint(axisService, httpEndpoint, bindingCache);
+                axisService.addEndpoint(httpEndpoint.getName(),
+                                        httpEndpoint);
             }
-            transportInValues = transports.iterator();
-        }
 
-        Map<QName, AxisBinding> bindingCache = new HashMap<QName, AxisBinding>();
-        if (transportInValues != null) {
-            for (; transportInValues.hasNext();) {
-                String transportName = transportInValues.next();
-                String protocol = transportName.substring(0, 1).toUpperCase()
-                                  + transportName.substring(1, transportName.length())
-                        .toLowerCase();
+            boolean disableSilverlight = isTrueParam(axisService,
+            		org.apache.axis2.Constants.Configuration.DISABLE_SILVERLIGHT);
+            if (!disableSilverlight) {
+                String silverlightEndpointName = axisService.getName() + protocol
+                                            + "SilverlightEndpoint";
 
-                // axis2.xml indicated no HTTP binding?
-                boolean disableREST = false;
-                Parameter disableRESTParameter = axisService
-                        .getParameter(org.apache.axis2.Constants.Configuration.DISABLE_REST);
-                if (disableRESTParameter != null
-                    && JavaUtils.isTrueExplicitly(disableRESTParameter.getValue())) {
-                    disableREST = true;
-                }
-
-                boolean disableSOAP11 = false;
-                Parameter disableSOAP11Parameter = axisService
-                        .getParameter(org.apache.axis2.Constants.Configuration.DISABLE_SOAP11);
-                if (disableSOAP11Parameter != null
-                    && JavaUtils.isTrueExplicitly(disableSOAP11Parameter.getValue())) {
-                    disableSOAP11 = true;
-                }
-
-                boolean disableSOAP12 = false;
-                Parameter disableSOAP12Parameter = axisService
-                        .getParameter(org.apache.axis2.Constants.Configuration.DISABLE_SOAP12);
-                if (disableSOAP12Parameter != null
-                    && JavaUtils
-                        .isTrueExplicitly(disableSOAP12Parameter.getValue())) {
-                    disableSOAP12 = true;
-                }
-
-                /*
-                     * populates soap11 endpoint
-                     */
-                if (!disableSOAP11) {
-                    String soap11EndpointName = serviceName + protocol
-                                                + "Soap11Endpoint";
-
-                    AxisEndpoint httpSoap11Endpoint = new AxisEndpoint();
-                    httpSoap11Endpoint.setName(soap11EndpointName);
-                    httpSoap11Endpoint.setParent(axisService);
-                    httpSoap11Endpoint.setTransportInDescription(transportName);
-                    populateSoap11Endpoint(axisService, httpSoap11Endpoint,
-                                           bindingCache);
-                    axisService.addEndpoint(httpSoap11Endpoint.getName(),
-                                            httpSoap11Endpoint);
-                    // setting soap11 endpoint as the default endpoint
-                    axisService.setEndpointName(soap11EndpointName);
-                }
-
-                /*
-                     * generating Soap12 endpoint
-                     */
-                if (!disableSOAP12) {
-                    String soap12EndpointName = serviceName + protocol
-                                                + "Soap12Endpoint";
-                    AxisEndpoint httpSoap12Endpoint = new AxisEndpoint();
-                    httpSoap12Endpoint.setName(soap12EndpointName);
-                    httpSoap12Endpoint.setParent(axisService);
-                    httpSoap12Endpoint.setTransportInDescription(transportName);
-                    populateSoap12Endpoint(axisService, httpSoap12Endpoint,
-                                           bindingCache);
-                    axisService.addEndpoint(httpSoap12Endpoint.getName(),
-                                            httpSoap12Endpoint);
-                }
-
-                /*
-                     * generating Http endpoint
-                     */
-                if (("http".equals(transportName)
-                     || "https".equals(transportName)) && !disableREST) {
-                    String httpEndpointName = serviceName + protocol
-                                              + "Endpoint";
-                    AxisEndpoint httpEndpoint = new AxisEndpoint();
-                    httpEndpoint.setName(httpEndpointName);
-                    httpEndpoint.setParent(axisService);
-                    httpEndpoint.setTransportInDescription(transportName);
-                    populateHttpEndpoint(axisService, httpEndpoint, bindingCache);
-                    axisService.addEndpoint(httpEndpoint.getName(),
-                                            httpEndpoint);
-                }
+                AxisEndpoint silverlightEndpoint = new AxisEndpoint();
+                silverlightEndpoint.setName(silverlightEndpointName);
+                silverlightEndpoint.setParent(axisService);
+                silverlightEndpoint.setTransportInDescription(transportName);
+                populateSilverlightEndpoint(axisService, silverlightEndpoint, bindingCache);
+                axisService.addEndpoint(silverlightEndpoint.getName(), silverlightEndpoint);
             }
         }
     }
@@ -1437,6 +1264,58 @@ public class Utils {
         }
         axisBinding.setParent(axisEndpoint);
         axisEndpoint.setBinding(axisBinding);
+    }
+
+    private static void populateSilverlightEndpoint(AxisService axisService,
+    												AxisEndpoint axisEndpoint,
+    												Map<QName, AxisBinding> bindingCache)
+    {
+    	String serviceName = axisService.getName();
+
+    	QName bindingName = new QName(serviceName + "SilverlightBinding");
+
+    	AxisBinding axisBinding = (bindingCache != null)
+    							? bindingCache.get(bindingName)
+    							: null;
+
+		if (axisBinding == null) {
+			axisBinding = new AxisBinding();
+			axisBinding.setName(bindingName);
+
+			axisBinding.setType(Java2WSDLConstants.TRANSPORT_URI);
+			axisBinding.setProperty(WSDLConstants.WSDL_1_1_STYLE,
+									WSDLConstants.STYLE_DOC);
+
+			axisBinding.setProperty(WSDL2Constants.ATTR_WSOAP_VERSION,
+					SOAP11Constants.SOAP_ENVELOPE_NAMESPACE_URI);
+
+			for (AxisOperation operation: axisService.getOperations()) {
+				final AxisBindingOperation axisBindingOperation
+					= new AxisBindingOperation();
+
+				axisBindingOperation.setName(operation.getName());
+				axisBindingOperation.setAxisOperation(operation);
+
+				String soapAction = operation.getSoapAction();
+				if (soapAction != null) {
+					axisBindingOperation.setProperty(
+							WSDL2Constants.ATTR_WSOAP_ACTION, soapAction);
+				}
+				axisBinding.addBindingOperation(axisBindingOperation);
+
+				populateBindingOperation(axisBinding,
+						axisBindingOperation);
+			}
+
+			axisBinding.clearPolicyComponents();
+			axisEndpoint.clearPolicyComponents();
+
+			if (bindingCache != null) {
+				bindingCache.put(bindingName, axisBinding);
+			}
+		}
+		axisBinding.setParent(axisEndpoint);
+		axisEndpoint.setBinding(axisBinding);
     }
 
     private static void populateBindingOperation(AxisBinding axisBinding,
