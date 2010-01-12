@@ -20,67 +20,37 @@
 
 package org.apache.axis2;
 
-/**
- * Class Constants
- */
 public class Constants extends org.apache.axis2.namespace.Constants {
 
-    /**
-     * Field SOAP_STYLE_RPC_ENCODED
-     */
     public static final int SOAP_STYLE_RPC_ENCODED = 1000;
 
-    /**
-     * Field SOAP_STYLE_RPC_LITERAL
-     */
     public static final int SOAP_STYLE_RPC_LITERAL = 1001;
 
-    /**
-     * Field SOAP_STYLE_DOC_LITERAL_WRAPPED
-     */
     public static final int SOAP_STYLE_DOC_LITERAL_WRAPPED = 1002;
 
-    /**
-     * Field SESSION_SCOPE
-     */
     public static final String SESSION_SCOPE = "session";
 
-    /**
-     * Field SESSION_CONTEXT_PROPERTY
-     */
     public static final String SESSION_CONTEXT_PROPERTY = "SessionContext";
 
-    /**
-     * Field PHASE_TRANSPORT
-     */
     public static final String PHASE_TRANSPORT = "transport";
 
-    /**
-     * Field PHASE_SERVICE
-     */
     public static final String PHASE_SERVICE = "service";
 
-    /**
-     * Field PHASE_GLOBAL
-     */
     public static final String PHASE_GLOBAL = "global";
 
-    /**
-     * Field MESSAGE_SCOPE
-     */
     public static final String MESSAGE_SCOPE = "message";
 
     public static final String AXIS_BINDING_OPERATION = "AxisBindingOperation";
-    
+
     public static final String AXIS_BINDING_MESSAGE = "AxisBindingMessage";
 
 
     /**
-     * To chenge the conetext path from axis2/service to something else
+     * To change the context path from axis2/service to something else
      */
     public static final String PARAM_CONTEXT_ROOT = "contextRoot";
     /**
-     * To chenage the service path to somthing else
+     * To change the service path to something else
      */
     public static final String PARAM_SERVICE_PATH = "servicePath";
     //Parameter name for transport session managemntt
@@ -89,9 +59,6 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     public static final String HTTP_RESPONSE_STATE = "axis2.http.response.state";
     public static final String HTTP_BASIC_AUTH_REALM = "axis2.authentication.realm";
 
-    /**
-     * Field APPLICATION_SCOPE
-     */
     public static final String SCOPE_APPLICATION = "application";
     public static final String SCOPE_SOAP_SESSION = "soapsession";
     public static final String SCOPE_TRANSPORT_SESSION = "transportsession";
@@ -101,17 +68,10 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     public static final String AXIS2_CONF = "axis2.xml";
     public static final String USER_HOME = "user.home";
 
-    /**
-     * Field TRANSPORT_TCP
-     */
     public static final String TRANSPORT_TCP = "tcp";
     public static final String TRANSPORT_MAIL = "mailto";
     public static final String TRANSPORT_LOCAL = "local";
     public static final String TRANSPORT_JMS = "jms";
-
-    /**
-     * Field TRANSPORT_HTTP
-     */
     public static final String TRANSPORT_HTTP = "http";
     public static final String TRANSPORT_HTTPS = "https";
 
@@ -125,9 +85,6 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     public static final String TCCL_SERVICE = "service";
     public static final String FAULT_NAME = "faultName";
 
-    /**
-     * Field REQUEST_URL_PREFIX
-     */
     public static final String LIST_PHASES = "listPhases";
     public static final String LIST_MODULES = "listModules";
     public static final String LIST_GLOABLLY_ENGAGED_MODULES = "globalModules";
@@ -150,19 +107,18 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     public static final String USER_NAME = "userName";
     public static final String ADMIN_SECURITY_DISABLED = "disableAdminSecurity";
 
-    /**
-     * Field SINGLE_SERVICE
-     */
     public static final String SINGLE_SERVICE = "singleservice";
 
     /**
      * @deprecated Please use org.apache.axis2.transport.http.HTTPConstants.MC_HTTP_SERVLETCONTEXT
      */
-    public static final String SERVLET_CONTEXT = "transport.http.servletContext";
+    @Deprecated
+	public static final String SERVLET_CONTEXT = "transport.http.servletContext";
     /**
      * @deprecated Please use org.apache.axis2.transport.http.HTTPConstants.MC_HTTP_SERVLETREQUEST
      */
-    public static final String HTTP_SERVLET_REQUEST = "transport.http.servletRequest";
+    @Deprecated
+	public static final String HTTP_SERVLET_REQUEST = "transport.http.servletRequest";
 
     public static final String SERVICE_MAP = "servicemap";
     public static final String SERVICE_ROOT = "serviceRoot";
@@ -228,7 +184,8 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     /**
      * @deprecated Please use org.apache.axis2.transport.http.HTTPConstants.COOKIE_STRING
      */
-    public static final String COOKIE_STRING = "Cookie";
+    @Deprecated
+	public static final String COOKIE_STRING = "Cookie";
     public static final String SESSION_COOKIE = "axis_session";
     public static final String SESSION_COOKIE_JSESSIONID = "JSESSIONID";
     public static final String CUSTOM_COOKIE_ID = "customCookieID";
@@ -252,9 +209,6 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     // used to handle piggy back messages with mail transport
     public static final String PIGGYBACK_MESSAGE = "piggybackMessage";
 
-    /**
-     * Field Builder Selector
-     */
     public static final String BUILDER_SELECTOR = "builderselector";
 
     /**
@@ -263,21 +217,20 @@ public class Constants extends org.apache.axis2.namespace.Constants {
      * from SOAPFault to AxisFault
      */
     public static final String INBOUND_FAULT_OVERRIDE = "inboundFaultOverride";
-    
-    
+
     /**
      * On inbound requests, the detachable input stream can be queried to get
      * the inbound length.  It can also be "detached" from the inbound http stream
      * to allow resources to be freed.
      */
-    public static final String DETACHABLE_INPUT_STREAM = 
+    public static final String DETACHABLE_INPUT_STREAM =
         "org.apache.axiom.om.util.DetachableInputStream";
 
-    /** SOAP Role Configuration */
     public static final String SOAP_ROLE_CONFIGURATION_ELEMENT = "SOAPRoleConfiguration";
     public static final String SOAP_ROLE_IS_ULTIMATE_RECEIVER_ATTRIBUTE = "isUltimateReceiver";
     public static final String SOAP_ROLE_ELEMENT = "role";
     public static final String SOAP_ROLE_PLAYER_PARAMETER = "rolePlayer";
+
     /**
      * This is used to store Header QNames that failed mustUnderstand check in AxisEngine.
      */
@@ -286,10 +239,10 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     // Keys to access JAXWS Request and Response SOAP Headers
     public static final String JAXWS_OUTBOUND_SOAP_HEADERS  = "jaxws.binding.soap.headers.outbound";
     public static final String JAXWS_INBOUND_SOAP_HEADERS = "jaxws.binding.soap.headers.inbound";
-    
+
     // If the JAXWS WebMethod throws an exception on the server, the exception is
     // stored on the server outbound MessageContext.  This is the key to access that Throwable object.
-    public static final String JAXWS_WEBMETHOD_EXCEPTION = 
+    public static final String JAXWS_WEBMETHOD_EXCEPTION =
         "jaxws.outbound.response.webmethod.exception";
 
     /**
@@ -306,7 +259,7 @@ public class Constants extends org.apache.axis2.namespace.Constants {
     public static final String TRANSACTION_MANAGER = "TransactionManager";
     public static final String SUSPENDED_TRANSACTION = "SuspendedTransaction";
 
-    
+
     public static interface Configuration {
         public static final String ENABLE_REST = "enableREST";
         public static final String ENABLE_HTTP_CONTENT_NEGOTIATION = "httpContentNegotiation";
@@ -340,9 +293,6 @@ public class Constants extends org.apache.axis2.namespace.Constants {
 
         public static final String CONFIG_CONTEXT_TIMEOUT_INTERVAL = "ConfigContextTimeoutInterval";
 
-        /** @deprecated MISSPELLING */
-        public static final String CONFIG_CONTEXT_TIMOUT_INTERVAL = "ConfigContextTimeoutInterval";
-
         public static final String TRANSPORT_IN_URL = "TransportInURL";
 
         public static final String URL_PARAMETER_LIST = "URLParameterList";
@@ -357,24 +307,16 @@ public class Constants extends org.apache.axis2.namespace.Constants {
         public static final String DISABLE_REST   = "disableREST";
         public static final String DISABLE_SOAP11   = "disableSOAP11";
         public static final String DISABLE_SOAP12 = "disableSOAP12";
+        public static final String DISABLE_SILVERLIGHT = "disableSilverlight";
 
         // this will contain the keys of all the properties that will be in the message context
         public static final String TRANSPORT_URL = "TransportURL";
-
-        /**
-         * @deprecated please use org.apache.axis2.addressing.AddressingConstants.DISABLE_ADDRESSING_FOR_OUT_MESSAGES
-         */
-        public static final String DISABLE_ADDRESSING_FOR_OUT_MESSAGES =
-                "disableAddressingForOutMessages";
 
         // if this property is set to Boolean.TRUE then the SOAPAction header, if present,
         // will NOT be set to the value of Options.getAction(). The empty value, "", will
         // be used instead.                            L
         public static final String DISABLE_SOAP_ACTION = "disableSoapAction";
 
-        /**
-         * Field CHARACTER_SET_ENCODING
-         */
         public static final String CHARACTER_SET_ENCODING = "CHARACTER_SET_ENCODING";
 
         /**
@@ -396,23 +338,23 @@ public class Constants extends org.apache.axis2.namespace.Constants {
          * @see org.apache.axis2.transport.MessageFormatter
          */
         public static final String MESSAGE_TYPE = "messageType";
-        
+
         public static final String MESSAGE_FORMATTER = "messageFormatter";
-        
+
         /**
-         * This is used to enable/disable Axis2 default fall back builder. When enabled Axis2 
+         * This is used to enable/disable Axis2 default fall back builder. When enabled Axis2
          * will build any message that has a content type which is not supported by the configured
          * Axis2 builder will be built using this builder.
          */
         public static final String USE_DEFAULT_FALLBACK_BUILDER = "useDefaultFallbackBuilder";
 
         public static final String SOAP_RESPONSE_MEP = "soapResponseMEP";
-        
+
         /**
          * This will be used as a key for storing transport information.
          */
         public static final String TRANSPORT_INFO_MAP = "TransportInfoMap";
-        
+
         /**
          * If this is set to a Boolean 'true' value, then RequestResponseTransport instances will
          * not be signalled by the Dispatch phase. This is useful for modules that add wish to
@@ -421,14 +363,11 @@ public class Constants extends org.apache.axis2.namespace.Constants {
         public static final String DISABLE_RESPONSE_ACK = "DisableResponseAck";
 
         /**
-         * This constant is used to add an deployment life cycle listner to Axis2
+         * This constant is used to add a deployment life cycle listener to Axis2
          */
-
         public static final String DEPLOYMENT_LIFE_CYCLE_LISTENER = "deploymentLifeCycleListener";
 
         public static final String GENERATE_ABSOLUTE_LOCATION_URIS = "generateAbsoluteLocationURIs";
-
-
 
     }
 }
