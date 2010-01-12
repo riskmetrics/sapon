@@ -28,7 +28,6 @@
         <dependency>
             <groupId>com.riskmetrics.sapon</groupId>
             <artifactId>addressing</artifactId>
-            <type>mar</type>
         </dependency>
     </dependencies>
 
