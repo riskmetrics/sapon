@@ -27,26 +27,4 @@
         </dependency>
     </dependencies>
 
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>com.riskmetrics.sapon</groupId>
-                <artifactId>sapon-mar-maven-plugin</artifactId>
-                <extensions>true</extensions>
-                <executions>
-                    <execution>
-                        <id>generate-mar</id>
-                        <phase>verify</phase>
-                        <goals>
-                            <goal>mar</goal>
-                        </goals>
-                        <configuration>
-                            <includeDependencies>false</includeDependencies>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
-
 </project>
