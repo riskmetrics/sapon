@@ -82,7 +82,7 @@ public class DeployableChain<T> {
             last = deployable;
         }
 
-        Deployable previous = (Deployable)deployed.get(name);
+        Deployable previous = deployed.get(name);
         if (previous == null) {
             deployed.put(name, deployable);
         } else {
@@ -181,7 +181,9 @@ public class DeployableChain<T> {
             }
         }
 
-        if (minIndex == -1) minIndex = 0;
+        if (minIndex == -1) {
+			minIndex = 0;
+		}
 
         chain.add(minIndex, name);
         remaining.remove(name);
@@ -219,14 +221,14 @@ public class DeployableChain<T> {
         }
 
         while (!keys.isEmpty()) {
-            String name = (String)keys.iterator().next();
+            String name = keys.iterator().next();
             getMinIndex(name, keys, new LinkedHashSet<String>());
         }
 
         // Now we've got a chain of names.  Convert to actual things before we return.
         for (int i = 0; i < chain.size(); i++) {
             String name = (String)chain.get(i);
-            chain.set(i, ((Deployable)deployed.get(name)).getTarget());
+            chain.set(i, (deployed.get(name)).getTarget());
         }
     }
 

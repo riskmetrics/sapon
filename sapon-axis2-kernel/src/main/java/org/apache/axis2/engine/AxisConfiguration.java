@@ -68,9 +68,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.neethi.Policy;
 
-/**
- * Class AxisConfiguration
- */
 public class AxisConfiguration extends AxisDescriptionBase
 	implements ModuleConfigAccessor
 {
@@ -281,11 +278,11 @@ public class AxisConfiguration extends AxisDescriptionBase
         axisServiceGroup.setAxisConfiguration(this);
         axisServiceGroup.addService(service);
         addServiceGroup(axisServiceGroup);
-//        processEndpoints(service, service.getAxisConfiguration());
     }
 
     public synchronized void addServiceGroup(AxisServiceGroup axisServiceGroup)
-            throws AxisFault {
+    	throws AxisFault
+    {
         axisServiceGroup.setAxisConfiguration(this);
         notifyObservers(AxisEvent.SERVICE_DEPLOY, axisServiceGroup);
 
@@ -308,7 +305,7 @@ public class AxisConfiguration extends AxisDescriptionBase
 
         ArrayList<AxisService> servicesIAdded = new ArrayList<AxisService>();
         for(final AxisService axisService: axisServiceGroup.getServices()) {
-            processEndpoints(axisService, axisService.getConfiguration());
+            processEndpoints(axisService);
 
             Map<String, AxisEndpoint> endpoints = axisService.getEndpoints();
             String serviceName = axisService.getName();
@@ -1183,12 +1180,10 @@ public class AxisConfiguration extends AxisDescriptionBase
         return phaseList;
     }
 
-    private void processEndpoints(AxisService axisService,
-    		AxisConfiguration axisConfiguration) throws AxisFault {
+    private void processEndpoints(AxisService axisService) throws AxisFault {
         Map<String, AxisEndpoint> enspoints = axisService.getEndpoints();
         if (enspoints == null || enspoints.size() == 0) {
-			org.apache.axis2.deployment.util.Utils.addEndpointsToService(
-					axisService, axisConfiguration);
+			org.apache.axis2.deployment.util.Utils.expandServiceEndpoints(axisService);
 		}
 	}
 
