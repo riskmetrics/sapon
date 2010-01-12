@@ -394,24 +394,36 @@ public class TransportUtils {
 
     public static void processContentTypeForAction(String contentType, MessageContext msgContext) {
         //Check for action header and set it in as soapAction in MessageContext
-        int index = contentType.indexOf("action");
-        if (index > -1) {
-            String transientString = contentType.substring(index, contentType.length());
-            int equal = transientString.indexOf("=");
-            int firstSemiColon = transientString.indexOf(";");
-            String soapAction; // This will contain "" in the string
-            if (firstSemiColon > -1) {
-                soapAction = transientString.substring(equal + 1, firstSemiColon);
-            } else {
-                soapAction = transientString.substring(equal + 1, transientString.length());
-            }
-            if ((soapAction != null) && soapAction.startsWith("\"")
-                    && soapAction.endsWith("\"")) {
-                soapAction = soapAction
-                        .substring(1, soapAction.length() - 1);
-            }
-            msgContext.setSoapAction(soapAction);
+        int actionIndex = contentType.indexOf("action");
+        if (actionIndex < 0) {
+        	return;
         }
+
+        int actionStart = contentType.indexOf("=", actionIndex) + 1;
+        int actionEnd = contentType.indexOf(";", actionIndex);
+
+        if(actionEnd < 0) {
+        	actionEnd = contentType.length();
+        }
+
+        char check = contentType.charAt(actionStart);
+        while(isQuoteOrEscape(check)) {
+        	actionStart++;
+        	check = contentType.charAt(actionStart);
+        }
+
+        check = contentType.charAt(actionEnd - 1);
+        while(isQuoteOrEscape(check)) {
+        	actionEnd--;
+        	check = contentType.charAt(actionEnd - 1);
+        }
+
+        final String soapAction = contentType.substring(actionStart, actionEnd);
+        msgContext.setSoapAction(soapAction);
+    }
+
+    private static boolean isQuoteOrEscape(char c) {
+    	return c == '"' || c == '\\';
     }
 
 
