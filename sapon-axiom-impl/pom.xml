@@ -8,12 +8,12 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <artifactId>axiom-impl</artifactId>
     <name>Sapon Axiom Impl</name>
-    <version>SNAPSHOT</version>
+    <version>0.0.1</version>
     <description>Sapon's modified Axiom default implementation.</description>
 
     <dependencies>
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>com.riskmetrics.sapon</groupId>
             <artifactId>axiom-api</artifactId>
-            <version>SNAPSHOT</version>
+            <version>0.0.1</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>

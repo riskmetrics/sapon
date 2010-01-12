@@ -8,12 +8,12 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
 	<artifactId>wsdl4j</artifactId>
 	<name>Sapon WSDL4J</name>
-	<version>SNAPSHOT</version>
+	<version>0.0.1</version>
 	<description>Sapon's WSDL 1.1 implementation.</description>
 
 </project>

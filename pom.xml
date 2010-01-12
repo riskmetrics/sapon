@@ -7,7 +7,7 @@
     
     <groupId>com.riskmetrics.sapon</groupId>
     <artifactId>sapon-parent</artifactId>
-    <version>SNAPSHOT</version>
+    <version>0.0.1</version>
     <packaging>pom</packaging>
     <name>Sapon API</name>
     <description>Parent pom for Sapon projects.</description>
@@ -29,72 +29,72 @@
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>addressing</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>axiom-api</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>axiom-dom</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>axiom-impl</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>                     
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>axis2-kernel</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>axis2-mtompolicy</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency> 
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>axis2-transport-base</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>mex</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>neethi</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>            
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>rampart-policy</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>rampart-trust</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency> 
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>synapse-commons</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>synapse-core</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency> 
             <dependency>
                 <groupId>com.riskmetrics.sapon</groupId>
                 <artifactId>wsdl4j</artifactId>
-                <version>SNAPSHOT</version>
+                <version>0.0.1</version>
             </dependency>
             <dependency>
                 <groupId>commons-codec</groupId>

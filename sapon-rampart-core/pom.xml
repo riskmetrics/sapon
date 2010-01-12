@@ -8,11 +8,11 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
     <artifactId>rampart-core</artifactId>
-    <version>SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>Sapon Rampart Core</name>
     <description>Sapon's modified Rampart core functionality.</description>
 

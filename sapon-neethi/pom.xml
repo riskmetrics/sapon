@@ -8,12 +8,12 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
 
 	<artifactId>neethi</artifactId>
 	<name>Sapon Neethi</name>
-	<version>SNAPSHOT</version>
+	<version>0.0.1</version>
 	<description>Sapon's Neethi implementation of WS Policy.</description>
 
 	<dependencies>

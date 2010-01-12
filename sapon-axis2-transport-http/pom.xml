@@ -8,11 +8,11 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     
     <artifactId>axis2-transport-http</artifactId>
-    <version>SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>Sapon Axis2 HTTP Transport</name>
     <description>Sapon's modified Axis2 HTTP Transport implementation.</description>
 

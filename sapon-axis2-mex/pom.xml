@@ -8,11 +8,11 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>SNAPSHOT</version>
+        <version>0.0.1</version>
     </parent>
     
     <artifactId>mex</artifactId>
-    <version>SNAPSHOT</version>
+    <version>0.0.1</version>
     <name>Sapon Axis2 MEX</name>
     <description>Sapon's modified Axis2 WS-Metadata Exchange implementation.</description>
     
