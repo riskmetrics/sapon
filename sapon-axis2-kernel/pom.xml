@@ -8,11 +8,11 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
     
     <artifactId>axis2-kernel</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>Sapon Axis2 Kernel</name>
     <description>Sapon's modified core Axis2 functionality</description>
     
