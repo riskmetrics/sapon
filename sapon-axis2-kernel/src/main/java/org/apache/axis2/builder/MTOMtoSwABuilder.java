@@ -19,6 +19,7 @@ import org.apache.axiom.attachments.ByteArrayDataSource;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.impl.MTOMConstants;
 import org.apache.axiom.om.impl.builder.StAXBuilder;
+import org.apache.axiom.om.util.Base64;
 import org.apache.axiom.om.util.DetachableInputStream;
 import org.apache.axiom.om.util.StAXUtils;
 import org.apache.axiom.soap.SOAPBody;
@@ -104,19 +105,22 @@ public class MTOMtoSwABuilder implements Builder, MTOMConstants {
 	}
 
 	private void ensureSwA(SOAPEnvelope envelope, Attachments attachments)
+		throws AxisFault
 	{
 		SOAPBody body = envelope.getBody();
 		walk(body, attachments);
 	}
 
-	private void walk(OMElement e, Attachments attachments) {
+	private void walk(OMElement e, Attachments attachments)
+		throws AxisFault
+	{
 		if(qnames.contains(e.getQName())) {
 			OMElement child = e.getFirstElement();
 			if(child == null) {
-				String serialized = e.getText();
+				byte[] decoded = Base64.decode(e.getText());
 				DataHandler dh
 					= new DataHandler(
-							new ByteArrayDataSource(serialized.getBytes(), "text/xml"));
+							new ByteArrayDataSource(decoded, "text/xml"));
 				attachments.addDataHandler("foo", dh);
 				e.setText("cid:foo");
 			} else if(XOP_QNAME.equals(child.getQName())) {
