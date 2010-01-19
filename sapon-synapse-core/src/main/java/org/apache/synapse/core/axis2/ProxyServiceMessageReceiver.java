@@ -39,16 +39,13 @@ public class ProxyServiceMessageReceiver extends SynapseMessageReceiver {
 
     private static final Log log = LogFactory.getLog(ProxyServiceMessageReceiver.class);
 
-    /** The name of the Proxy Service */
     private String name = null;
-    /** The proxy service */
     private ProxyService proxy = null;
 
     @Override
 	public void receive(MessageContext mc) throws AxisFault {
 
-        String remoteAddr = (String) mc.getProperty(
-            MessageContext.REMOTE_ADDR);
+        String remoteAddr = (String) mc.getProperty(MessageContext.REMOTE_ADDR);
 
         if (log.isDebugEnabled()) {
             log.debug("Proxy Service " + name + " received a new message" +

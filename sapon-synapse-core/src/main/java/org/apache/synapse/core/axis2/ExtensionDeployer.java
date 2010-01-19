@@ -135,7 +135,7 @@ public class ExtensionDeployer implements Deployer {
     }
 
     private <T> List<T> getProviders(Class<T> providerClass, URLClassLoader loader)
-            throws IOException {
+            throws DeploymentException, IOException {
 
         List<T> providers = new LinkedList<T>();
         String providerClassName = providerClass.getName();

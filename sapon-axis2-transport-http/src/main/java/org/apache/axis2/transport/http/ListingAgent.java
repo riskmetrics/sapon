@@ -33,6 +33,7 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
@@ -72,15 +73,19 @@ public class ListingAgent extends AbstractAgent {
         initTransportListener(httpServletRequest);
 
         String query = httpServletRequest.getQueryString();
-        if (query != null) {
-            if (query.indexOf("wsdl2") > 0 || query.indexOf("wsdl") > 0 ||
-                query.indexOf("xsd") > 0 || query.indexOf("policy") > 0) {
-                processListService(httpServletRequest, httpServletResponse);
-            } else {
-                super.handle(httpServletRequest, httpServletResponse);
-            }
-        } else {
-            super.handle(httpServletRequest, httpServletResponse);
+        try {
+	        if (query != null) {
+	            if (query.indexOf("wsdl2") > 0 || query.indexOf("wsdl") > 0 ||
+	                query.indexOf("xsd") > 0 || query.indexOf("policy") > 0) {
+	                processListService(httpServletRequest, httpServletResponse);
+	            } else {
+	                super.handle(httpServletRequest, httpServletResponse);
+	            }
+	        } else {
+	            super.handle(httpServletRequest, httpServletResponse);
+	        }
+        } catch(AxisFault af) {
+        	throw new ServletException(af);
         }
     }
 
@@ -114,7 +119,7 @@ public class ListingAgent extends AbstractAgent {
     }
 
     protected void processListFaultyServices(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
+            throws IOException, ServletException, AxisFault {
         String serviceName = req.getParameter("serviceName");
         if (serviceName != null) {
             AxisService service = configContext.getAxisConfiguration().getService(serviceName);
@@ -205,7 +210,7 @@ public class ListingAgent extends AbstractAgent {
 
     public void processListService(HttpServletRequest req,
                                    HttpServletResponse res)
-            throws IOException, ServletException {
+            throws IOException, ServletException, AxisFault {
 
         String url;
         try {

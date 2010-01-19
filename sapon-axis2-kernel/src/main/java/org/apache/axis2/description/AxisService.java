@@ -1105,8 +1105,9 @@ public class AxisService extends AxisDescriptionBase
 	 *         found/printed a schema
 	 * @throws IOException
 	 */
-	public int printXSD(OutputStream out, String xsd) throws IOException {
-
+	public int printXSD(OutputStream out, String xsd)
+		throws IOException, AxisFault
+	{
 		// If we find a SchemaSupplier, use that
 		SchemaSupplier supplier = (SchemaSupplier) getParameterValue("SchemaSupplier");
 		if (supplier != null) {

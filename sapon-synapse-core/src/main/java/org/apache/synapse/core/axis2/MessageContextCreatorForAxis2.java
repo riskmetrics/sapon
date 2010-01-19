@@ -28,8 +28,10 @@ import org.apache.synapse.config.SynapseConfiguration;
 import org.apache.synapse.core.SynapseEnvironment;
 
 /**
- * The MessageContext needs to be set up and then is used by the SynapseMessageReceiver to inject messages.
- * This class is used by the SynapseMessageReceiver to find the environment. The env is stored in a Parameter to the Axis2 config
+ * The MessageContext needs to be set up and then is used by the
+ * SynapseMessageReceiver to inject messages. This class is used by the
+ * SynapseMessageReceiver to find the environment. The env is stored in a
+ * Parameter to the Axis2 config
  */
 public class MessageContextCreatorForAxis2 {
 

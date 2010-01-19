@@ -19,12 +19,12 @@
 
 package org.apache.axis2.transport.http;
 
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.httpclient.HttpVersion;
 import org.apache.commons.httpclient.auth.AuthPolicy;
 import org.apache.commons.httpclient.auth.AuthScope;
-
-import java.util.List;
-import java.util.Properties;
 
 /**
  * Utility bean for setting transport properties in runtime.
@@ -136,7 +136,7 @@ public class HttpTransportProperties {
         /* if Authentication scheme needs retry just turn on the following flag */
         private boolean allowedRetry = false;
         /* Changing the priorty or adding a custom AuthPolicy*/
-        private List authSchemes;
+        private List<String> authSchemes;
 
         /* Default Auth Schems*/
         public static final String NTLM = AuthPolicy.NTLM;
@@ -199,11 +199,11 @@ public class HttpTransportProperties {
             this.domain = domain;
         }
 
-        public void setAuthSchemes(List authSchemes) {
+        public void setAuthSchemes(List<String> authSchemes) {
             this.authSchemes = authSchemes;
         }
 
-        public List getAuthSchemes() {
+        public List<String> getAuthSchemes() {
             return this.authSchemes;
         }
 
@@ -218,9 +218,10 @@ public class HttpTransportProperties {
 
     /**
      * @deprecated org.apache.axis2.transport.http.HttpTransportProperties.MailProperties has been
-     * deprecated and user are encourage the use of java.util.Properties instead.  
+     * deprecated and user are encourage the use of java.util.Properties instead.
      */
-    public static class MailProperties {
+    @Deprecated
+	public static class MailProperties {
         final Properties mailProperties = new Properties();
 
         private String password;

@@ -468,7 +468,12 @@ public class OperationContext extends AbstractContext<ServiceContext>
                 MessageContext copyMC = mc.extractCopyMessageContext();
 
                 // Don't persist the message of the other message contexts
-                copyMC.setEnvelope(null);
+                try {
+                	copyMC.setEnvelope(null);
+                } catch(AxisFault af) {
+                	throw new IOException("Could not set SOAPEnvelope while "
+                			+ "externalizing", af);
+                }
 
                 // put the modified entry in the list
                 tmpMsgCtxMap.put(key, copyMC);

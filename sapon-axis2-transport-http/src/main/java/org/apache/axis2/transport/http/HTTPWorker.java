@@ -26,6 +26,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
@@ -57,7 +58,7 @@ public class HTTPWorker implements Worker {
     public void service(
             final AxisHttpRequest request,
             final AxisHttpResponse response,
-            final MessageContext msgContext) throws HttpException, IOException {
+            final MessageContext msgContext) throws HttpException, IOException, AxisFault {
 
         ConfigurationContext configurationContext = msgContext.getConfigurationContext();
         final String servicePath = configurationContext.getServiceContextPath();
@@ -336,7 +337,7 @@ public class HTTPWorker implements Worker {
 
     private boolean processInternalWSDL(String uri, ConfigurationContext configurationContext,
                                         String serviceName, AxisHttpResponse response)
-    throws IOException {
+    throws IOException, AxisFault {
         String wsdlName = uri.substring(uri.lastIndexOf("=") + 1);
 
         Map<String, AxisService> services = configurationContext.getAxisConfiguration().getServices();

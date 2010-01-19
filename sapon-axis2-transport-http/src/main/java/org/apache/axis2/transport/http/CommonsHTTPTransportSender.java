@@ -19,6 +19,17 @@
 
 package org.apache.axis2.transport.http;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+import java.util.zip.GZIPOutputStream;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.xml.stream.FactoryConfigurationError;
+
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants;
@@ -39,17 +50,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.xml.stream.FactoryConfigurationError;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.zip.GZIPOutputStream;
 
 public class CommonsHTTPTransportSender extends AbstractHandler implements
         TransportSender {
@@ -239,9 +239,6 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
         } catch (FactoryConfigurationError e) {
             log.debug(e);
             throw AxisFault.makeFault(e);
-        } catch (IOException e) {
-            log.debug(e);
-            throw AxisFault.makeFault(e);
         }
         return InvocationResponse.CONTINUE;
     }
@@ -266,7 +263,9 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
         OutTransportInfo transportInfo = (OutTransportInfo) msgContext
                 .getProperty(Constants.OUT_TRANSPORT_INFO);
 
-        if (transportInfo == null) throw new AxisFault("No transport info in MessageContext");
+        if (transportInfo == null) {
+			throw new AxisFault("No transport info in MessageContext");
+		}
 
         ServletBasedOutTransportInfo servletBasedOutTransportInfo = null;
         if (transportInfo instanceof ServletBasedOutTransportInfo) {
@@ -280,19 +279,16 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
 
             Object customHeaders = msgContext.getProperty(HTTPConstants.HTTP_HEADERS);
             if (customHeaders != null) {
-                if (customHeaders instanceof List) {
-                    Iterator iter = ((List) customHeaders).iterator();
-                    while (iter.hasNext()) {
-                        Header header = (Header) iter.next();
+                if (customHeaders instanceof List<?>) {
+                	for(Object o: ((List<?>) customHeaders)) {
+                        Header header = (Header) o;
                         if (header != null) {
                             servletBasedOutTransportInfo
                                     .addHeader(header.getName(), header.getValue());
                         }
                     }
-                } else if (customHeaders instanceof Map) {
-                    Iterator iter = ((Map) customHeaders).entrySet().iterator();
-                    while (iter.hasNext()) {
-                        Map.Entry header = (Map.Entry) iter.next();
+                } else if (customHeaders instanceof Map<?,?>) {
+                    for(Map.Entry<?,?> header: ((Map<?,?>) customHeaders).entrySet()) {
                         if (header != null) {
                             servletBasedOutTransportInfo
                                     .addHeader((String) header.getKey(), (String) header.getValue());
@@ -303,19 +299,16 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
         } else if (transportInfo instanceof AxisHttpResponseImpl) {
             Object customHeaders = msgContext.getProperty(HTTPConstants.HTTP_HEADERS);
             if (customHeaders != null) {
-                if (customHeaders instanceof List) {
-                    Iterator iter = ((List) customHeaders).iterator();
-                    while (iter.hasNext()) {
-                        Header header = (Header) iter.next();
+                if (customHeaders instanceof List<?>) {
+                    for(Object o: (List<?>) customHeaders) {
+                        Header header = (Header) o;
                         if (header != null) {
                             ((AxisHttpResponseImpl) transportInfo)
                                     .addHeader(header.getName(), header.getValue());
                         }
                     }
-                } else if (customHeaders instanceof Map) {
-                    Iterator iter = ((Map) customHeaders).entrySet().iterator();
-                    while (iter.hasNext()) {
-                        Map.Entry header = (Map.Entry) iter.next();
+                } else if (customHeaders instanceof Map<?,?>) {
+                    for(Map.Entry<?,?> header: ((Map<?,?>) customHeaders).entrySet()) {
                         if (header != null) {
                             ((AxisHttpResponseImpl) transportInfo)
                                     .addHeader((String) header.getKey(), (String) header.getValue());
@@ -328,7 +321,9 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
         format.setAutoCloseWriter(true);
 
         MessageFormatter messageFormatter = TransportUtils.getMessageFormatter(msgContext);
-        if (messageFormatter == null) throw new AxisFault("No MessageFormatter in MessageContext");
+        if (messageFormatter == null) {
+			throw new AxisFault("No MessageFormatter in MessageContext");
+		}
 
         // Once we get to this point, exceptions should NOT be turned into faults and sent,
         // because we're already sending!  So catch everything and log it, but don't pass
@@ -340,9 +335,10 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
 
             Object gzip = msgContext.getOptions().getProperty(HTTPConstants.MC_GZIP_RESPONSE);
             if (gzip != null && JavaUtils.isTrueExplicitly(gzip)) {
-                if (servletBasedOutTransportInfo != null)
-                    servletBasedOutTransportInfo.addHeader(HTTPConstants.HEADER_CONTENT_ENCODING,
+                if (servletBasedOutTransportInfo != null) {
+					servletBasedOutTransportInfo.addHeader(HTTPConstants.HEADER_CONTENT_ENCODING,
                                                            HTTPConstants.COMPRESSION_GZIP);
+				}
                 try {
                     out = new GZIPOutputStream(out);
                     out.write(messageFormatter.getBytes(msgContext, format));

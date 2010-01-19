@@ -145,7 +145,7 @@ public class HTTPTransportUtils {
 
     public static InputStream handleGZip(MessageContext msgContext, InputStream in)
             throws IOException {
-        Map headers = (Map) msgContext.getProperty(MessageContext.TRANSPORT_HEADERS);
+        Map<?,?> headers = (Map<?,?>) msgContext.getProperty(MessageContext.TRANSPORT_HEADERS);
 
         if (headers != null) {
             if (HTTPConstants.COMPRESSION_GZIP

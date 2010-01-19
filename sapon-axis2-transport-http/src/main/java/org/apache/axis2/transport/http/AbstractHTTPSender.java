@@ -24,7 +24,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -75,16 +74,9 @@ public abstract class AbstractHTTPSender {
     protected static final String PROTOCOL_HTTP = "http";
     protected static final String PROTOCOL_HTTPS = "https";
 
-    /**
-     * proxydiscription
-     */
     protected TransportOutDescription proxyOutSetting = null;
     protected OMOutputFormat format = new OMOutputFormat();
 
-    /**
-     * isAllowedRetry will be using to check where the
-     * retry should be allowed or not.
-     */
     protected boolean isAllowedRetry = false;
 
     public void setChunked(boolean chunked) {
@@ -118,7 +110,7 @@ public abstract class AbstractHTTPSender {
                                                MessageContext msgContext) throws AxisFault {
         // Set RESPONSE properties onto the REQUEST message context.  They will need to be copied off the request context onto
         // the response context elsewhere, for example in the OutInOperationClient.
-        Map transportHeaders = new CommonsTransportHeaders(method.getResponseHeaders());
+        Map<String, Object> transportHeaders = new CommonsTransportHeaders(method.getResponseHeaders());
         msgContext.setProperty(MessageContext.TRANSPORT_HEADERS, transportHeaders);
         msgContext.setProperty(HTTPConstants.MC_HTTP_STATUS_CODE, new Integer(method.getStatusCode()));
         Header header = method.getResponseHeader(HTTPConstants.HEADER_CONTENT_TYPE);
@@ -148,7 +140,7 @@ public abstract class AbstractHTTPSender {
 
                 // Transport details will be stored in a HashMap so that anybody interested can
                 // retrieve them
-                HashMap transportInfoMap = new HashMap();
+                Map<String, Object> transportInfoMap = new HashMap<String, Object>();
                 transportInfoMap.put(Constants.Configuration.CONTENT_TYPE, contentType);
                 transportInfoMap.put(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
 
@@ -206,7 +198,7 @@ public abstract class AbstractHTTPSender {
 
     protected void processResponse(HttpMethodBase httpMethod,
                                    MessageContext msgContext)
-            throws IOException {
+            throws AxisFault, IOException {
         obtainHTTPHeaderInformation(httpMethod, msgContext);
 
         InputStream in = httpMethod.getResponseBodyAsStream();
@@ -346,15 +338,15 @@ public abstract class AbstractHTTPSender {
                     }
                 }
                 /* Customizing the priority Order */
-                List schemes = authenticator.getAuthSchemes();
+                List<String> schemes = authenticator.getAuthSchemes();
                 if (schemes != null && schemes.size() > 0) {
-                    List authPrefs = new ArrayList(3);
+                    List<String> authPrefs = new ArrayList<String>(3);
                     for (int i = 0; i < schemes.size(); i++) {
-                        if (schemes.get(i) instanceof AuthPolicy) {
-                            authPrefs.add(schemes.get(i));
-                            continue;
-                        }
-                        String scheme = (String) schemes.get(i);
+//                        if (schemes.get(i) instanceof AuthPolicy) {
+//                            authPrefs.add(schemes.get(i));
+//                            continue;
+//                        }
+                        String scheme = schemes.get(i);
                         if (HttpTransportProperties.Authenticator.BASIC.equals(scheme)) {
                             authPrefs.add(AuthPolicy.BASIC);
                         } else if (HttpTransportProperties.Authenticator.NTLM.equals(scheme)) {
@@ -513,7 +505,7 @@ public abstract class AbstractHTTPSender {
     }
 
     protected void executeMethod(HttpClient httpClient, MessageContext msgContext, URL url,
-                                 HttpMethod method) throws IOException {
+                                 HttpMethod method) throws IOException, AxisFault {
         HostConfiguration config = this.getHostConfiguration(httpClient, msgContext, url);
 
         msgContext.setProperty(HTTPConstants.HTTP_METHOD, method);
@@ -551,8 +543,8 @@ public abstract class AbstractHTTPSender {
         // set the custom headers, if available
         Object httpHeadersObj = msgContext.getProperty(HTTPConstants.HTTP_HEADERS);
         if (httpHeadersObj != null) {
-            if (httpHeadersObj instanceof ArrayList) {
-                ArrayList httpHeaders = (ArrayList) httpHeadersObj;
+            if (httpHeadersObj instanceof List<?>) {
+                List<?> httpHeaders = (List<?>) httpHeadersObj;
                 Header header;
                 for (int i = 0; i < httpHeaders.size(); i++) {
                     header = (Header) httpHeaders.get(i);
@@ -563,12 +555,11 @@ public abstract class AbstractHTTPSender {
                 }
 
             }
-            if (httpHeadersObj instanceof Map) {
-                Map httpHeaders = (Map) httpHeadersObj;
-                for (Iterator iterator = httpHeaders.entrySet().iterator(); iterator.hasNext();) {
-                    Map.Entry entry  = (Map.Entry) iterator.next();
-                    String key = (String) entry.getKey();
-                    String value = (String) entry.getValue();
+            if (httpHeadersObj instanceof Map<?,?>) {
+                Map<?,?> httpHeaders = (Map<?,?>) httpHeadersObj;
+                for (Map.Entry<?, ?> element : httpHeaders.entrySet()) {
+                    String key = (String) element.getKey();
+                    String value = (String) element.getValue();
                     if (HTTPConstants.HEADER_USER_AGENT.equals(key)) {
                         isCustomUserAgentSet = true;
                     }

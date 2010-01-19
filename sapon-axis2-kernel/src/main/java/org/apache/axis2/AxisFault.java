@@ -23,7 +23,6 @@ package org.apache.axis2;
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.UndeclaredThrowableException;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -72,7 +71,7 @@ import org.apache.axis2.context.MessageContext;
  */
 
 
-public class AxisFault extends RemoteException {
+public class AxisFault extends Exception {
     private static final long serialVersionUID = -374933082062124907L;
 
     /**

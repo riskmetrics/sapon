@@ -40,6 +40,7 @@ import org.apache.axiom.om.OMNamespace;
 import org.apache.axiom.om.impl.builder.StAXOMBuilder;
 import org.apache.axiom.om.util.StAXUtils;
 import org.apache.axiom.om.util.UUIDGenerator;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.externalize.ExternalizeConstants;
 import org.apache.axis2.context.externalize.SafeObjectInputStream;
 import org.apache.axis2.context.externalize.SafeObjectOutputStream;
@@ -500,11 +501,15 @@ public class EndpointReference implements Externalizable, SafeSerializable {
 
         // Write out the content as xml
         out.writeUTF("start xml"); // write marker
-        OMElement om =
-                EndpointReferenceHelper.toOM(OMAbstractFactory.getOMFactory(),
+        OMElement om;
+        try {
+        	om = EndpointReferenceHelper.toOM(OMAbstractFactory.getOMFactory(),
                                              this,
                                              new QName("urn:axis2", "omepr", "ser"),
                                              AddressingConstants.Final.WSA_NAMESPACE);
+        } catch(AxisFault af) {
+        	throw new IOException("Could not serialize endpoint reference to om", af);
+        }
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
 

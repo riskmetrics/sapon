@@ -214,7 +214,7 @@ public class SafeObjectInputStream implements ObjectInput, ObjectStreamConstants
             } catch (IOException e) {
                 throw e;
             } catch (Exception e) {
-                throw AxisFault.makeFault(e);
+                throw new IOException(AxisFault.makeFault(e));
             }
         }
         return map;
@@ -286,7 +286,7 @@ public class SafeObjectInputStream implements ObjectInput, ObjectStreamConstants
             } catch (IOException e) {
                 throw e;
             } catch (Exception e) {
-                throw AxisFault.makeFault(e);
+                throw new IOException(AxisFault.makeFault(e));
             }
         }
         return list;

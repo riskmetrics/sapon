@@ -19,34 +19,37 @@
 
 package org.apache.axis2.transport.http;
 
-import org.apache.commons.httpclient.Header;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class CommonsTransportHeaders implements Map {
+import org.apache.commons.httpclient.Header;
+
+public class CommonsTransportHeaders implements Map<String, Object> {
     private Header[] headers;
 
-    HashMap headerMap = null;
+    Map<String, Object> headerMap = null;
 
     public CommonsTransportHeaders(Header[] headers) {
         this.headers = headers;
     }
 
     private void init() {
-        headerMap = new HashMap();
-
-        for (int i = 0; i < headers.length; i++) {
-            headerMap.put(headers[i].getName(), headers[i].getValue());
+        headerMap = new HashMap<String, Object>();
+        for (Header header : headers) {
+            headerMap.put(header.getName(), header.getValue());
         }
     }
 
+    private void ensureInit() {
+    	if(headerMap == null) {
+    		init();
+    	}
+    }
+
     public int size() {
-        if (headerMap == null) {
-            init();
-        }
+    	ensureInit();
         return headerMap.size();
     }
 
@@ -57,72 +60,52 @@ public class CommonsTransportHeaders implements Map {
     }
 
     public boolean isEmpty() {
-        if (headerMap == null) {
-            init();
-        }
+    	ensureInit();
         return headerMap.isEmpty();
     }
 
     public boolean containsKey(Object key) {
-        if (headerMap == null) {
-            init();
-        }
+    	ensureInit();
         return headerMap.containsKey(key);
     }
 
     public boolean containsValue(Object value) {
-        if (headerMap == null) {
-            init();
-        }
+        ensureInit();
         return headerMap.containsValue(value);
     }
 
-    public Collection values() {
-        if (headerMap == null) {
-            init();
-        }
+    public Collection<Object> values() {
+    	ensureInit();
         return headerMap.values();
     }
 
-    public void putAll(Map t) {
-        if (headerMap == null) {
-            init();
-        }
+    public void putAll(Map<? extends String, ?> t) {
+    	ensureInit();
         headerMap.putAll(t);
     }
 
-    public Set entrySet() {
-        if (headerMap == null) {
-            init();
-        }
+    public Set<Map.Entry<String, Object>> entrySet() {
+    	ensureInit();
         return headerMap.entrySet();
     }
 
-    public Set keySet() {
-        if (headerMap == null) {
-            init();
-        }
+    public Set<String> keySet() {
+    	ensureInit();
         return headerMap.keySet();
     }
 
     public Object get(Object key) {
-        if (headerMap == null) {
-            init();
-        }
+    	ensureInit();
         return headerMap.get(key);
     }
 
     public Object remove(Object key) {
-        if (headerMap == null) {
-            init();
-        }
+    	ensureInit();
         return headerMap.remove(key);
     }
 
-    public Object put(Object key, Object value) {
-        if (headerMap == null) {
-            init();
-        }
+    public Object put(String key, Object value) {
+    	ensureInit();
         return headerMap.put(key, value);
     }
 }

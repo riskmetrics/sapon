@@ -34,9 +34,9 @@ import org.apache.axis2.engine.AxisConfiguration;
  * Class HTTPTransportReceiver
  */
 public class HTTPTransportReceiver {
-    public static Map getGetRequestParameters(String requestURI) {
+    public static Map<String, String> getGetRequestParameters(String requestURI) {
 
-        Map map = new HashMap();
+        Map<String, String> map = new HashMap<String, String>();
         if (requestURI == null || "".equals(requestURI)) {
             return map;
         }
@@ -101,13 +101,14 @@ public class HTTPTransportReceiver {
                 temp.append("<h3><a href=\"" + axisService.getName() + "?wsdl\">" +
                 		axisService.getName() + "</a></h3>");
 
-                Iterator iterator = axisService.getOperations().iterator();
+                Iterator<AxisOperation> iterator
+                	= axisService.getOperations().iterator();
 
                 if (iterator.hasNext()) {
                     temp.append("Available operations <ul>");
 
                     for (; iterator.hasNext();) {
-                        AxisOperation axisOperation = (AxisOperation) iterator.next();
+                        AxisOperation axisOperation = iterator.next();
 
                         temp.append("<li>" + axisOperation.getName().getLocalPart() + "</li>");
                     }
@@ -147,13 +148,13 @@ public class HTTPTransportReceiver {
 
             temp.append("<h3>" + axisService.getName() + "</h3>");
             temp.append("<a href=\"" + axisService.getName() + "?wsdl\">wsdl</a> <br/> ");
-            temp.append("<i>Service Description :  " + axisService.getServiceDescription() +
+            temp.append("<i>Service Description :  " + axisService.getDocumentation() +
             			"</i><br/><br/>");
-            Iterator iterator = axisService.getOperations().iterator();
+            Iterator<AxisOperation> iterator = axisService.getOperations().iterator();
             if (iterator.hasNext()) {
                 temp.append("Available operations <ul>");
                 for (; iterator.hasNext();) {
-                    AxisOperation axisOperation = (AxisOperation) iterator.next();
+                    AxisOperation axisOperation = iterator.next();
                     temp.append("<li>" + axisOperation.getName().getLocalPart() + "</li>");
                 }
                 temp.append("</ul>");

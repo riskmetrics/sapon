@@ -274,7 +274,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             loadCustomServices(repoURL);
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
-        } catch (IOException e) {
+        } catch (AxisFault e) {
             log.error(e.getMessage(), e);
         }
     }
@@ -326,7 +326,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             axisConfig.validateSystemPredefinedPhases();
         } catch (MalformedURLException e) {
             throw new DeploymentException(e);
-        } catch (IOException e) {
+        } catch (AxisFault e) {
             throw new DeploymentException(e);
         }
     }
@@ -345,7 +345,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             }
             ModuleBuilder moduleBuilder = new ModuleBuilder(moduleStream, module, axisConfig);
             moduleBuilder.populateModule();
-        } catch (IOException e) {
+        } catch (AxisFault e) {
             throw new DeploymentException(e);
         }
     }
@@ -506,6 +506,8 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             throw new DeploymentException(e);
         } catch (XMLStreamException e) {
             throw new DeploymentException(e);
+        } catch (AxisFault e) {
+        	throw new DeploymentException(e);
         }
         return null;
     }

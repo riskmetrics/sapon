@@ -21,9 +21,9 @@
 package org.apache.axis2.deployment.repository.util;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URL;
 
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.deployment.Deployer;
 import org.apache.axis2.deployment.DeploymentErrorMsgs;
 import org.apache.axis2.deployment.DeploymentException;
@@ -103,19 +103,18 @@ public class DeploymentFileData {
         this.classLoader = classLoader;
     }
 
-    public void setClassLoader(boolean isDirectory, ClassLoader parent, File file) throws AxisFault {
+    public void setClassLoader(boolean isDirectory, ClassLoader parent, File file) throws DeploymentException {
         if (!isDirectory) {
             if (this.file != null) {
                 URL[] urlsToLoadFrom;
                 try {
                     if (!this.file.exists()) {
-                        throw new AxisFault(Messages.getMessage(DeploymentErrorMsgs.FILE_NOT_FOUND,
-                                                                this.file.getAbsolutePath()));
+                        throw new FileNotFoundException(Messages.getMessage(DeploymentErrorMsgs.FILE_NOT_FOUND, this.file.getAbsolutePath()));
                     }
                     urlsToLoadFrom = new URL[]{this.file.toURI().toURL()};
                     classLoader = Utils.createClassLoader(urlsToLoadFrom, parent, true, file);
                 } catch (Exception e) {
-                    throw AxisFault.makeFault(e);
+                    throw new DeploymentException(e);
                 }
             }
         } else {

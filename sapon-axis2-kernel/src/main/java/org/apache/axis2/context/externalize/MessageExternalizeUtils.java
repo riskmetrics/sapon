@@ -19,6 +19,15 @@
 
 package org.apache.axis2.context.externalize;
 
+import java.io.BufferedOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
+import java.io.OutputStream;
+
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.impl.builder.StAXBuilder;
 import org.apache.axiom.om.util.StAXUtils;
@@ -32,38 +41,30 @@ import org.apache.axis2.transport.TransportUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.xml.stream.XMLStreamReader;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-import java.io.OutputStream;
-
 /**
  * Utility to read/write the Message of a MessageContext
  * Message Object Format.
- * 
+ *
  * <tt>
  * Format := Prolog {DataBlocks} EndBlocks
- * 
+ *
  * Prolog :=
- *   NAME      (UTF) 
+ *   NAME      (UTF)
  *   REVISION  (INT)
  *   ACTIVE    (BOOL)
- *     [OPTIMIZED (BOOL)]  
+ *     [OPTIMIZED (BOOL)]
  *        [OPTIMIZED_CONTENT_TYPE (UTF)]    <--- If OPTIMIZED=TRUE
- *     [CHARSET   (UTF)] 
+ *     [CHARSET   (UTF)]
  *     [NAMESPACE (UTF)]
- *   
+ *
  * DataBlock :=
  *   SIZE (INT >0)
  *   DATA (BYTES)
- *   
+ *
  * EndBlocks
  *   SIZE (INT)   {0 indicates end -1 indicates failure}
- *     
- *   
+ *
+ *
  * </tt>
  */
 public class MessageExternalizeUtils  implements ExternalizeConstants {
@@ -80,14 +81,14 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
     private static final int REVISION_2 = 2;
     // current revision level of this object
     private static final int revisionID = REVISION_2;
-    
-    
+
+
     /**
      * Private Constructor.
      * This class only supports static methods
      */
     private MessageExternalizeUtils() {}
-    
+
     /**
      * Write out the Message
      * @param out
@@ -96,7 +97,7 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
      * @param outputFormat
      * @throws IOException
      */
-    public static void writeExternal(ObjectOutput out, 
+    public static void writeExternal(ObjectOutput out,
                                      MessageContext mc,
                                      String correlationIDString,
                                      OMOutputFormat outputFormat) throws IOException {
@@ -115,7 +116,7 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             }
             return;
         }
-        
+
         // Write Prolog
         String msgClass = envelope.getClass().getName();
         out.writeUTF(msgClass);
@@ -131,35 +132,35 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
         out.writeUTF(outputFormat.getCharSetEncoding());
         out.writeUTF(envelope.getNamespace().getNamespaceURI());
         if (log.isDebugEnabled()) {
-            log.debug(correlationIDString + ":writeExternal(): " + 
+            log.debug(correlationIDString + ":writeExternal(): " +
                       "optimized=[" + outputFormat.isOptimized() + "]  " +
                       "optimizedContentType " + outputFormat.getContentType() + "]  " +
                       "charSetEnc=[" + outputFormat.getCharSetEncoding() + "]  " +
                       "namespaceURI=[" + envelope.getNamespace().getNamespaceURI() + "]");
         }
-        
+
         // Write DataBlocks
         // MessageOutputStream writes out the DataBlocks in chunks
         // BufferedOutputStream buffers the data to prevent numerous, small blocks
-        MessageOutputStream mos = new MessageOutputStream(out);  
-        BufferedOutputStream bos = new BufferedOutputStream(mos);   
+        MessageOutputStream mos = new MessageOutputStream(out);
+        BufferedOutputStream bos = new BufferedOutputStream(mos);
         boolean errorOccurred = false;
-        try { 
-            // Write out the message using the same logic as the 
+        try {
+            // Write out the message using the same logic as the
             // transport layer.
             MessageFormatter msgFormatter = TransportUtils.getMessageFormatter(mc);
-            msgFormatter.writeTo(mc, outputFormat, bos, 
+            msgFormatter.writeTo(mc, outputFormat, bos,
                                  true); // Preserve the original message
-            
-        } catch (IOException e) {
-            throw e;
+
+        } catch (AxisFault e) {
+            throw new IOException(e);
         } catch (Throwable t) {
-            throw AxisFault.makeFault(t);
+            throw new IOException(AxisFault.makeFault(t));
         } finally {
             bos.flush();
             bos.close();
         }
-        
+
         // Write End of Data Blocks
         if (errorOccurred) {
             out.writeInt(-1);
@@ -170,7 +171,7 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             log.debug(correlationIDString + ":writeExternal(): end");
         }
     }
-    
+
     /**
      * Read the Message
      * @param in
@@ -186,12 +187,12 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             log.debug(correlationIDString + ":readExternal(): start");
         }
         SOAPEnvelope envelope = null;
-        
+
         // Read Prolog
         // Read the class name and object state
         String name = in.readUTF();
         int revision = in.readInt();
-        
+
         if (log.isDebugEnabled()) {
             log.debug(correlationIDString + ":readExternal(): name= " + name  +
                       " revision= " + revision);
@@ -200,8 +201,8 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
         if (revision != REVISION_2) {
             throw new ClassNotFoundException(ExternalizeConstants.UNSUPPORTED_REVID);
         }
-        
-        
+
+
         boolean gotMsg = in.readBoolean();
         if (gotMsg != ACTIVE_OBJECT) {
             if (log.isDebugEnabled()) {
@@ -211,7 +212,7 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             in.readInt(); // Read end of data blocks
             return envelope;
         }
-        
+
         // Read optimized, optimized content-type, charset encoding and namespace uri
         boolean optimized= in.readBoolean();
         String optimizedContentType = null;
@@ -227,7 +228,7 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
                       "charSetEnc=[" + charSetEnc + "]  " +
                       "namespaceURI=[" + namespaceURI + "]");
         }
-        
+
         MessageInputStream mis = new MessageInputStream(in);
         StAXBuilder  builder = null;
         try {
@@ -266,7 +267,7 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
         }
         return envelope;
     }
-    
+
     /**
      * MessageOutputStream writes DataBlock chunks to the ObjectOutput.
      */
@@ -277,20 +278,23 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             this.out = out;
             isDebug = log.isDebugEnabled();
         }
-        
-         
-        public void close() throws IOException {
+
+
+        @Override
+		public void close() throws IOException {
             // NOOP: ObjectOutput will be closed externally
         }
-        
-        public void flush() throws IOException {
+
+        @Override
+		public void flush() throws IOException {
             out.flush();
         }
 
-        /** 
+        /**
          * Writes a chunk of data to the ObjectOutput
          */
-        public void write(byte[] b, int off, int len) throws IOException {
+        @Override
+		public void write(byte[] b, int off, int len) throws IOException {
             if (len > 0) {
                 if (isDebug) {
                     log.debug("Write data chunk with len=" + len);
@@ -301,11 +305,12 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             }
         }
 
-         
-        /** 
+
+        /**
          * Writes a chunk of data to the ObjectOutput
          */
-        public void write(byte[] b) throws IOException {
+        @Override
+		public void write(byte[] b) throws IOException {
             if (b != null &&  b.length > 0) {
                 if (isDebug) {
                     log.debug("Write data chunk with size=" + b.length);
@@ -316,11 +321,12 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             }
         }
 
-         
-        /** 
+
+        /**
          * Writes a single byte chunk of data to the ObjectOutput
          */
-        public void write(int b) throws IOException {
+        @Override
+		public void write(int b) throws IOException {
             if (isDebug) {
                 log.debug("Write one byte data chunk");
             }
@@ -329,19 +335,19 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             out.write(b);
         }
     }
-       
+
     /**
      * Provides a InputStream interface over ObjectInput.
      * MessageInputStream controls the reading of the DataBlock chunks
      *
      */
     private static class MessageInputStream extends InputStream {
-        
+
         ObjectInput in;
         boolean isDebug;
         int chunkAvail = 0;
         boolean isEOD = false;
-        
+
         /**
          * Constructor
          * @param in
@@ -351,11 +357,12 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             isDebug = log.isDebugEnabled();
         }
 
-         
+
         /**
          * Read a single logical byte
          */
-        public int read() throws IOException {
+        @Override
+		public int read() throws IOException {
             if (isDebug) {
                 log.debug("invoking read()");
             }
@@ -372,11 +379,12 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             return ret;
         }
 
-         
+
         /**
          * Read an array of logical bytes
          */
-        public int read(byte[] b, int off, int len) throws IOException {
+        @Override
+		public int read(byte[] b, int off, int len) throws IOException {
             if (isDebug) {
                 log.debug("invoking read with off=" + off + " and len=" + len);
             }
@@ -410,12 +418,14 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
             return bytesRead;
         }
 
-         
-        public int read(byte[] b) throws IOException {
+
+        @Override
+		public int read(byte[] b) throws IOException {
             return read(b, 0, b.length);
         }
-        
-        public void close() throws IOException {
+
+        @Override
+		public void close() throws IOException {
             if (isDebug) {
                 log.debug("start close");
             }
@@ -430,14 +440,14 @@ public class MessageExternalizeUtils  implements ExternalizeConstants {
                 log.debug("end close");
             }
         }
-        
+
         /**
          * updateChunkAvail updates the chunkAvail field with the
          * amount of data in the chunk.
          * @throws IOException
          */
         private void updateChunkAvail() throws IOException {
-            
+
             // If there are no more bytes in the current chunk,
             // read the size of the next datablock
             if (chunkAvail == 0 && !isEOD) {

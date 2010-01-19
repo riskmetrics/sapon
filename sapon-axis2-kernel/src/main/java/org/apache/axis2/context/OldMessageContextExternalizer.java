@@ -16,6 +16,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.attachments.Attachments;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.util.UUIDGenerator;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.Constants.Configuration;
 import org.apache.axis2.alt.Flows;
 import org.apache.axis2.client.Options;
@@ -200,9 +201,14 @@ public class OldMessageContextExternalizer {
         // Message
         // Read the message and attachments
         //---------------------------------------------------------
-        context.setEnvelope(
+        try {
+        	context.setEnvelope(
         		MessageExternalizeUtils.readExternal(	in, context,
         												context.getLogCorrelationID()));
+        } catch(AxisFault af) {
+        	throw new IOException("Could not set envelope while reading "
+        			+ "message context from external", af);
+        }
 
         //---------------------------------------------------------
         // ArrayList executionChain

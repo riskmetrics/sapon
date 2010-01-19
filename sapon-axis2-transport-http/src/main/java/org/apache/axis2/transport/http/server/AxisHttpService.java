@@ -122,7 +122,7 @@ public class AxisHttpService {
     }
 
     public void handleRequest(final AxisHttpConnection conn, final HttpContext context)
-            throws IOException, HttpException {
+            throws IOException, HttpException, AxisFault {
 
         MessageContext msgContext = configurationContext.createMessageContext();
         msgContext.setIncomingTransportName(Constants.TRANSPORT_HTTP);
@@ -240,7 +240,7 @@ public class AxisHttpService {
             final AxisHttpRequest request,
             final AxisHttpResponse response,
             final HttpContext context,
-            final MessageContext msgContext) throws HttpException, IOException {
+            final MessageContext msgContext) throws HttpException, IOException, AxisFault {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Request method: " + request.getMethod());
             LOG.debug("Target URI: " + request.getRequestURI());
@@ -262,7 +262,7 @@ public class AxisHttpService {
 
             // set the transport Headers
             Map<String, String> headerMap = new HashMap<String, String>();
-            for (Iterator it = request.headerIterator(); it.hasNext();) {
+            for (Iterator<?> it = request.headerIterator(); it.hasNext();) {
                 Header header = (Header) it.next();
                 headerMap.put(header.getName(), header.getValue());
             }
