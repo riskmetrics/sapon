@@ -423,8 +423,9 @@ public class ProxyService implements AspectConfigurable {
      * @param axisCfg the Axis2 configuration
      * @return the Axis2 service for the Proxy
      */
-    public AxisService buildAxisService(SynapseConfiguration synCfg, AxisConfiguration axisCfg) {
-
+    public AxisService buildAxisService(SynapseEnvironment synEnv, AxisConfiguration axisCfg)
+    {
+    	SynapseConfiguration synCfg = synEnv.getSynapseConfiguration();
         auditInfo("Building Axis service for Proxy service : " + name);
         final AxisService proxyService;
 
@@ -547,7 +548,7 @@ public class ProxyService implements AspectConfigurable {
         }
 
         // create a custom message receiver for this proxy service
-        ProxyServiceMessageReceiver msgRcvr = new ProxyServiceMessageReceiver();
+        ProxyServiceMessageReceiver msgRcvr = new ProxyServiceMessageReceiver(synEnv);
         msgRcvr.setName(name);
         msgRcvr.setProxy(this);
 

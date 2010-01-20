@@ -29,6 +29,7 @@ import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.aspects.ComponentType;
 import org.apache.synapse.aspects.statistics.StatisticsReporter;
+import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.endpoints.Endpoint;
 import org.apache.synapse.mediators.MediatorFaultHandler;
 
@@ -41,6 +42,10 @@ public class ProxyServiceMessageReceiver extends SynapseMessageReceiver {
 
     private String name = null;
     private ProxyService proxy = null;
+
+    public ProxyServiceMessageReceiver(SynapseEnvironment synEnv) {
+    	super(synEnv);
+    }
 
     @Override
 	public void receive(MessageContext mc) throws AxisFault {
@@ -68,7 +73,7 @@ public class ProxyServiceMessageReceiver extends SynapseMessageReceiver {
             }
         }
 
-        SynapseMessageContext synCtx = MessageContextCreatorForAxis2.getSynapseMessageContext(mc);
+        SynapseMessageContext synCtx = getSynapseMessageContext(mc);
 
         if(synCtx instanceof Axis2SynapseMessageContext) {
         	StatisticsReporter.reportForComponent(	(Axis2SynapseMessageContext)synCtx,

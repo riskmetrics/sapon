@@ -27,12 +27,12 @@ import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
-import org.apache.synapse.core.axis2.MessageContextCreatorForAxis2;
 import org.apache.synapse.core.axis2.SynapseMessageReceiver;
-import org.apache.synapse.mediators.TestMediateHandler;
 import org.apache.synapse.mediators.DummyMediator;
 import org.apache.synapse.mediators.MediatorUtils;
+import org.apache.synapse.mediators.TestMediateHandler;
 
 public class SequenceMediatorTest extends TestCase {
 
@@ -122,12 +122,11 @@ public class SequenceMediatorTest extends TestCase {
         synConfig.addSequence("myErrorHandler", seqErr);
         synConfig.addSequence(SynapseConstants.MAIN_SEQUENCE_KEY, seq);
 
-        MessageContextCreatorForAxis2.setSynConfig(synConfig);
-        MessageContextCreatorForAxis2.setSynEnv(new Axis2SynapseEnvironment(synConfig));
+        SynapseEnvironment synEnv = new Axis2SynapseEnvironment(synConfig);
         MessageContext mc = new OldMessageContext();
         mc.setEnvelope(MediatorUtils.getTestContext("<empty/>").getEnvelope());
 
-        new SynapseMessageReceiver().receive(mc);
+        new SynapseMessageReceiver(synEnv).receive(mc);
 
         assertTrue("T1.T2.T4".equals(result.toString()));
     }

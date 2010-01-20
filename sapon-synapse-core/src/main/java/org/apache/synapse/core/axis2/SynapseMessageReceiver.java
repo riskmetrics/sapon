@@ -30,6 +30,8 @@ import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.aspects.AspectConfigurationDetectionStrategy;
 import org.apache.synapse.aspects.ComponentType;
 import org.apache.synapse.aspects.statistics.StatisticsReporter;
+import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.mediators.MediatorFaultHandler;
 
 /**
@@ -41,10 +43,29 @@ public class SynapseMessageReceiver implements MessageReceiver {
 
     private static final Log log = LogFactory.getLog(SynapseMessageReceiver.class);
 
+    private final SynapseEnvironment synEnv;
+
+    public SynapseMessageReceiver(SynapseEnvironment env) {
+    	this.synEnv = env;
+    }
+
+    protected SynapseMessageContext getSynapseMessageContext(
+    		MessageContext axisMsgCtx) throws AxisFault
+    {
+    	if (synEnv == null) {
+            String msg = "Synapse environment has not initialized properly..";
+            log.fatal(msg);
+            throw new SynapseException(msg);
+        }
+    	SynapseConfiguration synCfg = synEnv.getSynapseConfiguration();
+
+        return Axis2SynapseMessageContextImpl.newInstance(axisMsgCtx, synCfg, synEnv);
+    }
+
     public void receive(MessageContext mc)
     	throws AxisFault
     {
-        SynapseMessageContext synCtx = MessageContextCreatorForAxis2.getSynapseMessageContext(mc);
+        SynapseMessageContext synCtx = getSynapseMessageContext(mc);
 
         if(synCtx instanceof Axis2SynapseMessageContext) {
         	StatisticsReporter.reportForComponent((Axis2SynapseMessageContext)synCtx,
