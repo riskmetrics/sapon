@@ -75,11 +75,9 @@ public class ProxyServiceMessageReceiver extends SynapseMessageReceiver {
 
         SynapseMessageContext synCtx = getSynapseMessageContext(mc);
 
-        if(synCtx instanceof Axis2SynapseMessageContext) {
-        	StatisticsReporter.reportForComponent(	(Axis2SynapseMessageContext)synCtx,
-        											proxy.getAspectConfiguration(),
-        											ComponentType.PROXYSERVICE);
-        }
+        StatisticsReporter.reportForComponent(	synCtx,
+        										proxy.getAspectConfiguration(),
+        										ComponentType.PROXYSERVICE);
 
         // get service log for this message and attach to the message context also set proxy name
         Log serviceLog = LogFactory.getLog(SynapseConstants.SERVICE_LOGGER_PREFIX + name);

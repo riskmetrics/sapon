@@ -43,14 +43,16 @@ public class StatisticsReporter {
      * @param configurable  Instance that can be configured it's audit
      * @param componentType Type of the componet need aspect
      */
-    public static void reportForComponent(Axis2SynapseMessageContext synCtx,
+    public static void reportForComponent(SynapseMessageContext synCtx,
                                           StatisticsConfigurable configurable,
                                           ComponentType componentType) {
 
-        if (configurable != null && configurable.isStatisticsEnable()
+        if (synCtx instanceof Axis2SynapseMessageContext &&
+        		configurable != null && configurable.isStatisticsEnable()
                 && configurable instanceof Identifiable) {
 
-            StatisticsRecord record = StatisticsReporter.getStatisticsRecord(synCtx);
+            StatisticsRecord record
+            	= StatisticsReporter.getStatisticsRecord((Axis2SynapseMessageContext)synCtx);
             record.setOwner(componentType);
             collectStatistics(synCtx, record, configurable, componentType);
         }
@@ -61,16 +63,19 @@ public class StatisticsReporter {
      *
      * @param synCtx Current Message through synapse
      */
-    public static void reportForAll(Axis2SynapseMessageContext synCtx) {
-
-        AspectConfiguration configuration =
+    public static void reportForAll(SynapseMessageContext synCtx) {
+    	if(synCtx instanceof Axis2SynapseMessageContext) {
+    		Axis2SynapseMessageContext a2synCtx
+    			= (Axis2SynapseMessageContext)synCtx;
+    		AspectConfiguration configuration =
                 AspectConfigurationDetectionStrategy.getAspectConfiguration(synCtx);
 
-        if (configuration != null && configuration.isStatisticsEnable()) {
-
-            StatisticsRecord record = StatisticsReporter.getStatisticsRecord(synCtx);
-            collectStatistics(synCtx, record, configuration, ComponentType.ANY);
-        }
+    		if (configuration != null && configuration.isStatisticsEnable()) {
+    			StatisticsRecord record
+    				= StatisticsReporter.getStatisticsRecord(a2synCtx);
+    			collectStatistics(synCtx, record, configuration, ComponentType.ANY);
+    		}
+    	}
     }
 
     /**
@@ -78,18 +83,20 @@ public class StatisticsReporter {
      *
      * @param synCtx synCtx  Current Message through synapse
      */
-    public static void reportFaultForAll(Axis2SynapseMessageContext synCtx) {
-
-        StatisticsRecord statisticsRecord = StatisticsReporter.getStatisticsRecord(synCtx);
-        if (statisticsRecord != null) {
-            if (log.isDebugEnabled()) {
-                log.debug("Reporting a fault : " + statisticsRecord);
-            }
-            statisticsRecord.collect(
+    public static void reportFaultForAll(SynapseMessageContext synCtx) {
+    	if(synCtx instanceof Axis2SynapseMessageContext) {
+    		StatisticsRecord statisticsRecord
+    			= StatisticsReporter.getStatisticsRecord((Axis2SynapseMessageContext)synCtx);
+    		if (statisticsRecord != null) {
+    			if (log.isDebugEnabled()) {
+    				log.debug("Reporting a fault : " + statisticsRecord);
+    			}
+    			statisticsRecord.collect(
                     new AspectConfiguration(SynapseConstants.SYNAPSE_ASPECTS),
                     ComponentType.ANY, true);
-            statisticsRecord.setFaultResponse(true);
-        }
+    			statisticsRecord.setFaultResponse(true);
+    		}
+    	}
     }
 
     private static StatisticsRecord getStatisticsRecord(Axis2SynapseMessageContext synCtx) {

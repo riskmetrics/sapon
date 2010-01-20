@@ -170,10 +170,7 @@ public class SynapseCallbackReceiver implements MessageReceiver {
         Object o = response.getProperty(SynapseConstants.SENDING_FAULT);
         if (o != null && Boolean.TRUE.equals(o)) {
 
-        	if(synapseOutMsgCtx instanceof Axis2SynapseMessageContext) {
-				StatisticsReporter.reportFaultForAll((Axis2SynapseMessageContext)synapseOutMsgCtx);
-				// there is a sending fault. propagate the fault to fault handlers.
-			}
+        	StatisticsReporter.reportFaultForAll(synapseOutMsgCtx);
 
             Stack<FaultHandler> faultStack = synapseOutMsgCtx.getFaultStack();
             if (faultStack != null && !faultStack.isEmpty()) {
@@ -341,9 +338,7 @@ public class SynapseCallbackReceiver implements MessageReceiver {
                 dispatcher.updateSession(synapseInMessageContext);
             }
 
-            if(synapseOutMsgCtx instanceof Axis2SynapseMessageContext) {
-            	StatisticsReporter.reportForAll((Axis2SynapseMessageContext)synapseInMessageContext);
-            }
+            StatisticsReporter.reportForAll(synapseInMessageContext);
 
             // send the response message through the synapse mediation flow
             try {

@@ -107,10 +107,7 @@ public class Axis2SynapseEnvironment
      */
     public void send(EndpointDefinition endpoint, SynapseMessageContext synCtx) {
         if (synCtx.isResponse()) {
-        	if(synCtx instanceof Axis2SynapseMessageContext) {
-        		StatisticsReporter.reportForAll((Axis2SynapseMessageContext)synCtx);
-        	}
-
+        	StatisticsReporter.reportForAll(synCtx);
             if (endpoint != null) {
                 Axis2Sender.sendOn(endpoint, synCtx);
             } else {

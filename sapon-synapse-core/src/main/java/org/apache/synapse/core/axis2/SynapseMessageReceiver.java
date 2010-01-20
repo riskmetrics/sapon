@@ -67,11 +67,9 @@ public class SynapseMessageReceiver implements MessageReceiver {
     {
         SynapseMessageContext synCtx = getSynapseMessageContext(mc);
 
-        if(synCtx instanceof Axis2SynapseMessageContext) {
-        	StatisticsReporter.reportForComponent((Axis2SynapseMessageContext)synCtx,
+        StatisticsReporter.reportForComponent(synCtx,
                 AspectConfigurationDetectionStrategy.getAspectConfiguration(synCtx),
                 ComponentType.SEQUENCE);
-        }
 
         if (log.isDebugEnabled()) {
             log.debug("Synapse received a new message for message mediation...");

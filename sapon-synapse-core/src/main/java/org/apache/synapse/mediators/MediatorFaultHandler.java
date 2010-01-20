@@ -27,7 +27,6 @@ import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.aspects.statistics.StatisticsReporter;
-import org.apache.synapse.core.axis2.Axis2SynapseMessageContext;
 import org.apache.synapse.mediators.base.SequenceMediator;
 
 /**
@@ -75,9 +74,7 @@ public class MediatorFaultHandler extends FaultHandler {
             name = faultMediator.getClass().getName();
         }
 
-        if(synCtx instanceof Axis2SynapseMessageContext) {
-        	StatisticsReporter.reportFaultForAll((Axis2SynapseMessageContext)synCtx);
-        }
+        StatisticsReporter.reportFaultForAll(synCtx);
 
         if (log.isDebugEnabled()) {
             log.debug("Executing fault handler mediator : " + name);
