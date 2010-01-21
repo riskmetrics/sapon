@@ -31,7 +31,7 @@ import org.apache.commons.logging.LogFactory;
 /** This class takes the input stream and turns it multiple streams. */
 public class BoundaryDelimitedStream extends FilterInputStream {
 
-    protected static Log log =
+    protected static final Log log =
             LogFactory.getLog(BoundaryDelimitedStream.class);
 
     protected byte[] boundary = null;

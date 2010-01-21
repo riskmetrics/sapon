@@ -118,7 +118,7 @@ public class Attachments implements OMAttachmentAccessor {
 
     private LifecycleManager manager;
 
-    protected static Log log = LogFactory.getLog(Attachments.class);
+    protected static final Log log = LogFactory.getLog(Attachments.class);
 
     public LifecycleManager getLifecycleManager() {
         if(manager == null) {
