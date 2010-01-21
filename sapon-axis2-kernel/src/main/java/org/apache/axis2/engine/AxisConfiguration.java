@@ -979,9 +979,7 @@ public class AxisConfiguration extends AxisDescriptionBase
         }
         return new TargetResolver() {
             public void resolveTarget(MessageContext messageContext) {
-                Iterator<TargetResolver> iter = targetResolvers.iterator();
-                while (iter.hasNext()) {
-                    TargetResolver tr = iter.next();
+                for(TargetResolver tr: targetResolvers) {
                     tr.resolveTarget(messageContext);
                 }
             }
