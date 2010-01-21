@@ -34,8 +34,9 @@ import org.apache.commons.logging.LogFactory;
 public class LifecycleManagerImpl implements LifecycleManager {
     private static final Log log = LogFactory.getLog(LifecycleManagerImpl.class);
 
-    //Hashtable to store file accessors.
-    private static Hashtable<String, FileAccessor> table = new Hashtable<String, FileAccessor>();
+    private static Hashtable<String, FileAccessor> fileAccessors
+    	= new Hashtable<String, FileAccessor>();
+
     private VMShutdownHook hook = null;
     public LifecycleManagerImpl() {
         super();
@@ -71,7 +72,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
         File file = new File(dir, fileString);
         FileAccessor fa = new FileAccessor(this, file);
         //add the fileAccesor to table
-        table.put(fileString, fa);
+        fileAccessors.put(fileString, fa);
         //Default behaviour
         deleteOnExit(file);
         if(log.isDebugEnabled()){
@@ -89,7 +90,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
         }
 
         if(file!=null && file.exists()){
-            table.remove(file);
+            fileAccessors.remove(file.getName());
             if(log.isDebugEnabled()){
                 log.debug("invoking file.delete()");
             }
@@ -126,7 +127,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
                 log.debug("Invoking deleteOnExit() for file = "+file.getAbsolutePath());
             }
             hook.add(file);
-            table.remove(file);
+            fileAccessors.remove(file.getName());
         }
         if(log.isDebugEnabled()){
             log.debug("End deleteOnExit()");
@@ -191,7 +192,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
             try{
                 Thread.sleep(interval*1000);
                 if(_file.exists()){
-                    table.remove(_file);
+                    fileAccessors.remove(_file.getName());
                     _file.delete();
                 }
             }catch(InterruptedException e){
@@ -204,7 +205,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
     }
 
 	public FileAccessor getFileAccessor(String fileName) throws IOException {
-		return table.get(fileName);
+		return fileAccessors.get(fileName);
 	}
 
 }
