@@ -19,12 +19,13 @@
 
 package org.apache.axis2.context.externalize;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 import java.io.IOException;
 import java.io.ObjectOutput;
 import java.io.ObjectStreamConstants;
+import java.util.Arrays;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * DebugObjectOutputStream delegates to an ObjectOutput object.
@@ -35,7 +36,7 @@ public class DebugObjectOutputStream implements ObjectStreamConstants, ObjectOut
     private static final Log log = LogFactory.getLog(DebugObjectOutputStream.class);
     private static final boolean isDebug = log.isDebugEnabled();
     ObjectOutput out;
-    
+
     DebugObjectOutputStream(ObjectOutput out) throws IOException {
         super();
         trace("--START DebugOutputStream--");
@@ -56,8 +57,8 @@ public class DebugObjectOutputStream implements ObjectStreamConstants, ObjectOut
     public void write(byte[] b, int off, int len) throws IOException {
         trace ("start write(b, off, len) off=" + off + " len=" + len);
         if (len > 4) {
-            trace (" first four bytes = '" + 
-                   b[off] + "' '" + 
+            trace (" first four bytes = '" +
+                   b[off] + "' '" +
                    b[off+1] + "' '" +
                    b[off+2] + "' '" +
                    b[off+3] + "'");
@@ -67,7 +68,7 @@ public class DebugObjectOutputStream implements ObjectStreamConstants, ObjectOut
     }
 
     public void write(byte[] b) throws IOException {
-        trace ("start write(byte) byte=" + b);
+        trace ("start write(byte) byte=" + Arrays.toString(b));
         out.write(b);
         trace ("end write(b)");
     }
@@ -116,7 +117,7 @@ public class DebugObjectOutputStream implements ObjectStreamConstants, ObjectOut
 
     public void writeFloat(float v) throws IOException {
         trace ("start writeFloat(v) v=" + v);
-        out.writeFloat(v); 
+        out.writeFloat(v);
         trace ("end writeFloat(v)");
     }
 
@@ -149,13 +150,13 @@ public class DebugObjectOutputStream implements ObjectStreamConstants, ObjectOut
         out.writeUTF(str);
         trace ("end writeUTF(v)");
     }
-    
+
     public void trace(String str) {
         if (isDebug) {
             log.debug(str);
         }
     }
-    
+
     private String valueName(Object obj) {
         if (obj == null) {
             return "null";
