@@ -436,7 +436,7 @@ public class Attachments implements OMAttachmentAccessor {
             rootContentID = rootContentID.trim();
 
             if ((rootContentID.indexOf("<") > -1)
-                    & (rootContentID.indexOf(">") > -1)) {
+                    && (rootContentID.indexOf(">") > -1)) {
                 rootContentID = rootContentID.substring(1, (rootContentID
                         .length() - 1));
             }
@@ -599,7 +599,7 @@ public class Attachments implements OMAttachmentAccessor {
                 try {
                     partContentID = nextPart.getContentID();
 
-                    if (partContentID == null & partIndex == 1) {
+                    if (partContentID == null && partIndex == 1) {
                         String id = "firstPart_" + UUIDGenerator.getUUID();
                         firstPartId = id;
                         if (size > 0) {
@@ -617,7 +617,7 @@ public class Attachments implements OMAttachmentAccessor {
                                 "Part content ID cannot be blank for non root MIME parts");
                     }
                     if ((partContentID.indexOf("<") > -1)
-                            & (partContentID.indexOf(">") > -1)) {
+                            && (partContentID.indexOf(">") > -1)) {
                         partContentID = partContentID.substring(1, (partContentID
                                 .length() - 1));
 
