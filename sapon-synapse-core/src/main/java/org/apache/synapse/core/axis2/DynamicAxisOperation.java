@@ -37,7 +37,6 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.engine.AxisEngine;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.transport.TransportUtils;
-import org.apache.axis2.util.TargetResolver;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.synapse.NhttpConstants;
 import org.apache.synapse.SynapseConstants;
@@ -104,12 +103,6 @@ public class DynamicAxisOperation extends OutInAxisOperation {
 
             // set ClientOptions to the current outgoing message
             outMsgCtx.setOptions(options);
-
-			// do Target Resolution
-			TargetResolver tr = cfgCtx.getAxisConfiguration().getTargetResolverChain();
-            if (tr != null) {
-                tr.resolveTarget(outMsgCtx);
-            }
 
             // if the transport to use for sending is not specified, try to find it from the URL
 			TransportOutDescription transportOut = options.getTransportOut();

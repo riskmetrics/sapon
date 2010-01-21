@@ -35,7 +35,6 @@
         <xs:element ref="messageReceivers"/>
         <xs:element ref="moduleConfig"/>
         <xs:element ref="phaseOrder"/>
-        <xs:element ref="targetResolvers"/>
         <xs:element ref="transportReceiver"/>
         <xs:element ref="transportSender"/>
       </xs:choice>
@@ -145,18 +144,6 @@
     <xs:complexType>
       <xs:attribute name="phase" use="required" type="xs:NCName"/>
       <xs:attribute name="phaseLast" type="xs:boolean"/>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="targetResolvers">
-    <xs:complexType>
-      <xs:sequence>
-        <xs:element ref="targetResolver"/>
-      </xs:sequence>
-    </xs:complexType>
-  </xs:element>
-  <xs:element name="targetResolver">
-    <xs:complexType>
-      <xs:attribute name="class" use="required"/>
     </xs:complexType>
   </xs:element>
   <xs:element name="transportReceiver">

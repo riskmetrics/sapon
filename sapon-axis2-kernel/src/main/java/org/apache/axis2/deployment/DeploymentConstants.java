@@ -48,8 +48,6 @@ public interface DeploymentConstants {
     String TAG_LABEL = "label";
     String TAG_HANDLER = "handler";
     String TAG_TYPE = "type";
-    String TAG_TARGET_RESOLVERS = "targetResolvers";
-    String TAG_TARGET_RESOLVER = "targetResolver";
     String TAG_THREAD_CONTEXT_MIGRATORS = "threadContextMigrators";
     String TAG_THREAD_CONTEXT_MIGRATOR = "threadContextMigrator";
     String TAG_TRANSPORT_SENDER = "transportSender";
@@ -117,7 +115,7 @@ public interface DeploymentConstants {
     String EXTENSION = "extension";
     String DEPLOYER = "deployer";
 
-    //Attachments LifecycleManager 
+    //Attachments LifecycleManager
     String ATTACHMENTS_LIFECYCLE_MANAGER = "attachmentsLifecycleManager";
 
     // for parameters
@@ -160,7 +158,7 @@ public interface DeploymentConstants {
     String POLICY_NS_URI = Constants.URI_POLICY;
     String TAG_POLICY = "Policy";
     String TAG_POLICY_REF = "PolicyReference";
-    
+
     String TAG_POLICY_ATTACHMENT = "PolicyAttachment";
     String TAG_APPLIES_TO = "AppliesTo";
 }
