@@ -12,13 +12,15 @@ import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.mediators.AbstractMediator;
 
 /**
- * Created by IntelliJ IDEA. User: ruwan Date: Oct 3, 2007 Time: 7:26:09 AM To change this template
- * use File | Settings | File Templates.
+ * Created by IntelliJ IDEA. User: ruwan Date: Oct 3, 2007 Time: 7:26:09 AM
  */
-public class SplitTestHelperMediator extends AbstractMediator implements ManagedLifecycle {
+public class SplitTestHelperMediator extends AbstractMediator
+	implements ManagedLifecycle
+{
 
     private List<SynapseMessageContext> mediatedContext = new ArrayList<SynapseMessageContext>();
     int msgcount;
+    boolean inited = false;
     String checkString;
 
     public boolean mediate(SynapseMessageContext synCtx) {
@@ -58,10 +60,18 @@ public class SplitTestHelperMediator extends AbstractMediator implements Managed
         return checkString;
     }
 
+    @Override
     public void init(SynapseEnvironment se) {
         msgcount = 0;
+        inited = true;
     }
 
+    @Override
+    public boolean isInitialized() {
+    	return inited;
+    }
+
+    @Override
     public void destroy() {
         clearMediatedContexts();
         msgcount = 0;

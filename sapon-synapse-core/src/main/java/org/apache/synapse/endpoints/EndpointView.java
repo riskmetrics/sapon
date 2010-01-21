@@ -30,14 +30,14 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class is the metrics collector and JMX control point for Endpoints
  */
-public class EndpointView implements EndpointViewMBean, MessageLevelMetricsCollector {
+public class EndpointView
+	implements EndpointViewMBean, MessageLevelMetricsCollector
+{
 
     private static final Log log = LogFactory.getLog(EndpointView.class);
     private static final Long ONE = (long) 1;
 
-    /** The name of the endpoint */
     private String endpointName = null;
-    /** The actual Endpoint implementation we manage */
     private Endpoint endpoint = null;
 
     // metrics collected / maintained

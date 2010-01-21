@@ -34,6 +34,7 @@ import org.apache.synapse.mediators.AbstractMediator;
 public class SendMediator extends AbstractMediator implements ManagedLifecycle {
 
     private Endpoint endpoint = null;
+    private boolean initialized = false;
 
     /**
      * This will call the send method on the messages with implicit message parameters
@@ -89,6 +90,11 @@ public class SendMediator extends AbstractMediator implements ManagedLifecycle {
         if (endpoint != null) {
             endpoint.init(synapseEnvironment);
         }
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {

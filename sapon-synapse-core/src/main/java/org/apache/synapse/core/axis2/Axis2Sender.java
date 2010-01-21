@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.NhttpConstants;
 import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
+import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.endpoints.EndpointDefinition;
 import org.apache.synapse.util.MessageHelper;
 import org.apache.synapse.util.POXUtils;
@@ -49,16 +50,11 @@ public class Axis2Sender {
      * @param endpoint the endpoint definition where the message should be sent
      * @param synapseInMessageContext the Synapse message context
      */
-    public static void sendOn(EndpointDefinition endpoint,
-        org.apache.synapse.SynapseMessageContext synapseInMessageContext) {
-
+    public static void sendOn(	EndpointDefinition endpoint,
+    							SynapseMessageContext synapseInMessageContext )
+    {
         try {
-            Axis2FlexibleMEPClient.send(
-                // The endpoint where we are sending to
-                endpoint,
-                // The Axis2 Message context of the Synapse MC
-                synapseInMessageContext);
-
+            Axis2FlexibleMEPClient.send(endpoint, synapseInMessageContext);
         } catch (Exception e) {
             handleException("Unexpected error during sending message out", e);
         }

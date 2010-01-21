@@ -39,6 +39,8 @@ public abstract class AbstractListMediator
     /** the list of child mediators held. These are executed sequentially */
     protected final List<Mediator> mediators = new ArrayList<Mediator>();
 
+    protected boolean inited = false;
+
     public boolean mediate(SynapseMessageContext synCtx) {
     	if (log.isDebugEnabled()) {
     		log.debug("Sequence <" + getType() + "> :: mediate()");
@@ -91,6 +93,11 @@ public abstract class AbstractListMediator
                 ((ManagedLifecycle) mediator).init(se);
             }
         }
+        inited = true;
+    }
+
+    public boolean isInitialized() {
+    	return inited;
     }
 
     /**

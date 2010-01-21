@@ -69,6 +69,8 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
     /** The target for the newly splitted messages */
     private Target target = null;
 
+    private boolean initialized = false;
+
     /**
      * Splits the message by iterating over the results of the given XPath expression
      *
@@ -260,6 +262,11 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
                 seq.init(se);
             }
         }
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {

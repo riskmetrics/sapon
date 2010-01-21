@@ -50,8 +50,9 @@ import org.jaxen.JaxenException;
  *      <target xpath="expression" | key="string"/>
  * </callout>
  */
-public class CalloutMediator extends AbstractMediator implements ManagedLifecycle {
-
+public class CalloutMediator extends AbstractMediator
+	implements ManagedLifecycle
+{
     private ServiceClient sc = null;
     private String serviceURL = null;
     private String action = null;
@@ -61,6 +62,7 @@ public class CalloutMediator extends AbstractMediator implements ManagedLifecycl
     private String targetKey = null;
     private String clientRepository = null;
     private String axis2xml = null;
+    private boolean initialized = false;
     public final static String DEFAULT_CLIENT_REPO = "./samples/axis2Client/client_repo";
     public final static String DEFAULT_AXIS2_XML = "./samples/axis2Client/client_repo/conf/axis2.xml";
 
@@ -183,11 +185,16 @@ public class CalloutMediator extends AbstractMediator implements ManagedLifecycl
                     clientRepository != null ? clientRepository : DEFAULT_CLIENT_REPO,
                     axis2xml != null ? axis2xml : DEFAULT_AXIS2_XML);
             sc = new ServiceClient(cfgCtx, null);
+            initialized = true;
         } catch (AxisFault e) {
             String msg = "Error initializing callout mediator : " + e.getMessage();
             log.error(msg, e);
             throw new SynapseException(msg, e);
         }
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {

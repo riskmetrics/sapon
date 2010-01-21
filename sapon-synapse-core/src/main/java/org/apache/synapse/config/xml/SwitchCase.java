@@ -42,14 +42,21 @@ public class SwitchCase implements ManagedLifecycle {
      * The regular expression pattern to be checked
      */
     private Pattern regex = null;
-    
+
     /**
      * The list mediator which is responsible on message mediation of the case
      */
     private AnonymousListMediator caseMediator;
 
+    private boolean initialized = false;
+
     public void init(SynapseEnvironment se) {
         caseMediator.init(se);
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {

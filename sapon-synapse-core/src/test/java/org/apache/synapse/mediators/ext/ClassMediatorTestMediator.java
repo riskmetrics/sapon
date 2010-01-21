@@ -29,7 +29,9 @@ import org.apache.synapse.mediators.AbstractMediator;
  * use a static member variable just to test this.. This class is not nice.. :-)
  * but does what is expected... :-(
  */
-public class ClassMediatorTestMediator extends AbstractMediator implements ManagedLifecycle {
+public class ClassMediatorTestMediator extends AbstractMediator
+	implements ManagedLifecycle
+{
 
     public static boolean invoked = false;
     public static boolean initialized = false;
@@ -42,7 +44,8 @@ public class ClassMediatorTestMediator extends AbstractMediator implements Manag
         return false;
     }
 
-    public String getType() {
+    @Override
+	public String getType() {
         return null;
     }
 
@@ -56,6 +59,10 @@ public class ClassMediatorTestMediator extends AbstractMediator implements Manag
 
     public void init(SynapseEnvironment se) {
         initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {

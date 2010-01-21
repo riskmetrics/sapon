@@ -33,11 +33,17 @@ public interface ManagedLifecycle {
      *
      * @param se SynapseEnvironment to be used for initialization
      */
-    public void init(SynapseEnvironment se);
+    void init(SynapseEnvironment se);
+
+    /**
+     * Has this managed object been initialized?
+     * @return true if the object is initialized
+     */
+    boolean isInitialized();
 
     /**
      * This method should implement the destroying of the
      * implemented parts of the configuration.
      */
-    public void destroy();
+    void destroy();
 }

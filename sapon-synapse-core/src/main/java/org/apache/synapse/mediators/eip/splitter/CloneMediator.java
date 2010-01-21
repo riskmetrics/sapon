@@ -42,7 +42,9 @@ import org.apache.synapse.util.MessageHelper;
  * specifies an Action and/or To address to be set to the cloned message. The number of cloned
  * messages created is the number of targets specified
  */
-public class CloneMediator extends AbstractMediator implements ManagedLifecycle {
+public class CloneMediator extends AbstractMediator
+	implements ManagedLifecycle
+{
 
     /**
      * Continue processing the parent message or not?
@@ -52,6 +54,8 @@ public class CloneMediator extends AbstractMediator implements ManagedLifecycle 
 
     /** the list of targets to which cloned copies of the message will be given for mediation */
     private List<Target> targets = new ArrayList<Target>();
+
+    private boolean initialized = false;
 
     /**
      * This will implement the mediate method of the Mediator interface and will provide the
@@ -162,6 +166,11 @@ public class CloneMediator extends AbstractMediator implements ManagedLifecycle 
                 ((ManagedLifecycle) endpoint).init(se);
             }
         }
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {
