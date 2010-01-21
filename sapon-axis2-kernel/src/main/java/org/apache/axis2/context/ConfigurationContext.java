@@ -34,7 +34,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.clustering.ClusterManager;
 import org.apache.axis2.clustering.ClusteringConstants;
 import org.apache.axis2.clustering.configuration.ConfigurationManager;
@@ -107,7 +107,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
 
     private void initConfigContextTimeout(AxisConfiguration axisConfiguration) {
         Parameter parameter = axisConfiguration
-                .getParameter(Constants.Configuration.CONFIG_CONTEXT_TIMEOUT_INTERVAL);
+                .getParameter(Axis2Constants.Configuration.CONFIG_CONTEXT_TIMEOUT_INTERVAL);
         if (parameter != null) {
             Object value = parameter.getValue();
             if (value != null && value instanceof String) {
@@ -230,7 +230,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
 
         if (serviceContext == null) {
             String scope = axisService.getScope();
-            if (Constants.SCOPE_APPLICATION.equals(scope)) {
+            if (Axis2Constants.SCOPE_APPLICATION.equals(scope)) {
                 String serviceGroupName = axisService.getServiceGroup().getName();
                 serviceGroupContext =
                         applicationSessionServiceGroupContexts.get(
@@ -249,7 +249,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
                 messageContext.setServiceGroupContext(serviceGroupContext);
                 messageContext
                         .setServiceContext(serviceGroupContext.getServiceContext(axisService));
-            } else if (Constants.SCOPE_SOAP_SESSION.equals(scope)) {
+            } else if (Axis2Constants.SCOPE_SOAP_SESSION.equals(scope)) {
                 //cleaning the session
                 cleanupServiceGroupContexts();
                 String serviceGroupContextId = messageContext.getServiceGroupContextId();
@@ -282,7 +282,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
                 messageContext.setServiceGroupContext(serviceGroupContext);
                 messageContext
                         .setServiceContext(serviceGroupContext.getServiceContext(axisService));
-            } else if (Constants.SCOPE_REQUEST.equals(scope)) {
+            } else if (Axis2Constants.SCOPE_REQUEST.equals(scope)) {
                 AxisServiceGroup axisServiceGroup = axisService.getServiceGroup();
                 serviceGroupContext = createServiceGroupContext(axisServiceGroup);
                 messageContext.setServiceGroupContext(serviceGroupContext);
@@ -406,7 +406,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
      */
     public void deployService(AxisService service) throws AxisFault {
         axisConfiguration.addService(service);
-        if (Constants.SCOPE_APPLICATION.equals(service.getScope())) {
+        if (Axis2Constants.SCOPE_APPLICATION.equals(service.getScope())) {
             ServiceGroupContext sgc = createServiceGroupContext(service.getServiceGroup());
             DependencyManager.initService(sgc);
         }
@@ -760,7 +760,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
      */
     private void cleanupTemp() {
         File tempFile = (File)axisConfiguration.getParameterValue(
-                Constants.Configuration.ARTIFACTS_TEMP_DIR);
+                Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR);
         if (tempFile == null) {
             String property = AccessController.doPrivileged(
                     new PrivilegedAction<String>() {
@@ -890,7 +890,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
      */
     public long getServiceGroupContextTimeoutInterval() {
         Integer serviceGroupContextTimoutIntervalParam =
-                (Integer)getProperty(Constants.Configuration.CONFIG_CONTEXT_TIMEOUT_INTERVAL);
+                (Integer)getProperty(Axis2Constants.Configuration.CONFIG_CONTEXT_TIMEOUT_INTERVAL);
         if (serviceGroupContextTimoutIntervalParam != null) {
             // TODO: This seems wrong - setting a field inside a getter??
             serviceGroupContextTimeoutInterval = serviceGroupContextTimoutIntervalParam;

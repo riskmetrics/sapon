@@ -19,8 +19,15 @@
 
 package org.apache.axis2.transport.http.server;
 
+import java.io.IOException;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.description.TransportInDescription;
@@ -40,13 +47,6 @@ import org.apache.http.protocol.ResponseConnControl;
 import org.apache.http.protocol.ResponseContent;
 import org.apache.http.protocol.ResponseDate;
 import org.apache.http.protocol.ResponseServer;
-
-import java.io.IOException;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Factory used to configure and create the various instances required in http transports.
@@ -119,7 +119,7 @@ public class HttpFactory {
      */
     public HttpFactory(ConfigurationContext configurationContext) throws AxisFault {
         this.configurationContext = configurationContext;
-        httpConfiguration = configurationContext.getAxisConfiguration().getTransportIn(Constants.TRANSPORT_HTTP);
+        httpConfiguration = configurationContext.getAxisConfiguration().getTransportIn(Axis2Constants.TRANSPORT_HTTP);
         port = getIntParam(PARAMETER_PORT, 6060);
         hostAddress = getStringParam(PARAMETER_HOST_ADDRESS, null);
         originServer = getStringParam(PARAMETER_ORIGIN_SERVER, "Simple-Server/1.1");
@@ -234,12 +234,12 @@ public class HttpFactory {
      */
     public IOProcessor newRequestConnectionListener(
             int port,
-            final HttpConnectionManager manager, 
+            final HttpConnectionManager manager,
             final HttpParams params) throws IOException {
         return new DefaultConnectionListener(
-                port, 
-                manager, 
-                new DefaultConnectionListenerFailureHandler(), 
+                port,
+                manager,
+                new DefaultConnectionListenerFailureHandler(),
                 params);
     }
 

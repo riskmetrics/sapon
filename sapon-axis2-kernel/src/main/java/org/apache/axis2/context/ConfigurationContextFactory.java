@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.deployment.AxisConfigBuilder;
 import org.apache.axis2.deployment.DeploymentConstants;
 import org.apache.axis2.deployment.DeploymentEngine;
@@ -67,7 +67,7 @@ public class ConfigurationContextFactory {
             AxisConfigurator axisConfigurator) throws AxisFault {
         AxisConfiguration axisConfig = axisConfigurator.getAxisConfiguration();
         // call to the deployment listners
-        Parameter param = axisConfig.getParameter(Constants.Configuration.DEPLOYMENT_LIFE_CYCLE_LISTENER);
+        Parameter param = axisConfig.getParameter(Axis2Constants.Configuration.DEPLOYMENT_LIFE_CYCLE_LISTENER);
         DeploymentLifeCycleListener deploymentLifeCycleListener = null;
         if (param != null){
             String className = (String) param.getValue();
@@ -119,7 +119,7 @@ public class ConfigurationContextFactory {
             throws AxisFault {
     	for(final AxisServiceGroup axisServiceGroup : configCtx.getAxisConfiguration().getServiceGroups()) {
             String maxScope = SessionUtils.calculateMaxScopeForServiceGroup(axisServiceGroup);
-            if (Constants.SCOPE_APPLICATION.equals(maxScope)) {
+            if (Axis2Constants.SCOPE_APPLICATION.equals(maxScope)) {
                 ServiceGroupContext serviceGroupContext =
                         configCtx.createServiceGroupContext(axisServiceGroup);
                 configCtx.addServiceGroupContextIntoApplicationScopeTable(serviceGroupContext);
@@ -141,17 +141,17 @@ public class ConfigurationContextFactory {
     private static void setContextPaths(AxisConfiguration axisConfig,
                                         ConfigurationContext configContext) {
         // Checking for context path
-        Parameter servicePath = axisConfig.getParameter(Constants.PARAM_SERVICE_PATH);
+        Parameter servicePath = axisConfig.getParameter(Axis2Constants.PARAM_SERVICE_PATH);
         if (servicePath != null) {
             String spath = ((String) servicePath.getValue()).trim();
             if (spath.length() > 0) {
                 configContext.setServicePath(spath);
             }
         } else {
-            configContext.setServicePath(Constants.DEFAULT_SERVICES_PATH);
+            configContext.setServicePath(Axis2Constants.DEFAULT_SERVICES_PATH);
         }
 
-        Parameter contextPath = axisConfig.getParameter(Constants.PARAM_CONTEXT_ROOT);
+        Parameter contextPath = axisConfig.getParameter(Axis2Constants.PARAM_CONTEXT_ROOT);
         if (contextPath != null) {
             String cpath = ((String) contextPath.getValue()).trim();
             if (cpath.length() > 0) {

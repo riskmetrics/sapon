@@ -26,8 +26,8 @@ import java.io.OutputStream;
 import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.builder.BuilderUtil;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisBindingOperation;
@@ -56,13 +56,13 @@ public class RESTUtil {
         try {
             msgContext.setDoingREST(true);
             String charSetEncoding = BuilderUtil.getCharSetEncoding(contentType);
-            msgContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEncoding);
+            msgContext.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING, charSetEncoding);
             dispatchAndVerify(msgContext);
             in = HTTPTransportUtils.handleGZip(msgContext, in);
             SOAPEnvelope soapEnvelope = TransportUtils
                     .createSOAPMessage(msgContext, in, contentType);
             msgContext.setEnvelope(soapEnvelope);
-            msgContext.setProperty(Constants.Configuration.CONTENT_TYPE,
+            msgContext.setProperty(Axis2Constants.Configuration.CONTENT_TYPE,
                                    contentType);
 
             msgContext.setProperty(MessageContext.TRANSPORT_OUT, out);
@@ -75,10 +75,10 @@ public class RESTUtil {
             throw AxisFault.makeFault(e);
         } finally {
             String messageType =
-                    (String) msgContext.getProperty(Constants.Configuration.MESSAGE_TYPE);
+                    (String) msgContext.getProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
             if (HTTPConstants.MEDIA_TYPE_X_WWW_FORM.equals(messageType) ||
                     HTTPConstants.MEDIA_TYPE_MULTIPART_FORM_DATA.equals(messageType)) {
-                msgContext.setProperty(Constants.Configuration.MESSAGE_TYPE,
+                msgContext.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
                                        HTTPConstants.MEDIA_TYPE_APPLICATION_XML);
             }
         }
@@ -100,7 +100,7 @@ public class RESTUtil {
             msgContext.setDoingREST(true);
             msgContext.setProperty(MessageContext.TRANSPORT_OUT, out);
             String charSetEncoding = BuilderUtil.getCharSetEncoding(contentType);
-            msgContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEncoding);
+            msgContext.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING, charSetEncoding);
             // 1. First dispatchAndVerify and find out the service and the operation.
             dispatchAndVerify(msgContext);
             SOAPEnvelope soapEnvelope;
@@ -119,10 +119,10 @@ public class RESTUtil {
         }
         finally {
             String messageType =
-                    (String) msgContext.getProperty(Constants.Configuration.MESSAGE_TYPE);
+                    (String) msgContext.getProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
             if (HTTPConstants.MEDIA_TYPE_X_WWW_FORM.equals(messageType) ||
                     HTTPConstants.MEDIA_TYPE_MULTIPART_FORM_DATA.equals(messageType)) {
-                msgContext.setProperty(Constants.Configuration.MESSAGE_TYPE,
+                msgContext.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
                                        HTTPConstants.MEDIA_TYPE_APPLICATION_XML);
             }
         }
@@ -156,7 +156,7 @@ public class RESTUtil {
                 if (axisEndpoint != null) {
                     AxisBindingOperation axisBindingOperation = axisEndpoint
                             .getBinding().getBindingOperation(axisOperation.getName());
-                    msgContext.setProperty(Constants.AXIS_BINDING_OPERATION, axisBindingOperation);
+                    msgContext.setProperty(Axis2Constants.AXIS_BINDING_OPERATION, axisBindingOperation);
                 }
                 msgContext.setAxisOperation(axisOperation);
             }

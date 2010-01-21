@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -523,8 +523,8 @@ public class Axis2SynapseController implements SynapseController {
         mediateOperation.setMessageReceiver(new SynapseMessageReceiver(synEnv));
         synapseService.addOperation(mediateOperation);
         List<String> transports = new ArrayList<String>();
-        transports.add(Constants.TRANSPORT_HTTP);
-        transports.add(Constants.TRANSPORT_HTTPS);
+        transports.add(Axis2Constants.TRANSPORT_HTTP);
+        transports.add(Axis2Constants.TRANSPORT_HTTPS);
         synapseService.setExposedTransports(transports);
         axisCfg.addService(synapseService);
     }

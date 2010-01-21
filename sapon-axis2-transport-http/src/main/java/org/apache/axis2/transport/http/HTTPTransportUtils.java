@@ -34,8 +34,8 @@ import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPProcessingException;
 import org.apache.axiom.soap.impl.llom.soap12.SOAP12Factory;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.builder.BuilderUtil;
 import org.apache.axis2.context.MessageContext;
@@ -114,7 +114,7 @@ public class HTTPTransportUtils {
         if (charSetEnc == null) {
             charSetEnc = MessageContext.DEFAULT_CHAR_SET_ENCODING;
         }
-        msgContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
+        msgContext.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
 
         if (contentType != null) {
             if (contentType.indexOf(SOAP12Constants.SOAP_12_CONTENT_TYPE) > -1) {
@@ -131,8 +131,8 @@ public class HTTPTransportUtils {
             }
             if (soapVersion == VERSION_SOAP11 && soapActionHeader == null) {
             	Parameter enableREST = msgContext
-            		.getParameter(Constants.Configuration.ENABLE_REST);
-            	if(enableREST != null && Constants.VALUE_TRUE.equals(enableREST.getValue())) {
+            		.getParameter(Axis2Constants.Configuration.ENABLE_REST);
+            	if(enableREST != null && Axis2Constants.VALUE_TRUE.equals(enableREST.getValue())) {
             		// If the content Type is text/xml (BTW which is the
             		// SOAP 1.1 Content type ) and the SOAP Action is
             		// absent it is rest !!

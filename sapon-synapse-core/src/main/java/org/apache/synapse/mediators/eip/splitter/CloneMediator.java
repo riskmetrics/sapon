@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.OperationContext;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.SynapseMessageContext;
@@ -92,7 +92,7 @@ public class CloneMediator extends AbstractMediator
         OperationContext opCtx
             = ((Axis2SynapseMessageContext) synCtx).getAxis2MessageContext().getOperationContext();
         if (!continueParent && opCtx != null) {
-            opCtx.setProperty(Constants.RESPONSE_WRITTEN, "SKIP");
+            opCtx.setProperty(Axis2Constants.RESPONSE_WRITTEN, "SKIP");
         }
 
         // finalize tracing and debugging

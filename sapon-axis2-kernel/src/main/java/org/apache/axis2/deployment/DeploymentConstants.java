@@ -20,7 +20,7 @@
 
 package org.apache.axis2.deployment;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 
 /**
  * Constants used during service/module deployment.
@@ -155,7 +155,7 @@ public interface DeploymentConstants {
     char SEPARATOR_DOT = '.';
     char SEPARATOR_COLON = ':';
 
-    String POLICY_NS_URI = Constants.URI_POLICY;
+    String POLICY_NS_URI = Axis2Constants.URI_POLICY;
     String TAG_POLICY = "Policy";
     String TAG_POLICY_REF = "PolicyReference";
 

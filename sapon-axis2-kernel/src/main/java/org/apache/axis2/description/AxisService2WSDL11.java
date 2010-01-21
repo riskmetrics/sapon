@@ -526,13 +526,13 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 	{
 		//TODO:  this needs a redesign.
 		boolean disableSOAP11 = isTrueParam(axisService,
-	    		org.apache.axis2.Constants.Configuration.DISABLE_SOAP11);
+	    		org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP11);
 		boolean disableSOAP12 = isTrueParam(axisService,
-				org.apache.axis2.Constants.Configuration.DISABLE_SOAP12);
+				org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP12);
 	    boolean disableREST = isTrueParam(axisService,
-				org.apache.axis2.Constants.Configuration.DISABLE_REST);
+				org.apache.axis2.Axis2Constants.Configuration.DISABLE_REST);
 		boolean disableSilverlight = isTrueParam(axisService,
-				org.apache.axis2.Constants.Configuration.DISABLE_SILVERLIGHT);
+				org.apache.axis2.Axis2Constants.Configuration.DISABLE_SILVERLIGHT);
 
 		for(AxisEndpoint axisEndpoint: axisService.getEndpoints().values()) {
 			if (!axisEndpoint.isActive()) {

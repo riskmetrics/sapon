@@ -25,8 +25,8 @@ import javax.management.MBeanServer;
 import javax.management.ObjectName;
 
 import org.apache.axiom.om.util.UUIDGenerator;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OldMessageContext;
@@ -105,7 +105,7 @@ public abstract class AbstractTransportSender extends AbstractHandler implements
 
         // is there a transport url which may be different to the WS-A To but has higher precedence
         String targetAddress = (String) msgContext.getProperty(
-            Constants.Configuration.TRANSPORT_URL);
+            Axis2Constants.Configuration.TRANSPORT_URL);
 
         if (targetAddress != null) {
             sendMessage(msgContext, targetAddress, null);
@@ -121,7 +121,7 @@ public abstract class AbstractTransportSender extends AbstractHandler implements
         } else if (msgContext.isServerSide()) {
             // get the out transport info for server side when target EPR is unknown
             sendMessage(msgContext, null,
-                (OutTransportInfo) msgContext.getProperty(Constants.OUT_TRANSPORT_INFO));
+                (OutTransportInfo) msgContext.getProperty(Axis2Constants.OUT_TRANSPORT_INFO));
         }
 
         return InvocationResponse.CONTINUE;

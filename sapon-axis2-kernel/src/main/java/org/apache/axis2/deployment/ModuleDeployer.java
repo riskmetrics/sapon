@@ -26,7 +26,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.repository.util.ArchiveReader;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
@@ -64,7 +64,7 @@ public class ModuleDeployer implements Deployer {
         try {
             deploymentFileData.setClassLoader(isDirectory,
                                               axisConfig.getModuleClassLoader(),
-                    (File)axisConfig.getParameterValue(Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                    (File)axisConfig.getParameterValue(Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
             AxisModule metaData = new AxisModule();
             metaData.setModuleClassLoader(deploymentFileData.getClassLoader());
             metaData.setParent(axisConfig);

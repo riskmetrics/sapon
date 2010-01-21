@@ -32,7 +32,7 @@ import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.classloader.MultiParentClassLoader;
 import org.apache.axis2.clustering.ClusteringFault;
@@ -118,7 +118,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                     !WSDL2Constants.MEP_URI_ROBUST_IN_ONLY.equals(messageCtx.getAxisOperation().getMessageExchangePattern())) {
                 log.error(fault);
             } else {
-                fault.setFaultType(Constants.APPLICATION_FAULT);
+                fault.setFaultType(Axis2Constants.APPLICATION_FAULT);
                 throw fault;
             }
         } finally {
@@ -143,11 +143,11 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
         tc.oldClassLoader = contextClassLoader;
 
         AxisService service = msgContext.getAxisService();
-        String serviceTCCL = (String) service.getParameterValue(Constants.SERVICE_TCCL);
+        String serviceTCCL = (String) service.getParameterValue(Axis2Constants.SERVICE_TCCL);
         if (serviceTCCL != null) {
             serviceTCCL = serviceTCCL.trim().toLowerCase();
 
-            if (serviceTCCL.equals(Constants.TCCL_COMPOSITE)) {
+            if (serviceTCCL.equals(Axis2Constants.TCCL_COMPOSITE)) {
                 final ClassLoader loader = AccessController.doPrivileged(new PrivilegedAction<ClassLoader>() {
                     public ClassLoader run() {
                         return new MultiParentClassLoader(new URL[]{},
@@ -166,7 +166,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                             }
                         }
                 );
-            } else if (serviceTCCL.equals(Constants.TCCL_SERVICE)) {
+            } else if (serviceTCCL.equals(Axis2Constants.TCCL_SERVICE)) {
                 AccessController.doPrivileged(
                         new PrivilegedAction<Object>() {
                             public Object run() {
@@ -219,9 +219,9 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
             ClassLoader classLoader = service.getClassLoader();
 
             // allow alternative definition of makeNewServiceObject
-            if (service.getParameter(Constants.SERVICE_OBJECT_SUPPLIER) != null) {
+            if (service.getParameter(Axis2Constants.SERVICE_OBJECT_SUPPLIER) != null) {
                 Parameter serviceObjectParam =
-                        service.getParameter(Constants.SERVICE_OBJECT_SUPPLIER);
+                        service.getParameter(Axis2Constants.SERVICE_OBJECT_SUPPLIER);
                 final Class<?> serviceObjectMaker
                 	= Loader.loadClass(classLoader,
                 						((String)serviceObjectParam.getValue()).trim());
@@ -246,7 +246,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
                 }
             }
 
-            Parameter implInfoParam = service.getParameter(Constants.SERVICE_CLASS);
+            Parameter implInfoParam = service.getParameter(Axis2Constants.SERVICE_CLASS);
             if (implInfoParam != null) {
                 final Class<?> implClass = Loader.loadClass(
                         classLoader,

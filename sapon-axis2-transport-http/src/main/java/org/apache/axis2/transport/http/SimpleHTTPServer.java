@@ -20,8 +20,15 @@
 
 package org.apache.axis2.transport.http;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.SocketException;
+import java.util.Iterator;
+
+import javax.xml.namespace.QName;
+
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -32,19 +39,12 @@ import org.apache.axis2.description.TransportInDescription;
 import org.apache.axis2.engine.ListenerManager;
 import org.apache.axis2.transport.TransportListener;
 import org.apache.axis2.transport.http.server.HttpFactory;
-import org.apache.axis2.transport.http.server.HttpUtils;
 import org.apache.axis2.transport.http.server.SessionManager;
 import org.apache.axis2.transport.http.server.SimpleHttpServer;
 import org.apache.axis2.util.OptionsParser;
 import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.xml.namespace.QName;
-import java.io.File;
-import java.io.IOException;
-import java.net.SocketException;
-import java.util.Iterator;
 
 /**
  * This is a simple implementation of an HTTP server for processing
@@ -89,7 +89,7 @@ public class SimpleHTTPServer implements TransportListener {
         this.configurationContext = httpFactory.getConfigurationContext();
         this.port = httpFactory.getPort();
         TransportInDescription httpDescription =
-                new TransportInDescription(Constants.TRANSPORT_HTTP);
+                new TransportInDescription(Axis2Constants.TRANSPORT_HTTP);
         httpDescription.setReceiver(this);
         httpFactory.getListenerManager().addListener(httpDescription, true);
         sessionManager = new SessionManager();
@@ -170,7 +170,7 @@ public class SimpleHTTPServer implements TransportListener {
             Runtime.getRuntime().addShutdownHook(new ShutdownThread(receiver));
             receiver.start();
             ListenerManager listenerManager = configctx .getListenerManager();
-            TransportInDescription trsIn = new TransportInDescription(Constants.TRANSPORT_HTTP);
+            TransportInDescription trsIn = new TransportInDescription(Axis2Constants.TRANSPORT_HTTP);
             trsIn.setReceiver(receiver);
             if (listenerManager == null) {
                 listenerManager = new ListenerManager();
@@ -184,9 +184,8 @@ public class SimpleHTTPServer implements TransportListener {
                         getTransportsIn().keySet().iterator();
                 while (iter.hasNext()) {
                     QName trp = (QName) iter.next();
-                    if (!new QName(Constants.TRANSPORT_HTTP).equals(trp)) {
-                        trsIn = (TransportInDescription)
-                                configctx.getAxisConfiguration().getTransportsIn().get(trp);
+                    if (!new QName(Axis2Constants.TRANSPORT_HTTP).equals(trp)) {
+                        trsIn = configctx.getAxisConfiguration().getTransportsIn().get(trp);
                         listenerManager.addListener(trsIn, false);
                     }
                 }
@@ -355,7 +354,8 @@ public class SimpleHTTPServer implements TransportListener {
             this.server = server;
         }
 
-        public void run() {
+        @Override
+		public void run() {
             System.out.println("[SimpleHTTPServer] Shutting down");
             server.stop();
             System.out.println("[SimpleHTTPServer] Shutdown complete");

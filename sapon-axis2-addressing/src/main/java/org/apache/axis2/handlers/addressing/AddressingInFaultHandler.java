@@ -30,8 +30,8 @@ import org.apache.axiom.soap.SOAPFaultReason;
 import org.apache.axiom.soap.SOAPFaultSubCode;
 import org.apache.axiom.soap.SOAPFaultText;
 import org.apache.axiom.soap.SOAPHeader;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.AddressingFaultsHelper;
 import org.apache.axis2.context.MessageContext;
@@ -110,7 +110,7 @@ public class AddressingInFaultHandler extends AbstractHandler implements Address
                 AxisFault axisFault = new AxisFault(fault.getCode(), sfr,
                                                     fault.getNode(), fault.getRole(),
                                                     detail);
-                msgContext.setProperty(Constants.INBOUND_FAULT_OVERRIDE, axisFault);
+                msgContext.setProperty(Axis2Constants.INBOUND_FAULT_OVERRIDE, axisFault);
             }
         }
 

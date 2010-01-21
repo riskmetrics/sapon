@@ -21,8 +21,8 @@ package org.apache.synapse.core.axis2;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.context.MessageContext;
@@ -72,7 +72,7 @@ public class Axis2Sender {
         // prevent it from going into any other transport sender
         if (messageContext.isPropertyTrue(NhttpConstants.SC_ACCEPTED) &&
             messageContext.getTransportOut() != null &&
-            !messageContext.getTransportOut().getName().startsWith(Constants.TRANSPORT_HTTP)) {
+            !messageContext.getTransportOut().getName().startsWith(Axis2Constants.TRANSPORT_HTTP)) {
                 return;
         }
 
@@ -94,7 +94,7 @@ public class Axis2Sender {
                 messageContext.setWSAAction("");
                 messageContext.setSoapAction("");
                 messageContext.setProperty(
-                        NhttpConstants.IGNORE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                        NhttpConstants.IGNORE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
                 messageContext.setProperty(
                         AddressingConstants.DISABLE_ADDRESSING_FOR_OUT_MESSAGES, Boolean.FALSE);
             }
@@ -108,7 +108,7 @@ public class Axis2Sender {
                 messageContext.setWSAAction("");
                 messageContext.setSoapAction("");
                 messageContext.setProperty(
-                        NhttpConstants.IGNORE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                        NhttpConstants.IGNORE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
                 messageContext.setProperty(
                         AddressingConstants.DISABLE_ADDRESSING_FOR_OUT_MESSAGES, Boolean.FALSE);
             }

@@ -45,7 +45,7 @@ import javax.wsdl.extensions.ExtensibilityElement;
 import javax.wsdl.extensions.ExtensionRegistry;
 import javax.xml.namespace.QName;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.commons.logging.Log;
@@ -226,13 +226,13 @@ public class WSDLDefinitionWrapper implements Definition {
 
         // determine what the setting for the memory optimization is
         if (axisCfg != null) {
-            Parameter param = axisCfg.getParameter(Constants.Configuration.REDUCE_WSDL_MEMORY_CACHE);
+            Parameter param = axisCfg.getParameter(Axis2Constants.Configuration.REDUCE_WSDL_MEMORY_CACHE);
 
             reduceWSDLMemoryCache =
                 param != null && ((String) param.getValue()).equalsIgnoreCase("true");
 
 
-            param = axisCfg.getParameter(Constants.Configuration.REDUCE_WSDL_MEMORY_TYPE);
+            param = axisCfg.getParameter(Axis2Constants.Configuration.REDUCE_WSDL_MEMORY_TYPE);
 
             if (param != null) {
                 String value = (String) param.getValue();

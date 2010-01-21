@@ -27,8 +27,8 @@ import javax.mail.internet.ContentType;
 import javax.mail.internet.ParseException;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.base.streams.ReaderInputStream;
@@ -66,7 +66,7 @@ public class TextMessageBuilderAdapter implements TextMessageBuilder {
         if (charset == null) {
             charset = MessageContext.DEFAULT_CHAR_SET_ENCODING;
         }
-        messageContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, charset);
+        messageContext.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING, charset);
         return getDocumentElement(new ReaderInputStream(reader, charset), contentType,
                 messageContext);
     }

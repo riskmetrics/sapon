@@ -15,11 +15,12 @@
  */
 package org.apache.axis2.transport.base;
 
+import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
-import org.apache.axis2.AxisFault;
-import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.AxisMessage;
+import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.wsdl.WSDLConstants;
 
 
@@ -50,16 +51,16 @@ public class SynchronousCallback {
 
             if (msgCtx == null) {
                 // try to see whether there is a piggy back message context
-                if (outMessageContext.getProperty(org.apache.axis2.Constants.PIGGYBACK_MESSAGE) != null) {
+                if (outMessageContext.getProperty(Axis2Constants.PIGGYBACK_MESSAGE) != null) {
 
-                    msgCtx = (MessageContext) outMessageContext.getProperty(org.apache.axis2.Constants.PIGGYBACK_MESSAGE);
+                    msgCtx = (MessageContext) outMessageContext.getProperty(Axis2Constants.PIGGYBACK_MESSAGE);
                     msgCtx.setTransportIn(inMessageContext.getTransportIn());
                     msgCtx.setTransportOut(inMessageContext.getTransportOut());
                     msgCtx.setServerSide(false);
                     msgCtx.setProperty(BaseConstants.MAIL_CONTENT_TYPE,
                             inMessageContext.getProperty(BaseConstants.MAIL_CONTENT_TYPE));
                     // FIXME: this class must not be transport dependent since it is used by AbstractTransportListener
-                    msgCtx.setIncomingTransportName(org.apache.axis2.Constants.TRANSPORT_MAIL);
+                    msgCtx.setIncomingTransportName(Axis2Constants.TRANSPORT_MAIL);
                     msgCtx.setEnvelope(inMessageContext.getEnvelope());
 
                 } else {
@@ -86,7 +87,7 @@ public class SynchronousCallback {
                 msgCtx.setProperty(BaseConstants.MAIL_CONTENT_TYPE,
                         inMessageContext.getProperty(BaseConstants.MAIL_CONTENT_TYPE));
                 // FIXME: this class must not be transport dependent since it is used by AbstractTransportListener
-                msgCtx.setIncomingTransportName(org.apache.axis2.Constants.TRANSPORT_MAIL);
+                msgCtx.setIncomingTransportName(Axis2Constants.TRANSPORT_MAIL);
                 msgCtx.setEnvelope(inMessageContext.getEnvelope());
 
             }

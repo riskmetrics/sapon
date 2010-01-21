@@ -43,7 +43,7 @@ import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeaderBlock;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.RelatesTo;
 import org.apache.axis2.alt.DefaultExecutionTracker;
@@ -876,7 +876,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
 
         // Otherwise the length is accumulated by the DetachableInputStream.
         DetachableInputStream dis =
-            (DetachableInputStream) getProperty(Constants.DETACHABLE_INPUT_STREAM);
+            (DetachableInputStream) getProperty(Axis2Constants.DETACHABLE_INPUT_STREAM);
         if (dis != null) {
             return dis.length();
         }
@@ -1227,7 +1227,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
         }
 
         AxisBindingMessage bindingMessage =
-        	(AxisBindingMessage) getProperty(Constants.AXIS_BINDING_MESSAGE);
+        	(AxisBindingMessage) getProperty(Axis2Constants.AXIS_BINDING_MESSAGE);
 
         // If AxisBindingMessage is not set, try to find the binding message from the AxisService
         if (bindingMessage == null) {
@@ -1882,7 +1882,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
             if(log.isDebugEnabled()){
                 log.debug("Adding Unprocessed headers to MessageContext.");
             }
-            setProperty(Constants.UNPROCESSED_HEADER_QNAMES, unprocessed);
+            setProperty(Axis2Constants.UNPROCESSED_HEADER_QNAMES, unprocessed);
         }
     }
 

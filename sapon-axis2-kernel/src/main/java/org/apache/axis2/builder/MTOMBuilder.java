@@ -33,7 +33,7 @@ import org.apache.axiom.om.util.StAXUtils;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.MTOMStAXSOAPModelBuilder;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 
 public class MTOMBuilder implements Builder {
@@ -46,7 +46,7 @@ public class MTOMBuilder implements Builder {
         XMLStreamReader streamReader;
         Attachments attachments = messageContext.getAttachments();
         String charSetEncoding
-        	= (String) messageContext.getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+        	= (String) messageContext.getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
 
         try {
             // Get the actual encoding by looking at the BOM of the InputStream

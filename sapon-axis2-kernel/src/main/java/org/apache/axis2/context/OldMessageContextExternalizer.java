@@ -17,7 +17,7 @@ import org.apache.axiom.attachments.Attachments;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants.Configuration;
+import org.apache.axis2.Axis2Constants.Configuration;
 import org.apache.axis2.alt.Flows;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.context.externalize.ActivateUtils;

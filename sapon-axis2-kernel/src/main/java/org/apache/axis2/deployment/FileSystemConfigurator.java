@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.AxisConfigurator;
@@ -51,7 +51,7 @@ public class FileSystemConfigurator extends DeploymentEngine implements AxisConf
     public FileSystemConfigurator(String repoLocation, String axis2xml) throws AxisFault {
         if (repoLocation == null) {
             //checking wether user has set the system property
-            repoLocation = System.getProperty(Constants.AXIS2_REPO);
+            repoLocation = System.getProperty(Axis2Constants.AXIS2_REPO);
         }
 
         // OK, we've got a repository location in mind.  Let's make
@@ -73,13 +73,13 @@ public class FileSystemConfigurator extends DeploymentEngine implements AxisConf
         // arg to this constructor, just respect it.
         if (axis2xml == null) {
             // If not, check for a system property setting
-            axis2xml = System.getProperty(Constants.AXIS2_CONF);
+            axis2xml = System.getProperty(Axis2Constants.AXIS2_CONF);
 
             // And if not that, try at the root of the repository if we have one.
             // It might be nice to default the repository to the current directory, but we don't yet
             if (axis2xml == null) {
                 if (repoLocation != null) {
-                    axis2xml = repoLocation + File.separator + Constants.AXIS2_CONF;
+                    axis2xml = repoLocation + File.separator + Axis2Constants.AXIS2_CONF;
                 }
             }
 

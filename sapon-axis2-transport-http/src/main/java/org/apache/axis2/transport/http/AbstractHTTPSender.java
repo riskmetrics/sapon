@@ -33,8 +33,8 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMOutputFormat;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
 import org.apache.axis2.description.TransportOutDescription;
@@ -133,19 +133,19 @@ public abstract class AbstractHTTPSender {
 
             if (inMessageContext != null) {
                 inMessageContext
-                        .setProperty(Constants.Configuration.CONTENT_TYPE, contentType);
+                        .setProperty(Axis2Constants.Configuration.CONTENT_TYPE, contentType);
                 inMessageContext
-                        .setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
+                        .setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
             } else {
 
                 // Transport details will be stored in a HashMap so that anybody interested can
                 // retrieve them
                 Map<String, Object> transportInfoMap = new HashMap<String, Object>();
-                transportInfoMap.put(Constants.Configuration.CONTENT_TYPE, contentType);
-                transportInfoMap.put(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
+                transportInfoMap.put(Axis2Constants.Configuration.CONTENT_TYPE, contentType);
+                transportInfoMap.put(Axis2Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
 
                 //the HashMap is stored in the outgoing message.
-                msgContext.setProperty(Constants.Configuration.TRANSPORT_INFO_MAP,
+                msgContext.setProperty(Axis2Constants.Configuration.TRANSPORT_INFO_MAP,
                                        transportInfoMap);
             }
         }
@@ -153,12 +153,12 @@ public abstract class AbstractHTTPSender {
         String sessionCookie = null;
         // Process old style headers first
         Header[] cookieHeaders = method.getResponseHeaders(HTTPConstants.HEADER_SET_COOKIE);
-        String customCoookiId = (String) msgContext.getProperty(Constants.CUSTOM_COOKIE_ID);
+        String customCoookiId = (String) msgContext.getProperty(Axis2Constants.CUSTOM_COOKIE_ID);
         for (Header cookieHeader : cookieHeaders) {
             HeaderElement[] elements = cookieHeader.getElements();
             for (HeaderElement element : elements) {
-                if (Constants.SESSION_COOKIE.equalsIgnoreCase(element.getName()) ||
-                        Constants.SESSION_COOKIE_JSESSIONID.equalsIgnoreCase(element.getName())) {
+                if (Axis2Constants.SESSION_COOKIE.equalsIgnoreCase(element.getName()) ||
+                        Axis2Constants.SESSION_COOKIE_JSESSIONID.equalsIgnoreCase(element.getName())) {
                     sessionCookie = processCookieHeader(element);
                 }
                 if (customCoookiId != null && customCoookiId.equalsIgnoreCase(element.getName())) {
@@ -171,8 +171,8 @@ public abstract class AbstractHTTPSender {
         for (Header cookieHeader : cookieHeaders) {
             HeaderElement[] elements = cookieHeader.getElements();
             for (HeaderElement element : elements) {
-                if (Constants.SESSION_COOKIE.equalsIgnoreCase(element.getName()) ||
-                        Constants.SESSION_COOKIE_JSESSIONID.equalsIgnoreCase(element.getName())) {
+                if (Axis2Constants.SESSION_COOKIE.equalsIgnoreCase(element.getName()) ||
+                        Axis2Constants.SESSION_COOKIE_JSESSIONID.equalsIgnoreCase(element.getName())) {
                     sessionCookie = processCookieHeader(element);
                 }
                 if(customCoookiId!=null&&customCoookiId.equalsIgnoreCase(element.getName())){

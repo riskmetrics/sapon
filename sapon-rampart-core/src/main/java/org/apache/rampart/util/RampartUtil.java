@@ -44,6 +44,7 @@ import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.client.Options;
@@ -1538,7 +1539,7 @@ public class RampartUtil {
         if (rpd.isTransportBinding() && !rmd.isInitiator()) {
             if (rpd.getTransportToken() instanceof HttpsToken) {
                 String incomingTransport = rmd.getMsgContext().getIncomingTransportName();
-                if (!incomingTransport.equals(org.apache.axis2.Constants.TRANSPORT_HTTPS)) {
+                if (!incomingTransport.equals(Axis2Constants.TRANSPORT_HTTPS)) {
                     throw new RampartException("invalidTransport",
                             new String[]{incomingTransport});
                 }

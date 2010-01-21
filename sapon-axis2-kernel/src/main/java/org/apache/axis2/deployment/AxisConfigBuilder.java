@@ -38,7 +38,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.RolePlayer;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.builder.ApplicationXMLBuilder;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.builder.MIMEBuilder;
@@ -216,7 +216,7 @@ public class AxisConfigBuilder extends DescriptionBuilder {
             // process roleplayer configuration
             OMElement rolePlayerElement =
                     config_element
-                            .getFirstChildWithName(new QName(Constants.SOAP_ROLE_CONFIGURATION_ELEMENT));
+                            .getFirstChildWithName(new QName(Axis2Constants.SOAP_ROLE_CONFIGURATION_ELEMENT));
 
             if (rolePlayerElement != null) {
                 processSOAPRoleConfig(axisConfig, rolePlayerElement);
@@ -293,9 +293,9 @@ public class AxisConfigBuilder extends DescriptionBuilder {
 
     private void processSOAPRoleConfig(AxisConfiguration axisConfig, OMElement soaproleconfigElement) {
     	if (soaproleconfigElement != null) {
-    		final boolean isUltimateReceiever = JavaUtils.isTrue(soaproleconfigElement.getAttributeValue(new QName(Constants.SOAP_ROLE_IS_ULTIMATE_RECEIVER_ATTRIBUTE)), true);
+    		final boolean isUltimateReceiever = JavaUtils.isTrue(soaproleconfigElement.getAttributeValue(new QName(Axis2Constants.SOAP_ROLE_IS_ULTIMATE_RECEIVER_ATTRIBUTE)), true);
     		List<String> roles = new ArrayList<String>();
-    		for(OMElement roleElement: soaproleconfigElement.getChildrenWithName(new QName(Constants.SOAP_ROLE_ELEMENT))) {
+    		for(OMElement roleElement: soaproleconfigElement.getChildrenWithName(new QName(Axis2Constants.SOAP_ROLE_ELEMENT))) {
     			roles.add(roleElement.getText());
     		}
     		final List<String> unmodifiableRoles = Collections.unmodifiableList(roles);

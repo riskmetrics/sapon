@@ -23,8 +23,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.OperationClient;
@@ -129,22 +129,22 @@ public class Axis2FlexibleMEPClient {
 
             if (SynapseConstants.FORMAT_POX.equals(endpoint.getFormat())) {
                 axisOutMsgCtx.setDoingREST(true);
-                axisOutMsgCtx.setProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE,
+                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
                         org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_APPLICATION_XML);
 
             } else if (SynapseConstants.FORMAT_GET.equals(endpoint.getFormat())) {
                 axisOutMsgCtx.setDoingREST(true);
-                axisOutMsgCtx.setProperty(Constants.Configuration.HTTP_METHOD,
-                    Constants.Configuration.HTTP_METHOD_GET);
-                axisOutMsgCtx.setProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE,
+                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
+                    Axis2Constants.Configuration.HTTP_METHOD_GET);
+                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
                         org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_X_WWW_FORM);
 
             } else if (SynapseConstants.FORMAT_SOAP11.equals(endpoint.getFormat())) {
                 axisOutMsgCtx.setDoingREST(false);
-                axisOutMsgCtx.removeProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE);
+                axisOutMsgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
                 // We need to set this ezplicitly here in case the requset was not a POST
-                axisOutMsgCtx.setProperty(Constants.Configuration.HTTP_METHOD,
-                    Constants.Configuration.HTTP_METHOD_POST);
+                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
+                    Axis2Constants.Configuration.HTTP_METHOD_POST);
                 if (axisOutMsgCtx.getSoapAction() == null && axisOutMsgCtx.getWSAAction() != null) {
                     axisOutMsgCtx.setSoapAction(axisOutMsgCtx.getWSAAction());
                 }
@@ -154,10 +154,10 @@ public class Axis2FlexibleMEPClient {
 
             } else if (SynapseConstants.FORMAT_SOAP12.equals(endpoint.getFormat())) {
                 axisOutMsgCtx.setDoingREST(false);
-                axisOutMsgCtx.removeProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE);
+                axisOutMsgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
                 // We need to set this ezplicitly here in case the requset was not a POST
-                axisOutMsgCtx.setProperty(Constants.Configuration.HTTP_METHOD,
-                    Constants.Configuration.HTTP_METHOD_POST);
+                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
+                    Axis2Constants.Configuration.HTTP_METHOD_POST);
                 if (axisOutMsgCtx.getSoapAction() == null && axisOutMsgCtx.getWSAAction() != null) {
                     axisOutMsgCtx.setSoapAction(axisOutMsgCtx.getWSAAction());
                 }
@@ -166,7 +166,7 @@ public class Axis2FlexibleMEPClient {
                 }
 
             } else if (SynapseConstants.FORMAT_REST.equals(endpoint.getFormat())) {
-                axisOutMsgCtx.removeProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE);
+                axisOutMsgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
                 axisOutMsgCtx.setDoingREST(true);
             } else {
                 processHttpGetMethod(originalInMsgCtx, axisOutMsgCtx);
@@ -176,21 +176,21 @@ public class Axis2FlexibleMEPClient {
                 axisOutMsgCtx.setDoingMTOM(true);
                 // fix / workaround for AXIS2-1798
                 axisOutMsgCtx.setProperty(
-                        org.apache.axis2.Constants.Configuration.ENABLE_MTOM,
-                        org.apache.axis2.Constants.VALUE_TRUE);
+                        Axis2Constants.Configuration.ENABLE_MTOM,
+                        Axis2Constants.VALUE_TRUE);
                 axisOutMsgCtx.setDoingMTOM(true);
 
             } else if (endpoint.isUseSwa()) {
                 axisOutMsgCtx.setDoingSwA(true);
                 // fix / workaround for AXIS2-1798
                 axisOutMsgCtx.setProperty(
-                        org.apache.axis2.Constants.Configuration.ENABLE_SWA,
-                        org.apache.axis2.Constants.VALUE_TRUE);
+                        Axis2Constants.Configuration.ENABLE_SWA,
+                        Axis2Constants.VALUE_TRUE);
                 axisOutMsgCtx.setDoingSwA(true);
             }
 
             if (endpoint.getCharSetEncoding() != null) {
-                axisOutMsgCtx.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING,
+                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING,
                         endpoint.getCharSetEncoding());
             }
 
@@ -339,7 +339,7 @@ public class Axis2FlexibleMEPClient {
         // Accepted response, as this implies that Synapse does not yet know if
         // a 202 or 200 response would be written back.
         originalInMsgCtx.getOperationContext().setProperty(
-            org.apache.axis2.Constants.RESPONSE_WRITTEN, "SKIP");
+            Axis2Constants.RESPONSE_WRITTEN, "SKIP");
 
         mepClient.execute(true);
    }
@@ -375,10 +375,10 @@ public class Axis2FlexibleMEPClient {
                                              MessageContext axisOutMsgCtx) {
 
         String httpMethod = (String) originalInMsgCtx.getProperty(
-                Constants.Configuration.HTTP_METHOD);
-        if (Constants.Configuration.HTTP_METHOD_GET.equals(httpMethod)) {
+                Axis2Constants.Configuration.HTTP_METHOD);
+        if (Axis2Constants.Configuration.HTTP_METHOD_GET.equals(httpMethod)) {
             axisOutMsgCtx.setProperty(
-                    org.apache.axis2.Constants.Configuration.MESSAGE_TYPE,
+                    Axis2Constants.Configuration.MESSAGE_TYPE,
                     HTTPConstants.MEDIA_TYPE_X_WWW_FORM);
             if (axisOutMsgCtx.getProperty(WSDL2Constants.ATTR_WHTTP_LOCATION) == null
                     && axisOutMsgCtx.getEnvelope().getBody().getFirstElement() != null) {

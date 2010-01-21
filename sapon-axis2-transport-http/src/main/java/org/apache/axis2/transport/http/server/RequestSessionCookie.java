@@ -19,7 +19,9 @@
 
 package org.apache.axis2.transport.http.server;
 
-import org.apache.axis2.Constants;
+import java.io.IOException;
+
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.http.Header;
 import org.apache.http.HeaderElement;
@@ -27,8 +29,6 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpRequestInterceptor;
 import org.apache.http.protocol.HttpContext;
-
-import java.io.IOException;
 
 public class RequestSessionCookie implements HttpRequestInterceptor {
 
@@ -43,12 +43,11 @@ public class RequestSessionCookie implements HttpRequestInterceptor {
 
         String sessionCookie = null;
         Header[] headers = request.getHeaders(HTTPConstants.HEADER_COOKIE);
-        for (int i = 0; i < headers.length; i++) {
-            HeaderElement[] elements = headers[i].getElements();
-            for (int e = 0; e < elements.length; e++) {
-                HeaderElement element = elements[e];
-                if (Constants.SESSION_COOKIE.equalsIgnoreCase(element.getName()) ||
-                        Constants.SESSION_COOKIE_JSESSIONID.equalsIgnoreCase(element.getName())) {
+        for (Header header : headers) {
+            HeaderElement[] elements = header.getElements();
+            for (HeaderElement element : elements) {
+                if (Axis2Constants.SESSION_COOKIE.equalsIgnoreCase(element.getName()) ||
+                        Axis2Constants.SESSION_COOKIE_JSESSIONID.equalsIgnoreCase(element.getName())) {
                     sessionCookie = element.getValue();
                 }
             }

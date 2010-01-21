@@ -29,7 +29,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.commons.logging.Log;
@@ -120,7 +120,7 @@ public class AbstractAgent {
             throws IOException, ServletException {
         httpServletResponse.setContentType("text/html");
         try {
-            httpServletRequest.getRequestDispatcher(Constants.AXIS_WEB_CONTENT_ROOT + jspName)
+            httpServletRequest.getRequestDispatcher(Axis2Constants.AXIS_WEB_CONTENT_ROOT + jspName)
                     .include(httpServletRequest, httpServletResponse);
         } catch (Throwable t) {
             log.info("Old Servlet API :" + t);
@@ -159,8 +159,8 @@ public class AbstractAgent {
     protected void populateSessionInformation(HttpServletRequest req) {
         Map<String, AxisService> services = configContext.getAxisConfiguration().getServices();
         try {
-            req.getSession().setAttribute(Constants.SERVICE_MAP, services);
-            req.getSession().setAttribute(Constants.SERVICE_PATH, configContext.getServicePath());
+            req.getSession().setAttribute(Axis2Constants.SERVICE_MAP, services);
+            req.getSession().setAttribute(Axis2Constants.SERVICE_PATH, configContext.getServicePath());
         } catch (Throwable t){
             log.info("Old Servlet API :" + t);
         }

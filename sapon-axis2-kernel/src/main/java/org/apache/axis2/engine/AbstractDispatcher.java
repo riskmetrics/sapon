@@ -20,7 +20,7 @@
 package org.apache.axis2.engine;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisBinding;
 import org.apache.axis2.description.AxisBindingOperation;
@@ -124,9 +124,9 @@ public abstract class AbstractDispatcher extends AbstractHandler {
 						}
 					}
 					 if (axisBindingOperation != null) {
-						msgctx.setProperty( Constants.AXIS_BINDING_MESSAGE,
+						msgctx.setProperty( Axis2Constants.AXIS_BINDING_MESSAGE,
 											axisBindingOperation.getChild(WSDLConstants.MESSAGE_LABEL_IN_VALUE));
-						msgctx.setProperty( Constants.AXIS_BINDING_OPERATION,
+						msgctx.setProperty( Axis2Constants.AXIS_BINDING_OPERATION,
 											axisBindingOperation);
 					}
                 }

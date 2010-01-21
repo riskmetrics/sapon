@@ -22,8 +22,8 @@ package org.apache.synapse.core.axis2;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.OperationClient;
 import org.apache.axis2.client.Options;
@@ -127,14 +127,14 @@ public class DynamicAxisOperation extends OutInAxisOperation {
             if (options.isUseSeparateListener()) {
 
 				options.setTransportIn(outMsgCtx.getConfigurationContext()
-						.getAxisConfiguration().getTransportIn(Constants.TRANSPORT_HTTP));
+						.getAxisConfiguration().getTransportIn(Axis2Constants.TRANSPORT_HTTP));
 
 				SynapseCallbackReceiver callbackReceiver =
                         (SynapseCallbackReceiver) axisOp.getMessageReceiver();
 
                 ((Axis2SynapseMessageContext)((AsyncCallback)
                         axisCallback).getSynapseOutMsgCtx()).getAxis2MessageContext().setProperty(
-                        NhttpConstants.IGNORE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                        NhttpConstants.IGNORE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
                 callbackReceiver.addCallback(outMsgCtx.getMessageID(), (AsyncCallback)axisCallback);
 
                 EndpointReference replyToFromTransport = outMsgCtx.getConfigurationContext()
@@ -191,8 +191,8 @@ public class DynamicAxisOperation extends OutInAxisOperation {
 
                 responseMessageContext.setProperty(MessageContext.TRANSPORT_OUT,
                     msgctx.getProperty(MessageContext.TRANSPORT_OUT));
-                responseMessageContext.setProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO,
-                    msgctx.getProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO));
+                responseMessageContext.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
+                    msgctx.getProperty(Axis2Constants.OUT_TRANSPORT_INFO));
 
                 responseMessageContext.setProperty(
                     org.apache.synapse.SynapseConstants.ISRESPONSE_PROPERTY, Boolean.TRUE);

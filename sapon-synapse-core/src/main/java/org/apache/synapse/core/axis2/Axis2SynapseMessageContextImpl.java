@@ -10,8 +10,8 @@ import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.RelatesTo;
 import org.apache.axis2.context.MessageContext;
@@ -188,7 +188,7 @@ public class Axis2SynapseMessageContextImpl implements Axis2SynapseMessageContex
 		if (SynapseConstants.RESPONSE.equals(key)
 				&& getAxis2MessageContext().getOperationContext() != null) {
 			getAxis2MessageContext().getOperationContext().setProperty(
-					org.apache.axis2.Constants.RESPONSE_WRITTEN, "SKIP");
+					Axis2Constants.RESPONSE_WRITTEN, "SKIP");
 		}
 	}
 
@@ -302,9 +302,9 @@ public class Axis2SynapseMessageContextImpl implements Axis2SynapseMessageContex
 	}
 
 	public boolean isDoingGET() {
-		return Constants.Configuration.HTTP_METHOD_GET
+		return Axis2Constants.Configuration.HTTP_METHOD_GET
 				.equals(axis2MessageContext
-						.getProperty(Constants.Configuration.HTTP_METHOD))
+						.getProperty(Axis2Constants.Configuration.HTTP_METHOD))
 				&& axis2MessageContext.isDoingREST();
 	}
 
@@ -312,11 +312,11 @@ public class Axis2SynapseMessageContextImpl implements Axis2SynapseMessageContex
 		if (b) {
 			axis2MessageContext.setDoingREST(b);
 			axis2MessageContext.setProperty(
-					Constants.Configuration.HTTP_METHOD,
-					Constants.Configuration.HTTP_METHOD_GET);
+					Axis2Constants.Configuration.HTTP_METHOD,
+					Axis2Constants.Configuration.HTTP_METHOD_GET);
 		} else {
 			axis2MessageContext
-					.removeProperty(Constants.Configuration.HTTP_METHOD);
+					.removeProperty(Axis2Constants.Configuration.HTTP_METHOD);
 		}
 	}
 

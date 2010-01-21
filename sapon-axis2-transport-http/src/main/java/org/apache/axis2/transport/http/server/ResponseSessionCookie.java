@@ -19,7 +19,9 @@
 
 package org.apache.axis2.transport.http.server;
 
-import org.apache.axis2.Constants;
+import java.io.IOException;
+
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.http.HttpException;
@@ -28,8 +30,6 @@ import org.apache.http.HttpResponseInterceptor;
 import org.apache.http.message.BufferedHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.CharArrayBuffer;
-
-import java.io.IOException;
 
 public class ResponseSessionCookie implements HttpResponseInterceptor {
 
@@ -55,7 +55,7 @@ public class ResponseSessionCookie implements HttpResponseInterceptor {
             CharArrayBuffer buffer1 = new CharArrayBuffer(sessionCookie.length() + 40);
             buffer1.append(HTTPConstants.HEADER_SET_COOKIE);
             buffer1.append(": ");
-            buffer1.append(Constants.SESSION_COOKIE_JSESSIONID);
+            buffer1.append(Axis2Constants.SESSION_COOKIE_JSESSIONID);
             buffer1.append("=");
             buffer1.append(sessionCookie);
             response.addHeader(new BufferedHeader(buffer1));
@@ -64,7 +64,7 @@ public class ResponseSessionCookie implements HttpResponseInterceptor {
             CharArrayBuffer buffer2 = new CharArrayBuffer(sessionCookie.length() + 50);
             buffer2.append(HTTPConstants.HEADER_SET_COOKIE2);
             buffer2.append(": ");
-            buffer2.append(Constants.SESSION_COOKIE_JSESSIONID);
+            buffer2.append(Axis2Constants.SESSION_COOKIE_JSESSIONID);
             buffer2.append("=");
             buffer2.append(sessionCookie);
             buffer2.append("; ");

@@ -30,8 +30,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.RolePlayer;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.AddressingFaultsHelper;
 import org.apache.axis2.addressing.EndpointReference;
@@ -99,7 +99,7 @@ public class AddressingInHandler extends AbstractHandler implements AddressingCo
 
         if(configuration == null){
         	AxisConfiguration conf = msgContext.getConfigurationContext().getAxisConfiguration();
-        	rolePlayer = (RolePlayer)conf.getParameterValue(Constants.SOAP_ROLE_PLAYER_PARAMETER);
+        	rolePlayer = (RolePlayer)conf.getParameterValue(Axis2Constants.SOAP_ROLE_PLAYER_PARAMETER);
         	configuration = conf;
         }
 

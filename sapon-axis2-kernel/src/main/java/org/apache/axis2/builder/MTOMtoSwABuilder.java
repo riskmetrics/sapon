@@ -26,7 +26,7 @@ import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -48,7 +48,7 @@ public class MTOMtoSwABuilder implements Builder, MTOMConstants {
         XMLStreamReader streamReader;
         Attachments attachments = messageContext.getAttachments();
         String charSetEncoding
-        	= (String) messageContext.getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+        	= (String) messageContext.getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
 
         try {
 
@@ -56,7 +56,7 @@ public class MTOMtoSwABuilder implements Builder, MTOMConstants {
             // to (a) get the length of the incoming message or (b)
             // free transport resources.
             DetachableInputStream is = new DetachableInputStream(inputStream);
-            messageContext.setProperty(Constants.DETACHABLE_INPUT_STREAM, is);
+            messageContext.setProperty(Axis2Constants.DETACHABLE_INPUT_STREAM, is);
 
             // Get the actual encoding by looking at the BOM of the InputStream
             PushbackInputStream pis = BuilderUtil.getPushbackInputStream(is);

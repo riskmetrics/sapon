@@ -24,7 +24,7 @@ import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -67,7 +67,7 @@ public class SynapseServerInfoImpl implements SynapseServerInfo {
     }
 
     public void setAxis2RepoLocation(String axis2RepoLocation) {
-        assertNotNullOrEmpty(axis2RepoLocation, Constants.AXIS2_REPO);
+        assertNotNullOrEmpty(axis2RepoLocation, Axis2Constants.AXIS2_REPO);
         if (!new File(axis2RepoLocation).isAbsolute() && synapseHome != null) {
             this.axis2RepoLocation = synapseHome + File.separator + axis2RepoLocation;
         } else {
@@ -76,7 +76,7 @@ public class SynapseServerInfoImpl implements SynapseServerInfo {
     }
 
     public void setAxis2XmlLocation(String axis2Xml) {
-        assertNotNullOrEmpty(axis2Xml, Constants.AXIS2_CONF);
+        assertNotNullOrEmpty(axis2Xml, Axis2Constants.AXIS2_CONF);
         if (!new File(axis2Xml).isAbsolute() && synapseHome != null) {
             this.axis2XmlLocation = synapseHome + File.separator + axis2Xml;
         } else {

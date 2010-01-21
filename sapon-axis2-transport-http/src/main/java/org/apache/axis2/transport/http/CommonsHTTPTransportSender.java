@@ -31,8 +31,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.xml.stream.FactoryConfigurationError;
 
 import org.apache.axiom.om.OMOutputFormat;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.MessageContext;
@@ -154,13 +154,13 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
             format.setCharSetEncoding(TransportUtils.getCharSetEncoding(msgContext));
 
             Object mimeBoundaryProperty = msgContext
-                    .getProperty(Constants.Configuration.MIME_BOUNDARY);
+                    .getProperty(Axis2Constants.Configuration.MIME_BOUNDARY);
             if (mimeBoundaryProperty != null) {
                 format.setMimeBoundary((String) mimeBoundaryProperty);
             }
 
             TransportOutDescription transportOut = msgContext.getConfigurationContext().
-                    getAxisConfiguration().getTransportOut(Constants.TRANSPORT_HTTP);
+                    getAxisConfiguration().getTransportOut(Axis2Constants.TRANSPORT_HTTP);
 
              // set the timeout properteies
 
@@ -187,9 +187,9 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
 
                     if (parameterValue != null && JavaUtils.isTrueExplicitly(parameterValue)) {
                         //Check whether user has already overridden this.
-                        Object propertyValue = msgContext.getProperty(Constants.Configuration.DISABLE_SOAP_ACTION);
+                        Object propertyValue = msgContext.getProperty(Axis2Constants.Configuration.DISABLE_SOAP_ACTION);
                         if (propertyValue == null || !JavaUtils.isFalseExplicitly(propertyValue)) {
-                            msgContext.setProperty(Constants.Configuration.DISABLE_SOAP_ACTION,
+                            msgContext.setProperty(Axis2Constants.Configuration.DISABLE_SOAP_ACTION,
                                     Boolean.TRUE);
                         }
                     }
@@ -200,7 +200,7 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
             // that now.
             EndpointReference epr = null;
             String transportURL = (String) msgContext
-                    .getProperty(Constants.Configuration.TRANSPORT_URL);
+                    .getProperty(Axis2Constants.Configuration.TRANSPORT_URL);
 
             if (transportURL != null) {
                 epr = new EndpointReference(transportURL);
@@ -261,7 +261,7 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
         // any case. (thilina)
         // if (msgContext.isServerSide()) {
         OutTransportInfo transportInfo = (OutTransportInfo) msgContext
-                .getProperty(Constants.OUT_TRANSPORT_INFO);
+                .getProperty(Axis2Constants.OUT_TRANSPORT_INFO);
 
         if (transportInfo == null) {
 			throw new AxisFault("No transport info in MessageContext");
@@ -406,7 +406,7 @@ public class CommonsHTTPTransportSender extends AbstractHandler implements
         }
 
         Object disableSoapAction = messageContext.getOptions().getProperty(
-                Constants.Configuration.DISABLE_SOAP_ACTION);
+                Axis2Constants.Configuration.DISABLE_SOAP_ACTION);
 
         if (!JavaUtils.isTrueExplicitly(disableSoapAction)) {
             // first try to get the SOAP action from message context

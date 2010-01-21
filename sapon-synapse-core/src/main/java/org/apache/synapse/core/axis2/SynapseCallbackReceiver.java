@@ -26,8 +26,8 @@ import java.util.Stack;
 import java.util.Timer;
 
 import org.apache.axiom.om.OMException;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.RelatesTo;
@@ -246,8 +246,8 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             response.setProperty(SynapseConstants.ISRESPONSE_PROPERTY, Boolean.TRUE);
             response.setProperty(MessageContext.TRANSPORT_OUT,
                     axisOutMsgCtx.getProperty(MessageContext.TRANSPORT_OUT));
-            response.setProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO,
-                    axisOutMsgCtx.getProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO));
+            response.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
+                    axisOutMsgCtx.getProperty(Axis2Constants.OUT_TRANSPORT_INFO));
             response.setTransportIn(axisOutMsgCtx.getTransportIn());
             response.setTransportOut(axisOutMsgCtx.getTransportOut());
 
@@ -256,14 +256,14 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             if (axisOutMsgCtx.isDoingMTOM()) {
                 response.setDoingMTOM(true);
                 response.setProperty(
-                        org.apache.axis2.Constants.Configuration.ENABLE_MTOM,
-                        org.apache.axis2.Constants.VALUE_TRUE);
+                        Axis2Constants.Configuration.ENABLE_MTOM,
+                        Axis2Constants.VALUE_TRUE);
             }
             if (axisOutMsgCtx.isDoingSwA()) {
                 response.setDoingSwA(true);
                 response.setProperty(
-                        org.apache.axis2.Constants.Configuration.ENABLE_SWA,
-                        org.apache.axis2.Constants.VALUE_TRUE);
+                        Axis2Constants.Configuration.ENABLE_SWA,
+                        Axis2Constants.VALUE_TRUE);
             }
 
             // when axis2 receives a soap message without addressing headers it users
@@ -287,8 +287,8 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             }
 
              // copy the message type property thats used by the out message to the response message
-            response.setProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE,
-                axisOutMsgCtx.getProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE));
+            response.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
+                axisOutMsgCtx.getProperty(Axis2Constants.Configuration.MESSAGE_TYPE));
 
             // compare original received message (axisOutMsgCtx) soap version with the response
             // if they are different change to original version
@@ -309,7 +309,7 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             response.setFaultTo(axisOutMsgCtx.getFaultTo());
 
             if (axisOutMsgCtx.isPropertyTrue(NhttpConstants.IGNORE_SC_ACCEPTED)) {
-                response.setProperty(NhttpConstants.FORCE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                response.setProperty(NhttpConstants.FORCE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
             }
 
             // create the synapse message context for the response

@@ -63,7 +63,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.classloader.JarFileClassLoader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.DeploymentClassLoader;
@@ -456,7 +456,7 @@ public class Utils {
     {
         String serviceClass;
         Parameter implInfoParam = axisService
-                .getParameter(Constants.SERVICE_CLASS);
+                .getParameter(Axis2Constants.SERVICE_CLASS);
         ClassLoader serviceClassLoader = axisService.getClassLoader();
 
         if (implInfoParam != null) {
@@ -466,7 +466,7 @@ public class Utils {
             // ServiceObjectSupplier. This is user specific and may contain
             // other looks.
             implInfoParam = axisService
-                    .getParameter(Constants.SERVICE_OBJECT_SUPPLIER);
+                    .getParameter(Axis2Constants.SERVICE_OBJECT_SUPPLIER);
             if (implInfoParam != null) {
                 String className = ((String)implInfoParam.getValue()).trim();
                 final Class<?> serviceObjectMaker = Loader.loadClass(
@@ -691,7 +691,7 @@ public class Utils {
                                     fin,
                                     (File)axisConfig
                                             .getParameterValue(
-                                                    Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                                                    Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
                     DeploymentFileData filedata = new DeploymentFileData(
                             inputFile);
 
@@ -701,7 +701,7 @@ public class Utils {
                                     moduleClassLoader,
                                     (File)axisConfig
                                             .getParameterValue(
-                                                    Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                                                    Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
                     Map<String, AxisService> wsdlservice = archiveReader.processWSDLs(filedata);
                     if (wsdlservice != null && wsdlservice.size() > 0) {
                         Iterator<AxisService> servicesitr = wsdlservice.values().iterator();
@@ -965,7 +965,7 @@ public class Utils {
 
             // populates soap11 endpoint
             boolean disableSOAP11 = isTrueParam(axisService,
-                    org.apache.axis2.Constants.Configuration.DISABLE_SOAP11);
+                    org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP11);
             if (!disableSOAP11) {
                 String soap11EndpointName = axisService.getName() + protocol
                                             + "Soap11Endpoint";
@@ -984,7 +984,7 @@ public class Utils {
 
             // generating Soap12 endpoint
             boolean disableSOAP12 = isTrueParam(axisService,
-                    org.apache.axis2.Constants.Configuration.DISABLE_SOAP12);
+                    org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP12);
             if (!disableSOAP12) {
                 String soap12EndpointName = axisService.getName() + protocol
                                             + "Soap12Endpoint";
@@ -1000,7 +1000,7 @@ public class Utils {
 
             // generating Http endpoint
             boolean disableREST = isTrueParam(axisService,
-                    org.apache.axis2.Constants.Configuration.DISABLE_REST);
+                    org.apache.axis2.Axis2Constants.Configuration.DISABLE_REST);
             if (("http".equals(transportName)
                  || "https".equals(transportName)) && !disableREST) {
                 String httpEndpointName = axisService.getName() + protocol
@@ -1015,7 +1015,7 @@ public class Utils {
             }
 
             boolean disableSilverlight = isTrueParam(axisService,
-            		org.apache.axis2.Constants.Configuration.DISABLE_SILVERLIGHT);
+            		org.apache.axis2.Axis2Constants.Configuration.DISABLE_SILVERLIGHT);
             if (!disableSilverlight) {
                 String silverlightEndpointName = axisService.getName() + protocol
                                             + "SilverlightEndpoint";

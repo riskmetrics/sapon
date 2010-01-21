@@ -23,8 +23,8 @@ import java.util.List;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
@@ -84,7 +84,7 @@ public class CalloutMediator extends AbstractMediator
                 options.setAction(action);
             } else {
                 if (synCtx.isSOAP11()) {
-                    options.setProperty(Constants.Configuration.DISABLE_SOAP_ACTION, true);
+                    options.setProperty(Axis2Constants.Configuration.DISABLE_SOAP_ACTION, true);
                 } else {
                     Axis2SynapseMessageContext axis2smc = (Axis2SynapseMessageContext) synCtx;
                     org.apache.axis2.context.MessageContext axis2MessageCtx =

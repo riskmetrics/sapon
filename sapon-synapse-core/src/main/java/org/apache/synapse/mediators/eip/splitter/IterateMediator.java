@@ -24,8 +24,8 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.OperationContext;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.SynapseMessageContext;
@@ -141,7 +141,7 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
         OperationContext opCtx
             = ((Axis2SynapseMessageContext) synCtx).getAxis2MessageContext().getOperationContext();
         if (!continueParent && opCtx != null) {
-            opCtx.setProperty(Constants.RESPONSE_WRITTEN,"SKIP");
+            opCtx.setProperty(Axis2Constants.RESPONSE_WRITTEN,"SKIP");
         }
 
         log.debug("End : Iterate mediator");

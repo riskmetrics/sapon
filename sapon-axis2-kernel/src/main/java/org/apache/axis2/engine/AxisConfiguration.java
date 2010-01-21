@@ -203,7 +203,7 @@ public class AxisConfiguration extends AxisDescriptionBase
         module.setParent(this);
 
         // check whether the module version paramter is there , if so set the module version as that
-        Parameter verisonParamter = module.getParameter(org.apache.axis2.Constants.MODULE_VERSION);
+        Parameter verisonParamter = module.getParameter(org.apache.axis2.Axis2Constants.MODULE_VERSION);
         if (verisonParamter !=null ) {
             String version = (String) verisonParamter.getValue();
             module.setVersion(version);

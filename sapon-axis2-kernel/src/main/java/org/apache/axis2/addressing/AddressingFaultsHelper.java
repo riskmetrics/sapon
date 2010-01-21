@@ -28,7 +28,7 @@ import org.apache.axiom.soap.SOAPFaultCode;
 import org.apache.axiom.soap.SOAPFaultSubCode;
 import org.apache.axiom.soap.SOAPFaultValue;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.AddressingConstants.Final;
 import org.apache.axis2.addressing.AddressingConstants.Submission;
 import org.apache.axis2.addressing.i18n.AddressingMessages;
@@ -347,10 +347,10 @@ public class AddressingFaultsHelper {
                                                String faultSubcode, String faultReason)
             throws AxisFault {
         Map<String, Object> faultInformation =
-                (Map<String, Object>)messageContext.getLocalProperty(Constants.FAULT_INFORMATION_FOR_HEADERS);
+                (Map<String, Object>)messageContext.getLocalProperty(Axis2Constants.FAULT_INFORMATION_FOR_HEADERS);
         if (faultInformation == null) {
             faultInformation = new HashMap<String, Object>();
-            messageContext.setProperty(Constants.FAULT_INFORMATION_FOR_HEADERS, faultInformation);
+            messageContext.setProperty(Axis2Constants.FAULT_INFORMATION_FOR_HEADERS, faultInformation);
         }
 
         faultInformation.put(faultInformationKey, faultInformationValue);
@@ -363,7 +363,7 @@ public class AddressingFaultsHelper {
 
         OperationContext oc = messageContext.getOperationContext();
         if (oc != null) {
-            oc.setProperty(Constants.Configuration.SEND_STACKTRACE_DETAILS_WITH_FAULTS, "false");
+            oc.setProperty(Axis2Constants.Configuration.SEND_STACKTRACE_DETAILS_WITH_FAULTS, "false");
         }
 
         messageContext.setProperty(AddressingConstants.DISABLE_ADDRESSING_FOR_OUT_MESSAGES,
@@ -422,7 +422,7 @@ public class AddressingFaultsHelper {
 
     public static OMElement getDetailElementForAddressingFault(MessageContext messageContext,
                                                                OMNamespace addressingNamespaceObject) {
-        Object faultInfoObj = messageContext.getLocalProperty(Constants.FAULT_INFORMATION_FOR_HEADERS);
+        Object faultInfoObj = messageContext.getLocalProperty(Axis2Constants.FAULT_INFORMATION_FOR_HEADERS);
         OMElement problemDetail = null;
         if (faultInfoObj != null && faultInfoObj instanceof Map<?,?>) {
         	Map<String, String> faultInfo = (Map<String, String>)faultInfoObj;

@@ -43,7 +43,7 @@ import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.impl.llom.soap11.SOAP11Factory;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.builder.BuilderUtil;
 import org.apache.axis2.context.MessageContext;
@@ -89,24 +89,24 @@ public class TransportUtils {
             }
 
             String contentType = (String) msgContext
-                    .getProperty(Constants.Configuration.CONTENT_TYPE);
+                    .getProperty(Axis2Constants.Configuration.CONTENT_TYPE);
 
             // get the type of char encoding
             String charSetEnc = (String) msgContext
-                    .getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+                    .getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
             if (charSetEnc == null && contentType != null) {
                 charSetEnc = BuilderUtil.getCharSetEncoding(contentType);
             } else if (charSetEnc == null) {
                 charSetEnc = MessageContext.DEFAULT_CHAR_SET_ENCODING;
             }
-            msgContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
+            msgContext.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING, charSetEnc);
 
             SOAPEnvelope env = createSOAPMessage(msgContext, inStream, contentType);
 
             // if we were told to detach, we will make the call here, this is only applicable
             // if a DetachableInputStream instance is found on the MessageContext
             if(detach) {
-                DetachableInputStream dis = (DetachableInputStream) msgContext.getProperty(Constants.DETACHABLE_INPUT_STREAM);
+                DetachableInputStream dis = (DetachableInputStream) msgContext.getProperty(Axis2Constants.DETACHABLE_INPUT_STREAM);
                 if(dis != null) {
                     if(log.isDebugEnabled()) {
                         log.debug("Detaching input stream after SOAPEnvelope construction");
@@ -180,7 +180,7 @@ public class TransportUtils {
                     }
 //                } else if (msgContext.isDoingREST() &&
 //                        !msgContext.isPropertyTrue(Constants.Configuration.SOAP_RESPONSE_MEP)) {
-                } else if (!msgContext.isPropertyTrue(Constants.Configuration.SOAP_RESPONSE_MEP)) {
+                } else if (!msgContext.isPropertyTrue(Axis2Constants.Configuration.SOAP_RESPONSE_MEP)) {
                     type = HTTPConstants.MEDIA_TYPE_APPLICATION_XML;
                 }
             }
@@ -207,7 +207,7 @@ public class TransportUtils {
                     log.debug("Could not find a Builder for type (" + type + ").  Using SOAP.");
                 }
                 String charSetEnc = (String) msgContext
-                        .getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+                        .getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
                 StAXBuilder builder = BuilderUtil.getSOAPBuilder(inStream, charSetEnc);
                 documentElement = builder.getDocumentElement();
             }
@@ -276,7 +276,7 @@ public class TransportUtils {
                 // Pick the char set encoding from the msgContext
                 String charSetEnc =
                         (String) msgContext
-                                .getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+                                .getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
 
                 format.setDoOptimize(false);
                 format.setDoingSWA(false);
@@ -309,7 +309,7 @@ public class TransportUtils {
 
         }
         if (messageFormatter == null) {
-            messageFormatter = (MessageFormatter) msgContext.getProperty(Constants.Configuration.MESSAGE_FORMATTER);
+            messageFormatter = (MessageFormatter) msgContext.getProperty(Axis2Constants.Configuration.MESSAGE_FORMATTER);
             if(messageFormatter != null) {
                 return messageFormatter;
             }
@@ -318,9 +318,9 @@ public class TransportUtils {
 
             // If we are doing rest better default to Application/xml formatter
             if (msgContext.isDoingREST()) {
-                String httpMethod = (String) msgContext.getProperty(Constants.Configuration.HTTP_METHOD);
-                if (Constants.Configuration.HTTP_METHOD_GET.equals(httpMethod) ||
-                        Constants.Configuration.HTTP_METHOD_DELETE.equals(httpMethod)) {
+                String httpMethod = (String) msgContext.getProperty(Axis2Constants.Configuration.HTTP_METHOD);
+                if (Axis2Constants.Configuration.HTTP_METHOD_GET.equals(httpMethod) ||
+                        Axis2Constants.Configuration.HTTP_METHOD_DELETE.equals(httpMethod)) {
                     return new XFormURLEncodedFormatter();
                 }
                 return new ApplicationXMLFormatter();
@@ -430,13 +430,13 @@ public class TransportUtils {
     private static String getMessageFormatterProperty(MessageContext msgContext) {
         String messageFormatterProperty = null;
         Object property = msgContext
-                .getProperty(Constants.Configuration.MESSAGE_TYPE);
+                .getProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
         if (property != null) {
             messageFormatterProperty = (String) property;
         }
         if (messageFormatterProperty == null) {
             Parameter parameter = msgContext
-                    .getParameter(Constants.Configuration.MESSAGE_TYPE);
+                    .getParameter(Axis2Constants.Configuration.MESSAGE_TYPE);
             if (parameter != null) {
                 messageFormatterProperty = (String) parameter.getValue();
             }
@@ -594,8 +594,8 @@ public class TransportUtils {
            try {
                if(msgContext != null
                        &&
-                       msgContext.getProperty(Constants.DETACHABLE_INPUT_STREAM) != null) {
-                   DetachableInputStream dis = (DetachableInputStream) msgContext.getProperty(Constants.DETACHABLE_INPUT_STREAM);
+                       msgContext.getProperty(Axis2Constants.DETACHABLE_INPUT_STREAM) != null) {
+                   DetachableInputStream dis = (DetachableInputStream) msgContext.getProperty(Axis2Constants.DETACHABLE_INPUT_STREAM);
                    if(log.isDebugEnabled()) {
                        log.debug("Detaching DetachableInputStream: " + dis);
                    }
@@ -630,13 +630,13 @@ public class TransportUtils {
         Object enableMTOMObject = null;
         // First check the whether MTOM is enabled by the configuration
         // (Eg:Axis2.xml, services.xml)
-        Parameter parameter = msgContext.getParameter(Constants.Configuration.ENABLE_MTOM);
+        Parameter parameter = msgContext.getParameter(Axis2Constants.Configuration.ENABLE_MTOM);
         if (parameter != null) {
             enableMTOMObject = parameter.getValue();
         }
         // Check whether the configuration is overridden programatically..
         // Priority given to programatically setting of the value
-        Object property = msgContext.getProperty(Constants.Configuration.ENABLE_MTOM);
+        Object property = msgContext.getProperty(Axis2Constants.Configuration.ENABLE_MTOM);
         if (property != null) {
             enableMTOMObject = property;
         }
@@ -645,7 +645,7 @@ public class TransportUtils {
         // If the value for 'enableMTOM' is given as optional and if the request
         // message was a MTOM message we sent out MTOM
         if (!enableMTOM && msgContext.isDoingMTOM() && (enableMTOMObject instanceof String)) {
-            if (((String) enableMTOMObject).equalsIgnoreCase(Constants.VALUE_OPTIONAL)) {
+            if (((String) enableMTOMObject).equalsIgnoreCase(Axis2Constants.VALUE_OPTIONAL)) {
 
 
 
@@ -688,13 +688,13 @@ public class TransportUtils {
         Object enableSwAObject = null;
         // First check the whether SwA is enabled by the configuration
         // (Eg:Axis2.xml, services.xml)
-        Parameter parameter = msgContext.getParameter(Constants.Configuration.ENABLE_SWA);
+        Parameter parameter = msgContext.getParameter(Axis2Constants.Configuration.ENABLE_SWA);
         if (parameter != null) {
             enableSwAObject = parameter.getValue();
         }
         // Check whether the configuration is overridden programatically..
         // Priority given to programatically setting of the value
-        Object property = msgContext.getProperty(Constants.Configuration.ENABLE_SWA);
+        Object property = msgContext.getProperty(Axis2Constants.Configuration.ENABLE_SWA);
         if (property != null) {
             enableSwAObject = property;
         }
@@ -703,7 +703,7 @@ public class TransportUtils {
         // If the value for 'enableSwA' is given as optional and if the request
         // message was a SwA message we sent out SwA
         if (!enableSwA && msgContext.isDoingSwA() && (enableSwAObject instanceof String)) {
-            if (((String) enableSwAObject).equalsIgnoreCase(Constants.VALUE_OPTIONAL)) {
+            if (((String) enableSwAObject).equalsIgnoreCase(Axis2Constants.VALUE_OPTIONAL)) {
                 enableSwA = true;
             }
         }
@@ -718,7 +718,7 @@ public class TransportUtils {
             return true;
         }
 
-        Object enableRESTProperty = msgContext.getProperty(Constants.Configuration.ENABLE_REST);
+        Object enableRESTProperty = msgContext.getProperty(Axis2Constants.Configuration.ENABLE_REST);
         if (enableRESTProperty != null) {
             enableREST = JavaUtils.isTrueExplicitly(enableRESTProperty);
         }
@@ -738,13 +738,13 @@ public class TransportUtils {
      */
     public static String getCharSetEncoding(MessageContext msgContext) {
         String charSetEnc = (String) msgContext
-            .getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+            .getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
 
         if (charSetEnc == null) {
             OperationContext opctx = msgContext.getOperationContext();
             if (opctx != null) {
                 charSetEnc = (String) opctx
-                    .getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+                    .getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
             }
             /**
              * If the char set enc is still not found use the default

@@ -19,7 +19,7 @@
 
 package org.apache.axis2.util;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.AxisServiceGroup;
 
@@ -49,13 +49,13 @@ public class SessionUtils {
      * @return integer
      */
     private static int getScopeIntValue(String scope) {
-        if (Constants.SCOPE_REQUEST.equals(scope)) {
+        if (Axis2Constants.SCOPE_REQUEST.equals(scope)) {
             return 1;
-        } else if (Constants.SCOPE_TRANSPORT_SESSION.equals(scope)) {
+        } else if (Axis2Constants.SCOPE_TRANSPORT_SESSION.equals(scope)) {
             return 2;
-        } else if (Constants.SCOPE_SOAP_SESSION.equals(scope)) {
+        } else if (Axis2Constants.SCOPE_SOAP_SESSION.equals(scope)) {
             return 3;
-        } else if (Constants.SCOPE_APPLICATION.equals(scope)) {
+        } else if (Axis2Constants.SCOPE_APPLICATION.equals(scope)) {
             return 4;
         } else {
             return 2;
@@ -71,19 +71,19 @@ public class SessionUtils {
     private static String getScopeString(int scope) {
         switch (scope) {
             case 1 : {
-                return Constants.SCOPE_REQUEST;
+                return Axis2Constants.SCOPE_REQUEST;
             }
             case 2 : {
-                return Constants.SCOPE_TRANSPORT_SESSION;
+                return Axis2Constants.SCOPE_TRANSPORT_SESSION;
             }
             case 3 : {
-                return Constants.SCOPE_SOAP_SESSION;
+                return Axis2Constants.SCOPE_SOAP_SESSION;
             }
             case 4 : {
-                return Constants.SCOPE_APPLICATION;
+                return Axis2Constants.SCOPE_APPLICATION;
             }
             default : {
-                return Constants.SCOPE_TRANSPORT_SESSION;
+                return Axis2Constants.SCOPE_TRANSPORT_SESSION;
             }
         }
     }

@@ -23,8 +23,8 @@ package org.apache.axis2.transport.http;
 import java.io.IOException;
 import java.net.URL;
 
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
 import org.apache.axis2.i18n.Messages;
@@ -54,17 +54,17 @@ public class HTTPSender extends AbstractHTTPSender {
         // handle multiple
 
         String httpMethod =
-                (String) msgContext.getProperty(Constants.Configuration.HTTP_METHOD);
+                (String) msgContext.getProperty(Axis2Constants.Configuration.HTTP_METHOD);
 
         try {
         	if ((httpMethod != null)) {
-        		if (Constants.Configuration.HTTP_METHOD_GET.equalsIgnoreCase(httpMethod)) {
+        		if (Axis2Constants.Configuration.HTTP_METHOD_GET.equalsIgnoreCase(httpMethod)) {
         			this.sendViaGet(msgContext, url, soapActionString);
         			return;
-        		} else if (Constants.Configuration.HTTP_METHOD_DELETE.equalsIgnoreCase(httpMethod)) {
+        		} else if (Axis2Constants.Configuration.HTTP_METHOD_DELETE.equalsIgnoreCase(httpMethod)) {
         			this.sendViaDelete(msgContext, url, soapActionString);
         			return;
-        		} else if (Constants.Configuration.HTTP_METHOD_PUT.equalsIgnoreCase(httpMethod)) {
+        		} else if (Axis2Constants.Configuration.HTTP_METHOD_PUT.equalsIgnoreCase(httpMethod)) {
         			this.sendViaPut(msgContext, url, soapActionString);
         			return;
         		}

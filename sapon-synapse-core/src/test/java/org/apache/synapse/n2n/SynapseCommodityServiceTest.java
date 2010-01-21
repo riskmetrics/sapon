@@ -28,6 +28,7 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
@@ -153,7 +154,7 @@ public class SynapseCommodityServiceTest extends TestCase {
         	.createConfigurationContextFromFileSystem(
                 getClass().getResource("/test_repos/synapse").getFile(),
                 getClass().getResource("/conf/axis2.xml").getFile());
-        System.getProperties().remove(org.apache.axis2.Constants.AXIS2_CONF);
+        System.getProperties().remove(Axis2Constants.AXIS2_CONF);
         ServiceClient businessClient = new ServiceClient(cfgCtx, null);
         Options options = new Options();
         options.setTo(

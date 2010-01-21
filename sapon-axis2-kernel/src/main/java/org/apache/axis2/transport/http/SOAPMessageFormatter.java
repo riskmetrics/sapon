@@ -32,7 +32,7 @@ import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.impl.MIMEOutputUtils;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.MessageFormatter;
 import org.apache.axis2.util.JavaUtils;
@@ -195,7 +195,7 @@ public class SOAPMessageFormatter implements MessageFormatter {
             log.debug("start writeSwAMessage()");
         }
         Object property = msgCtxt
-                .getProperty(Constants.Configuration.MM7_COMPATIBLE);
+                .getProperty(Axis2Constants.Configuration.MM7_COMPATIBLE);
         boolean MM7CompatMode = false;
         if (property != null) {
             MM7CompatMode = JavaUtils.isTrueExplicitly(property);
@@ -208,7 +208,7 @@ public class SOAPMessageFormatter implements MessageFormatter {
             String innerBoundary;
             String partCID;
             Object innerBoundaryProperty = msgCtxt
-                    .getProperty(Constants.Configuration.MM7_INNER_BOUNDARY);
+                    .getProperty(Axis2Constants.Configuration.MM7_INNER_BOUNDARY);
             if (innerBoundaryProperty != null) {
                 innerBoundary = (String) innerBoundaryProperty;
             } else {
@@ -216,7 +216,7 @@ public class SOAPMessageFormatter implements MessageFormatter {
                         + UUIDGenerator.getUUID().replace(':', '_');
             }
             Object partCIDProperty = msgCtxt
-                    .getProperty(Constants.Configuration.MM7_PART_CID);
+                    .getProperty(Axis2Constants.Configuration.MM7_PART_CID);
             if (partCIDProperty != null) {
                 partCID = (String) partCIDProperty;
             } else {

@@ -58,7 +58,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.alt.ModuleConfigAccessor;
 import org.apache.axis2.client.Options;
@@ -363,7 +363,7 @@ public class AxisService extends AxisDescriptionBase
 		this.invalidOperationsAliases = new ArrayList<String>();
 		moduleConfigmap = new HashMap<String, ModuleConfiguration>();
 		// by default service scope is for the request
-		scope = Constants.SCOPE_REQUEST;
+		scope = Axis2Constants.SCOPE_REQUEST;
 		httpLocationDispatcherMap = new HashMap<String, AxisOperation>();
 		messageReceivers = new HashMap<String, MessageReceiver>();
 		moduleRefs = new ArrayList<String>();
@@ -1072,7 +1072,7 @@ public class AxisService extends AxisDescriptionBase
 
 	private String getServiceEPR() {
 		String serviceEPR = null;
-		Parameter parameter = this.getParameter(Constants.Configuration.GENERATE_ABSOLUTE_LOCATION_URIS);
+		Parameter parameter = this.getParameter(Axis2Constants.Configuration.GENERATE_ABSOLUTE_LOCATION_URIS);
 		if ((parameter != null) && JavaUtils.isTrueExplicitly(parameter.getValue())) {
 			String[] eprs = this.getEPRs();
 			for (String epr : eprs) {
@@ -1685,10 +1685,10 @@ public class AxisService extends AxisDescriptionBase
 	 *            Constants.SCOPE_REQUEST.equals
 	 */
 	public void setScope(String scope) {
-		if (Constants.SCOPE_APPLICATION.equals(scope)
-				|| Constants.SCOPE_TRANSPORT_SESSION.equals(scope)
-				|| Constants.SCOPE_SOAP_SESSION.equals(scope)
-				|| Constants.SCOPE_REQUEST.equals(scope)) {
+		if (Axis2Constants.SCOPE_APPLICATION.equals(scope)
+				|| Axis2Constants.SCOPE_TRANSPORT_SESSION.equals(scope)
+				|| Axis2Constants.SCOPE_SOAP_SESSION.equals(scope)
+				|| Axis2Constants.SCOPE_REQUEST.equals(scope)) {
 			this.scope = scope;
 		}
 	}
@@ -2050,8 +2050,8 @@ public class AxisService extends AxisDescriptionBase
 			Map<String, MessageReceiver> messageReceiverClassMap, String targetNamespace,
 			ClassLoader loader, SchemaGenerator schemaGenerator,
 			AxisService axisService) throws AxisFault {
-		Parameter parameter = new Parameter(Constants.SERVICE_CLASS, implClass);
-		OMElement paraElement = Utils.getParameter(Constants.SERVICE_CLASS,
+		Parameter parameter = new Parameter(Axis2Constants.SERVICE_CLASS, implClass);
+		OMElement paraElement = Utils.getParameter(Axis2Constants.SERVICE_CLASS,
 				implClass, false);
 		parameter.setParameterElement(paraElement);
 		axisService.setUseDefaultChains(false);
