@@ -101,8 +101,8 @@ public class Options implements Externalizable, SafeSerializable {
 
     //I am going to set a reply to as customer reply To address ,
     // so that Axis2 does not need to wait for the reply
-    public static String  CUSTOM_REPLYTO_ADDRESS = "CUSTOM_REPLYTO_ADDRESS";
-    public static String  CUSTOM_REPLYTO_ADDRESS_TRUE = "true";
+    public static final String CUSTOM_REPLYTO_ADDRESS = "CUSTOM_REPLYTO_ADDRESS";
+    public static final String CUSTOM_REPLYTO_ADDRESS_TRUE = "true";
 
 
     /**

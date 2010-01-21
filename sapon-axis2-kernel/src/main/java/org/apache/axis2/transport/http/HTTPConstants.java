@@ -126,47 +126,47 @@ public class HTTPConstants {
     /**
      * Field MC_HTTP_STATUS_MESSAGE
      */
-    public static String MC_HTTP_STATUS_MESSAGE = "transport.http.statusMessage";
+    public static final String MC_HTTP_STATUS_MESSAGE = "transport.http.statusMessage";
 
     /**
      * Field MC_HTTP_STATUS_CODE
      */
-    public static String MC_HTTP_STATUS_CODE = "transport.http.statusCode";
+    public static final String MC_HTTP_STATUS_CODE = "transport.http.statusCode";
 
     /**
      * Field MC_HTTP_SERVLETRESPONSE
      */
-    public static String MC_HTTP_SERVLETRESPONSE = "transport.http.servletResponse";
+    public static final String MC_HTTP_SERVLETRESPONSE = "transport.http.servletResponse";
 
     /**
      * Field MC_HTTP_SERVLETREQUEST
      */
-    public static String MC_HTTP_SERVLETREQUEST = "transport.http.servletRequest";
+    public static final String MC_HTTP_SERVLETREQUEST = "transport.http.servletRequest";
 
     /**
      * Field MC_HTTP_SERVLETPATHINFO
      */
-    public static String MC_HTTP_SERVLETPATHINFO = "transport.http.servletPathInfo";
+    public static final String MC_HTTP_SERVLETPATHINFO = "transport.http.servletPathInfo";
 
     /**
      * Field MC_HTTP_SERVLETLOCATION
      */
-    public static String MC_HTTP_SERVLETLOCATION = "transport.http.servletLocation";
+    public static final String MC_HTTP_SERVLETLOCATION = "transport.http.servletLocation";
 
     /**
      * Field MC_HTTP_SERVLET
      */
-    public static String MC_HTTP_SERVLET = "transport.http.servlet";
+    public static final String MC_HTTP_SERVLET = "transport.http.servlet";
 
     /**
      * Field MC_HTTP_SERVLETCONTEXT
      */
-    public static String MC_HTTP_SERVLETCONTEXT = "transport.http.servletContext";
+    public static final String MC_HTTP_SERVLETCONTEXT = "transport.http.servletContext";
 
     /**
      * transport.http.servletConfig
      */
-    public static String HTTP_SERVLETCONFIG = "transport.http.servletConfig";
+    public static final String HTTP_SERVLETCONFIG = "transport.http.servletConfig";
 
     /**
      * Field HEADER_USER_AGENT
@@ -373,7 +373,7 @@ public class HTTPConstants {
     /**
      * Field CHAR_SET_ENCODING
      */
-    public static String CHAR_SET_ENCODING = "charset";
+    public static final String CHAR_SET_ENCODING = "charset";
 
     /**
      * Field UNAUTH[]
@@ -416,7 +416,7 @@ public class HTTPConstants {
     /**
      * Field HTTP[]
      */
-    public static char HTTP[] = "HTTP/1.0 ".toCharArray();
+    public static final char[] HTTP = "HTTP/1.0 ".toCharArray();
 
     /**
      * Field DEFAULT_SO_TIMEOUT

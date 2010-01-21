@@ -62,8 +62,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.classloader.JarFileClassLoader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.DeploymentClassLoader;
@@ -106,7 +106,7 @@ import org.apache.ws.commons.schema.XmlSchema;
 
 public class Utils {
 
-    public static String defaultEncoding = new OutputStreamWriter(System.out).getEncoding();
+    public static final String defaultEncoding = new OutputStreamWriter(System.out).getEncoding();
 
     private static Log log = LogFactory.getLog(Utils.class);
 
