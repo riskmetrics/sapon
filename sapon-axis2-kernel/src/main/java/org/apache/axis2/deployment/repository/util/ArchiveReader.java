@@ -296,8 +296,6 @@ public class ArchiveReader implements DeploymentConstants {
 
             } catch (FileNotFoundException e) {
                 throw new DeploymentException(e);
-            } catch (IOException e) {
-                throw new DeploymentException(e);
             } catch (XMLStreamException e) {
                 throw new DeploymentException(e);
             }
