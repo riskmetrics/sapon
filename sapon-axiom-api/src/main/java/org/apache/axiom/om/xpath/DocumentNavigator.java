@@ -741,6 +741,7 @@ public class DocumentNavigator extends DefaultNavigator {
                       OMFactory factory) {
             this.attribute = attribute;
             this.parent = parent;
+            this.factory = factory;
         }
 
         public String getLocalName() {
