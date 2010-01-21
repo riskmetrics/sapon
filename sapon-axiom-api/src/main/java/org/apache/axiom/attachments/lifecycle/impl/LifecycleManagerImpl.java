@@ -178,7 +178,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
         return hook;
     }
 
-    public class FileDeletor implements Runnable{
+    public static class FileDeletor implements Runnable{
         int interval;
         File _file;
 
