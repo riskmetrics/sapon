@@ -48,15 +48,15 @@ public class LifecycleManagerImpl implements LifecycleManager {
         if(log.isDebugEnabled()){
             log.debug("Start Create()");
         }
-        File file = null;
-        File dir = null;
-        if (attachmentDir != null) {
-            dir = new File(attachmentDir);
-            if (!dir.exists()) {
-                dir.mkdirs();
-            }
+        if (attachmentDir == null) {
+            throw new IllegalArgumentException("attachmentDir cannot be null");
         }
-        if (!dir.isDirectory()) {
+
+        File dir = new File(attachmentDir);
+        if (!dir.exists()) {
+        	dir.mkdirs();
+        }
+        else if (!dir.isDirectory()) {
             throw new IllegalArgumentException("Given Axis2 Attachment File Cache Location "
                 + dir + "  should be a directory.");
         }
@@ -68,7 +68,7 @@ public class LifecycleManagerImpl implements LifecycleManager {
         id = id.replaceAll(":", "_");
 
         String fileString = "Axis2" + id + ".att";
-        file = new File(dir, fileString);
+        File file = new File(dir, fileString);
         FileAccessor fa = new FileAccessor(this, file);
         //add the fileAccesor to table
         table.put(fileString, fa);
