@@ -277,9 +277,6 @@ public class WSDLWrapperReloadImpl implements WSDLWrapperImpl {
         if (USE_SOFT_REFERENCES) {
             if (softDocElement == null || softDocElement.get() == null) {
                 return null;
-            } else if (softDocElement.get().equals(Boolean.FALSE)) {
-                // The wsdl has no document element
-                return null;
             } else {
                 return softDocElement.get();
             }

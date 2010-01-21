@@ -242,7 +242,7 @@ public class DocLitBareSchemaGenerator extends DefaultSchemaGenerator {
         if (isArrayType) {
             type = type.getComponentType();
         }
-        if (AxisFault.class.getName().equals(type)) {
+        if (AxisFault.class.equals(type)) {
             return null;
         }
         String classTypeName;
