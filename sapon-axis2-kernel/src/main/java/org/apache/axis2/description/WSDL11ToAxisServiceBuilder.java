@@ -986,8 +986,11 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
                 output = null;
             }
         }
-        Operation op2 = portType.getOperation(op.getName(), input, output);
-        return ((op2 == null) ? op : op2);
+
+        Operation op2 = (op == null) ? null
+        		                     : portType.getOperation(op.getName(), input, output);
+        return (op2 == null) ? op
+        		             : op2;
     }
 
     /**

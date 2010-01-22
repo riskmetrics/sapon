@@ -388,7 +388,10 @@ public class OperationContext extends AbstractContext<ServiceContext>
         // match up the axis operation
         out.writeUTF("metaAxisService"); // write marker
         metaAxisService = null;
-        AxisService axisService = axisOperation.getService();
+        AxisService axisService = null;
+        if(axisOperation != null) {
+        	axisService = axisOperation.getService();
+        }
 
         if (axisService != null) {
             metaAxisService =
