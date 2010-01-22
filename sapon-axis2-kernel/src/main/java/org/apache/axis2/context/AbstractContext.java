@@ -340,11 +340,10 @@ public abstract class AbstractContext<P extends Context<?>> implements Context<P
     public void mergeProperties(Map<String, Object> props) {
         if (props != null) {
             initPropertiesMap();
-            for (String key : props.keySet()) {
-            	Object value = props.get(key);
-            	this.properties.put(key, value);
+            for (Map.Entry<String, Object> e : props.entrySet()) {
+            	this.properties.put(e.getKey(), e.getValue());
             	if (log.isTraceEnabled()) {
-            		debugPropertySet(key, value);
+            		debugPropertySet(e.getKey(), e.getValue());
             	}
             }
         }

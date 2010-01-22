@@ -30,6 +30,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.Map.Entry;
 
 import javax.wsdl.Binding;
 import javax.wsdl.BindingFault;
@@ -1491,7 +1492,8 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
     	Element elementDeclaration;
 
     	//loop through the input op map and generate the elements
-    	for (BindingOperationEntry boEntry: boeToInputMessageMap.keySet()) {
+    	for (Entry<BindingOperationEntry, Message> e: boeToInputMessageMap.entrySet()) {
+    		BindingOperationEntry boEntry = e.getKey();
     		elementDeclaration = document.createElementNS(
     				XMLSCHEMA_NAMESPACE_URI, xsdPrefix + ":"
     				+ XML_SCHEMA_ELEMENT_LOCAL_NAME);
@@ -1499,7 +1501,7 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
 
     		//when creating the inner complex type we have to find the parts list from the binding input
     		BindingInput bindingInput = boEntry.getBindingOperation().getBindingInput();
-    		Message message = boeToInputMessageMap.get(boEntry);
+    		Message message = e.getValue();
 
     		if (bindingInput != null) {
 
@@ -1697,10 +1699,10 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
                                          + XML_SCHEMA_LOCAL_NAME);
 
         // loop through the namespace declarations first
-        for (String s : namespacePrefixMap.keySet()) {
+        for (Entry<String, String> e: namespacePrefixMap.entrySet()) {
             schemaElement.setAttributeNS(XML_NAMESPACE_URI,
                                          NAMESPACE_DECLARATION_PREFIX
-                                         + namespacePrefixMap.get(s).toString(), s);
+                                         + e.getValue(), e.getKey());
         }
 
         if (schemaElement.getAttributeNS(XML_NAMESPACE_URI, xsdPrefix).length() == 0) {
