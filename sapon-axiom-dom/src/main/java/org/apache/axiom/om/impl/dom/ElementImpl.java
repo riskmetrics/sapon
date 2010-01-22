@@ -73,7 +73,6 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
 
     private Map<String, OMNamespace> namespaces;
 
-    /** @param ownerDocument  */
     public ElementImpl(DocumentImpl ownerDocument, String tagName,
                        OMFactory factory) {
         super(ownerDocument, factory);
@@ -973,7 +972,7 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
      * @see org.apache.axiom.om.OMElement#getText()
      */
     public String getText() {
-        String childText = "";
+        StringBuilder childText = new StringBuilder();
         OMNode child = this.getFirstOMChild();
         OMText textNode;
 
@@ -983,13 +982,13 @@ public class ElementImpl extends ParentNode implements Element, OMElement,
                 textNode = (OMText) child;
                 if (textNode.getText() != null
                         && !"".equals(textNode.getText())) {
-                    childText += textNode.getText();
+                    childText.append(textNode.getText());
                 }
             }
             child = child.getNextOMSibling();
         }
 
-        return childText;
+        return childText.toString();
     }
 
     public QName getTextAsQName() {
