@@ -672,12 +672,15 @@ public class EndpointView
 
     //---------- utility methods ---------------
     private static void addTableMaps(Map<Integer, Long> t, Map<Integer, Long> s) {
-        for (Integer o : s.keySet()) {
-            if (t.containsKey(o)) {
-                t.put(o, t.get(o) + s.get(o));
-            } else {
-                t.put(o, s.get(o));
+        for (Map.Entry<Integer, Long> e : s.entrySet()) {
+        	Integer skey = e.getKey();
+        	Long sval = e.getValue();
+
+        	Long tval = t.get(skey);
+        	if(tval == null) {
+        		tval = 0L;
             }
+        	t.put(skey, tval + sval);
         }
     }
 

@@ -202,15 +202,11 @@ public class AnnotatedCommandMediator extends POJOCommandMediator {
 
         Map<String, String> namespaces = getNamespaces(nsAnnotation);
         try {
-
             SynapseXPath axiomXPath = new SynapseXPath(xpath);
-
-            for (String prefix : namespaces.keySet()) {
-                axiomXPath.addNamespace(prefix, namespaces.get(prefix));
+            for (Map.Entry<String, String> e: namespaces.entrySet()) {
+                axiomXPath.addNamespace(e.getKey(), e.getValue());
             }
-
             return axiomXPath;
-
         } catch (JaxenException e) {
             throw new RuntimeException("Error creating SynapseXPath: " + xpath, e);
         }
