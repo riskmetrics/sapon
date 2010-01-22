@@ -57,8 +57,8 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.alt.ModuleConfigAccessor;
 import org.apache.axis2.client.Options;
@@ -1920,10 +1920,10 @@ public class AxisService extends AxisDescriptionBase
 				wsdlDefinition, wsdlServiceName, portName);
 		serviceBuilder.setServerSide(false);
 		AxisService axisService = serviceBuilder.populateService();
-		AxisEndpoint axisEndpoint = axisService.getEndpoints()
-		.get(axisService.getEndpointName());
-		options.setTo(new EndpointReference(axisEndpoint.getEndpointURL()));
+		AxisEndpoint axisEndpoint
+			= axisService.getEndpoints().get(axisService.getEndpointName());
 		if (axisEndpoint != null) {
+			options.setTo(new EndpointReference(axisEndpoint.getEndpointURL()));
 			options.setSoapVersionURI((String) axisEndpoint.getBinding()
 					.getProperty(WSDL2Constants.ATTR_WSOAP_VERSION));
 		}
