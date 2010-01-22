@@ -2916,7 +2916,7 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
     /**
      * BindingOperation plus state information
      */
-    class BindingOperationEntry {
+    static class BindingOperationEntry {
 
         private BindingOperation bindingOperation;
         private boolean isSOAPBinding;

@@ -19,6 +19,10 @@
 
 package org.apache.axis2.description;
 
+import java.io.InputStream;
+
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.AxisFault;
@@ -29,9 +33,6 @@ import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.engine.AxisEngine;
 import org.apache.axis2.transport.TransportUtils;
 import org.apache.axis2.util.Utils;
-
-import javax.xml.namespace.QName;
-import java.io.InputStream;
 
 public class RobustOutOnlyAxisOperation extends OutInAxisOperation {
 
@@ -48,11 +49,12 @@ public class RobustOutOnlyAxisOperation extends OutInAxisOperation {
         setMessageExchangePattern(WSDL2Constants.MEP_URI_ROBUST_OUT_ONLY);
     }
 
-    public OperationClient createClient(ServiceContext sc, Options options) {
+    @Override
+	public OperationClient createClient(ServiceContext sc, Options options) {
         return new RobustOutOnlyOperationClient(this, sc, options);
     }
 
-    class RobustOutOnlyOperationClient extends OutInAxisOperationClient {
+    static class RobustOutOnlyOperationClient extends OutInAxisOperationClient {
 
         public RobustOutOnlyOperationClient(OutInAxisOperation axisOp, ServiceContext sc,
                                             Options options) {
@@ -70,7 +72,8 @@ public class RobustOutOnlyAxisOperation extends OutInAxisOperation {
          * @param responseMessageContext responseMessageContext
          * @throws AxisFault
          */
-        protected void handleResponse(MessageContext responseMessageContext) throws AxisFault {
+        @Override
+		protected void handleResponse(MessageContext responseMessageContext) throws AxisFault {
             SOAPEnvelope envelope = responseMessageContext.getEnvelope();
             if (envelope == null) {
                 // If request is REST we assume the responseMessageContext is REST, so

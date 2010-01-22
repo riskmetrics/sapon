@@ -26,8 +26,8 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.OperationClient;
@@ -478,7 +478,7 @@ class OutInAxisOperationClient extends OperationClient {
     /**
      * This class acts as a callback that allows users to wait on the result.
      */
-    private class SyncCallBack implements AxisCallback {
+    private static class SyncCallBack implements AxisCallback {
         boolean complete;
         boolean receivedFault;
 

@@ -46,12 +46,12 @@ public class DataSourceBuilder implements Builder {
                                      MessageContext msgContext)
             throws AxisFault {
         msgContext.setDoingREST(true);
-        
+
         OMNamespace ns = new OMNamespaceImpl("", "");
         OMFactory factory = OMAbstractFactory.getOMFactory();
         byte[] bytes;
         try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
             BufferUtils.inputStream2OutputStream(inputStream, baos);
             baos.flush();
             bytes = baos.toByteArray();
@@ -62,9 +62,9 @@ public class DataSourceBuilder implements Builder {
         return new OMSourcedElementImpl("dummy", ns, factory, ds);
     }
 
-    public class ByteArrayDataSourceEx extends javax.mail.util.ByteArrayDataSource implements OMDataSource {
+    public static class ByteArrayDataSourceEx extends javax.mail.util.ByteArrayDataSource implements OMDataSource {
         private byte[] bytes;
-    
+
         public ByteArrayDataSourceEx(byte[] bytes, String s) {
             super(bytes, s);
             this.bytes = bytes;
@@ -77,8 +77,9 @@ public class DataSourceBuilder implements Builder {
                 throw new XMLStreamException(e);
             }
         }
-    
-        public java.lang.String getContentType() {
+
+        @Override
+		public java.lang.String getContentType() {
             return super.getContentType();
         }
 
