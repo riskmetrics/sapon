@@ -106,6 +106,12 @@ public class Axis2SynapseController implements SynapseController {
      */
     public void init(SynapseServerInfo synapseServerInfo,
                      ServerContextInformation serverContextInformation) {
+    	if(synapseServerInfo == null) {
+    		throw new IllegalArgumentException("synapseServerInfo cannot be null");
+    	}
+    	if(serverContextInformation == null) {
+    		throw new IllegalArgumentException("serverContextInformation cannot be null");
+    	}
 
         log.info("Initializing Synapse at : " + new Date());
 
@@ -117,8 +123,8 @@ public class Axis2SynapseController implements SynapseController {
             System.setProperty(JMX_AGENT_NAME, "org.apache.synapse");
         }
 
-        if (serverContextInformation == null || serverContextInformation.getServerContext() == null
-                || synapseServerInfo.isCreateNewInstance()) {
+        if (serverContextInformation.getServerContext() == null
+        		|| synapseServerInfo.isCreateNewInstance()) {
 
             if (log.isDebugEnabled()) {
                 log.debug("Initializing Synapse in a new axis2 server environment instance");

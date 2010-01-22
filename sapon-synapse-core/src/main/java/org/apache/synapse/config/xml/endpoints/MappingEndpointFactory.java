@@ -21,7 +21,7 @@ import org.apache.synapse.endpoints.MappingEndpoint;
  *            [encoding="<em>charset encoding</em>"]
  *            [statistics="enable|disable"] [trace="enable|disable"]&gt;
  *     .. extensibility ..
- *	   
+ *
  *	   &lt;map from="from uri" to="to uri"/&gt;+
  *
  *     &lt;enableRM [policy="<em>key</em>"]/&gt;?
@@ -41,37 +41,37 @@ import org.apache.synapse.endpoints.MappingEndpoint;
  * </pre>
  */
 public class MappingEndpointFactory extends DefaultEndpointFactory {
-	
+
 	private static MappingEndpointFactory instance = new MappingEndpointFactory();
-	
+
 	private MappingEndpointFactory() {
 	}
-	
+
 	public static MappingEndpointFactory getInstance() {
 		return instance;
 	}
-	
+
 	@Override
 	protected Endpoint createEndpoint(OMElement epConfig, boolean anonymousEndpoint)
 	{
 		MappingEndpoint mappingEndpoint = new MappingEndpoint();
-		
+
         OMAttribute name = epConfig.getAttribute(
                 new QName(XMLConfigConstants.NULL_NAMESPACE, "name"));
 
         if (name != null) {
             mappingEndpoint.setName(name.getAttributeValue());
         }
-        
+
         OMElement mappingElement = epConfig.getFirstChildWithName(
         		new QName(SynapseConstants.SYNAPSE_NAMESPACE, "mapping"));
         if(mappingElement != null) {
         	EndpointDefinition definition = createEndpointDefinition(mappingElement);
             mappingEndpoint.setDefinition(definition);
-            processAuditStatus(definition, mappingEndpoint.getName(), epConfig);	
+            processAuditStatus(definition, mappingEndpoint.getName(), epConfig);
+            mappingEndpoint.extractMappings(mappingElement);
         }
-        
-        mappingEndpoint.extractMappings(mappingElement);
+
         return mappingEndpoint;
 	}
 

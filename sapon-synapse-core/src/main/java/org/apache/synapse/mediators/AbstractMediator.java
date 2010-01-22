@@ -86,7 +86,7 @@ public abstract class AbstractMediator implements Mediator, AspectConfigurable
      */
     protected void handleException(String msg, Exception e, SynapseMessageContext msgContext) {
         log.error(msg, e);
-        if (msgContext.getServiceLog() != null) {
+        if (msgContext != null && msgContext.getServiceLog() != null) {
             msgContext.getServiceLog().error(msg, e);
         }
         throw new SynapseException(msg, e);
