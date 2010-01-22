@@ -79,11 +79,11 @@ public class ProxyServiceSerializer {
 
         List<String> pinnedServers = service.getPinnedServers();
         if (pinnedServers != null && !pinnedServers.isEmpty()) {
-          String pinnedServersStr = "" + pinnedServers.get(0);
-          for (int i = 1; i < pinnedServers.size(); i++) {
-            pinnedServersStr = pinnedServersStr + " " + pinnedServers.get(i);
-          }
-          proxy.addAttribute(fac.createOMAttribute("pinnedServers", nullNS, pinnedServersStr));
+        	StringBuilder pinnedServersStr = new StringBuilder(pinnedServers.get(0));
+        	for (int i = 1; i < pinnedServers.size(); i++) {
+        		pinnedServersStr = pinnedServersStr.append(" " + pinnedServers.get(i));
+        	}
+        	proxy.addAttribute(fac.createOMAttribute("pinnedServers", nullNS, pinnedServersStr.toString()));
         }
 
         if (service.isStartOnLoad()) {
