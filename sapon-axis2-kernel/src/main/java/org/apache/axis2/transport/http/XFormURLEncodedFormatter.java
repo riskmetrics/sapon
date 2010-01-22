@@ -39,15 +39,16 @@ public class XFormURLEncodedFormatter implements MessageFormatter {
         OMElement omElement = messageContext.getEnvelope().getBody().getFirstElement();
 
         if (omElement != null) {
-            String paraString = "";
+            StringBuilder paraString = new StringBuilder();
             for(OMElement ele1: omElement.getChildElements()) {
-                String parameter;
-
-                parameter = ele1.getLocalName() + "=" + ele1.getText();
-                paraString = "".equals(paraString) ? parameter : (paraString + "&" + parameter);
+                String parameter = ele1.getLocalName() + "=" + ele1.getText();
+                if(paraString.length() > 0) {
+                	paraString.append("&");
+                }
+                paraString.append(parameter);
             }
 
-            return paraString.getBytes();
+            return paraString.toString().getBytes();
         }
 
         return new byte[0];
