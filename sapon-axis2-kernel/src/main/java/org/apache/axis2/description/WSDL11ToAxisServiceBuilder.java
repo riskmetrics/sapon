@@ -1579,7 +1579,8 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
     	}
 
     	// loop through the output to map and generate the elements
-    	for (BindingOperationEntry boEntry: boeToOutputMessageMap.keySet()) {
+    	for (Entry<BindingOperationEntry, Message> e: boeToOutputMessageMap.entrySet()) {
+    		BindingOperationEntry boEntry = e.getKey();
     		String baseoutputOpName = boEntry.getBindingOperation().getName();
     		// see basic profile 4.7.19
     		String outputOpName = baseoutputOpName + WRAPPED_OUTPUTNAME_SUFFIX;
@@ -1589,7 +1590,7 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
     		elementDeclaration.setAttribute(XSD_NAME, outputOpName);
 
     		BindingOutput bindingOutput = boEntry.getBindingOperation().getBindingOutput();
-    		Message message = boeToOutputMessageMap.get(boEntry);
+    		Message message = e.getValue();
 
     		if (bindingOutput != null) {
     			Collection<Part> partsCollection = null;
