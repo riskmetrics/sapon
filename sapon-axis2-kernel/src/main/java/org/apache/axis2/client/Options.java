@@ -540,7 +540,7 @@ public class Options implements Externalizable, SafeSerializable {
      */
     public boolean isUseSeparateListener() {
         if (useSeparateListener == null && parent != null) {
-            useSeparateListener = new Boolean(parent.isUseSeparateListener());
+            useSeparateListener = Boolean.valueOf(parent.isUseSeparateListener());
         }
 
         return useSeparateListener != null
