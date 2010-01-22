@@ -91,11 +91,8 @@ public class MessageHelper {
         newCtx.setResponse(synCtx.isResponse());
 
         // copy all the synapse level properties to the newCtx
-        for (Object o : synCtx.getPropertyKeySet()) {
-            // If there are non String keyed properties neglect them rather than trow exception
-            if (o instanceof String) {
-                newCtx.setProperty((String) o, synCtx.getProperty((String) o));
-            }
+        for (String s: synCtx.getPropertyKeySet()) {
+        	newCtx.setProperty(s, synCtx.getProperty(s));
         }
 
         // Make deep copy of fault stack so that parent will not be lost it's fault stack

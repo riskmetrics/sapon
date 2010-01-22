@@ -254,9 +254,8 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
     public void init(SynapseEnvironment se) {
         if (target != null) {
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).init(se);
-            }
+            endpoint.init(se);
+
             ManagedLifecycle seq = target.getSequence();
             if (seq != null) {
                 seq.init(se);
@@ -272,9 +271,8 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
     public void destroy() {
         if (target != null) {
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).destroy();
-            }
+            endpoint.destroy();
+
             ManagedLifecycle seq = target.getSequence();
             if (seq != null) {
                 seq.destroy();

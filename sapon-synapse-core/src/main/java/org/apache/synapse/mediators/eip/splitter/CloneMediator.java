@@ -162,9 +162,7 @@ public class CloneMediator extends AbstractMediator
                 seq.init(se);
             }
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).init(se);
-            }
+            endpoint.init(se);
         }
         initialized = true;
     }
@@ -181,9 +179,7 @@ public class CloneMediator extends AbstractMediator
                 seq.destroy();
             }
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).destroy();
-            }
+            endpoint.destroy();
         }
     }
 }
