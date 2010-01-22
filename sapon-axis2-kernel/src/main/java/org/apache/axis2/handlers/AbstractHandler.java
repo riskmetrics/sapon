@@ -25,19 +25,10 @@ import org.apache.axis2.description.HandlerDescription;
 import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.Handler;
 
-/**
- * Class AbstractHandler
- */
 public abstract class AbstractHandler implements Handler {
 
-    /**
-     * Field handlerDesc
-     */
     protected HandlerDescription handlerDesc;
 
-    /**
-     * Constructor AbstractHandler.
-     */
     public AbstractHandler() {
         handlerDesc = new HandlerDescription("DefaultHandler");
     }
@@ -50,24 +41,13 @@ public abstract class AbstractHandler implements Handler {
     public void cleanup() {
     }
 
-    /**
-     * Method init.
-     *
-     */
     public void init(HandlerDescription handlerdesc) {
         this.handlerDesc = handlerdesc;
     }
 
-    /*
-     *  (non-Javadoc)
-     * @see java.lang.Object#toString()
-     */
-    public String toString() {
-        String name = this.getName();
-
-        return (name != null)
-                ? name
-                : null;
+    @Override
+	public String toString() {
+        return getName();
     }
 
     /**
@@ -79,11 +59,6 @@ public abstract class AbstractHandler implements Handler {
         return handlerDesc;
     }
 
-    /**
-     * Method getName.
-     *
-     * @return Returns QName.
-     */
     public String getName() {
         return handlerDesc.getName();
     }
