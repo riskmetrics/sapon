@@ -35,9 +35,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.wsdl.Definition;
@@ -2287,24 +2289,43 @@ public class AxisService extends AxisDescriptionBase
 			nameTable.put(s, sourceURI);
 			sourceURIToNewLocationMap.put(sourceURI, sourceURI);
 		} else {
-			String newURI = sourceURI.substring(sourceURI.lastIndexOf('/') + 1);
-			if (newURI.endsWith(".xsd")) {
+			StringBuffer newURIBuff
+				= new StringBuffer(sourceURI.substring(sourceURI.lastIndexOf('/') + 1));
+			if (endsWith(newURIBuff, ".xsd")) {
 				// remove the .xsd extension
-				newURI = newURI.substring(0, newURI.lastIndexOf("."));
+				newURIBuff.setLength(newURIBuff.length() - ".xsd".length());
 			} else {
-				newURI = "xsd" + count++;
+				//TODO:  um, what?
+				//newURI = "xsd" + count++;
 			}
 
-			newURI = customSchemaNameSuffix != null ? newURI
-					+ customSchemaNameSuffix : newURI;
+			if(customSchemaNameSuffix != null) {
+				newURIBuff.append(customSchemaNameSuffix);
+			}
+
+			String newURI = newURIBuff.toString();
 			// make it unique
-			while (nameTable.containsValue(newURI)) {
-				newURI = newURI + count++;
+			Set<String> vals = new HashSet<String>(nameTable.size());
+			vals.addAll(nameTable.values());
+			while (vals.contains(newURI)) {
+				newURI = newURIBuff.append(count++).toString();
 			}
-
 			nameTable.put(s, newURI);
 			sourceURIToNewLocationMap.put(sourceURI, newURI);
 		}
+	}
+
+	private static boolean endsWith(StringBuffer sb, String str) {
+		if(str.length() > sb.length()) {
+			return false;
+		}
+		final int baseIndex = sb.length() - str.length();
+		for(int i=0; i<str.length(); i++) {
+			if(sb.charAt(baseIndex + i) != str.charAt(i)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**
