@@ -49,10 +49,8 @@ import org.w3c.dom.NodeList;
 public abstract class ParentNode extends ChildNode implements OMContainerEx {
 
     protected ChildNode firstChild;
-
     protected ChildNode lastChild;
 
-    /** @param ownerDocument  */
     protected ParentNode(DocumentImpl ownerDocument, OMFactory factory) {
         super(ownerDocument, factory);
     }
