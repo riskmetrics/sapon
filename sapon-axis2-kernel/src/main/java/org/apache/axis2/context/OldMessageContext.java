@@ -42,8 +42,8 @@ import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeaderBlock;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.RelatesTo;
 import org.apache.axis2.alt.DefaultExecutionTracker;
@@ -1433,7 +1433,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
     /*
     * character to delimit strings
     */
-    private final String selfManagedDataDelimiter = "*";
+    private static final String selfManagedDataDelimiter = "*";
 
 
     /**
