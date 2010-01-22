@@ -2289,8 +2289,8 @@ public class AxisService extends AxisDescriptionBase
 			nameTable.put(s, sourceURI);
 			sourceURIToNewLocationMap.put(sourceURI, sourceURI);
 		} else {
-			StringBuffer newURIBuff
-				= new StringBuffer(sourceURI.substring(sourceURI.lastIndexOf('/') + 1));
+			StringBuilder newURIBuff
+				= new StringBuilder(sourceURI.substring(sourceURI.lastIndexOf('/') + 1));
 			if (endsWith(newURIBuff, ".xsd")) {
 				// remove the .xsd extension
 				newURIBuff.setLength(newURIBuff.length() - ".xsd".length());
@@ -2315,7 +2315,7 @@ public class AxisService extends AxisDescriptionBase
 		}
 	}
 
-	private static boolean endsWith(StringBuffer sb, String str) {
+	private static boolean endsWith(StringBuilder sb, String str) {
 		if(str.length() > sb.length()) {
 			return false;
 		}
