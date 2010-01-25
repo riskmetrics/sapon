@@ -152,24 +152,6 @@ public class OldMessageContext extends AbstractContext<OperationContext>
     private transient AxisMessage axisMessage;
 
     /**
-     * AxisOperation associated with this message context
-     */
-    private transient AxisOperation axisOperation;
-
-    /**
-     * AxisService
-     */
-    private transient AxisService axisService;
-
-    /**
-     * AxisServiceGroup
-     * <p/>
-     * Note the service group can be set independently of the service
-     * so the service might not match up with this serviceGroup
-     */
-    private transient AxisServiceGroup axisServiceGroup;
-
-    /**
      * ConfigurationContext
      */
     private transient ConfigurationContext configurationContext;
@@ -312,22 +294,18 @@ public class OldMessageContext extends AbstractContext<OperationContext>
         paused = true;
     }
 
-    public boolean hasAxisOperation() {
-    	return axisOperation != null;
-    }
-
     public AxisOperation getAxisOperation() {
         if (LoggingControl.debugLoggingAllowed) {
             checkActivateWarning("getAxisOperation");
         }
-        return axisOperation;
+        return axisMessage.getOperation();
     }
 
     public AxisService getAxisService() {
         if (LoggingControl.debugLoggingAllowed) {
             checkActivateWarning("getAxisService");
         }
-        return axisService;
+        return axisMessage.getService();
     }
 
     /*
@@ -339,7 +317,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
         if (LoggingControl.debugLoggingAllowed) {
             checkActivateWarning("getAxisServiceGroup");
         }
-        return axisServiceGroup;
+        return axisMessage.getServiceGroup();
     }
 
     public ConfigurationContext getConfigurationContext() {
@@ -1325,24 +1303,6 @@ public class OldMessageContext extends AbstractContext<OperationContext>
     }
 
     /**
-     * Gets the first child of the envelope, check if it is a soap:Body, which means there is no header.
-     * We do this basically to make sure we don't parse and build the om tree of the whole envelope
-     * looking for the soap header. If this method returns true, there still is no guarantee that there is
-     * a soap:Header present, use getHeader() and also check for null on getHeader() to be absolutely sure.
-     *
-     * @return boolean
-     * @deprecated The bonus you used to get from this is now built in to SOAPEnvelope.getHeader()
-     */
-    @Deprecated
-	public boolean isHeaderPresent() {
-        // If there's no envelope there can't be a header.
-        if (this.envelope == null) {
-            return false;
-        }
-        return (this.envelope.getHeader() != null);
-    }
-
-    /**
      * Setting of the attachments map should be performed at the receipt of a
      * message only. This method is only meant to be used by the Axis2
      * internals.
@@ -1743,21 +1703,6 @@ public class OldMessageContext extends AbstractContext<OperationContext>
     public void setFailureReason(Exception failureReason) {
         this.failureReason = failureReason;
     }
-
-	@Override
-	public boolean hasAxisMessage() {
-		return axisMessage != null;
-	}
-
-	@Override
-	public boolean hasAxisService() {
-		return axisService != null;
-	}
-
-	@Override
-	public boolean hasAxisServiceGroup() {
-		return axisServiceGroup != null;
-	}
 
 	@Override
 	public void setFault(boolean b) {

@@ -236,10 +236,6 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
                                 serviceGroupName);
                 if (serviceGroupContext == null) {
                     AxisServiceGroup axisServiceGroup = messageContext.getAxisServiceGroup();
-                    if (axisServiceGroup == null) {
-                        axisServiceGroup = axisService.getServiceGroup();
-                        messageContext.setAxisServiceGroup(axisServiceGroup);
-                    }
                     ConfigurationContext cfgCtx = messageContext.getConfigurationContext();
                     serviceGroupContext = cfgCtx.createServiceGroupContext(axisServiceGroup);
                     applicationSessionServiceGroupContexts
