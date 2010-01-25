@@ -356,7 +356,7 @@ public class AxisEngine {
                         MessageContext.TRANSPORT_NON_BLOCKING);
                 if (isTransportNonBlocking != null &&
                         ((Boolean) isTransportNonBlocking).booleanValue()) {
-                    msgContext.getConfigurationContext().getThreadPool().execute(
+                    msgContext.getConfigurationContext().getExecutor().execute(
                             new TransportNonBlockingInvocationWorker(msgContext, sender));
                 } else {
                     sender.invoke(msgContext);

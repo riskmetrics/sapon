@@ -31,10 +31,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import org.apache.axiom.om.util.UUIDGenerator;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.clustering.ClusterManager;
 import org.apache.axis2.clustering.ClusteringConstants;
 import org.apache.axis2.clustering.configuration.ConfigurationManager;
@@ -45,10 +47,7 @@ import org.apache.axis2.description.Parameter;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.engine.DependencyManager;
 import org.apache.axis2.engine.ListenerManager;
-import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.util.JavaUtils;
-import org.apache.axis2.util.threadpool.ThreadFactory;
-import org.apache.axis2.util.threadpool.ThreadPool;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -80,7 +79,7 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
     private Hashtable<String, ServiceGroupContext> applicationSessionServiceGroupContexts
     	= new Hashtable<String, ServiceGroupContext>();
     private AxisConfiguration axisConfiguration;
-    private ThreadFactory threadPool;
+    private Executor executor;
     //To keep TransportManager instance
     private ListenerManager listenerManager;
 
@@ -621,12 +620,12 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
      *
      * @return Returns configuration specific thread pool
      */
-    public ThreadFactory getThreadPool() {
-        if (threadPool == null) {
-            threadPool = new ThreadPool();
+    public Executor getExecutor() {
+        if (executor == null) {
+            executor = Executors.newCachedThreadPool();
         }
 
-        return threadPool;
+        return executor;
     }
 
     /**
@@ -636,20 +635,6 @@ public class ConfigurationContext extends AbstractContext<ConfigurationContext> 
      */
     public void setAxisConfiguration(AxisConfiguration configuration) {
         axisConfiguration = configuration;
-    }
-
-    /**
-     * Sets the thread factory.
-     *
-     * @param pool The thread pool
-     * @throws AxisFault If a thread pool has already been set
-     */
-    public void setThreadPool(ThreadFactory pool) throws AxisFault {
-        if (threadPool == null) {
-            threadPool = pool;
-        } else {
-            throw new AxisFault(Messages.getMessage("threadpoolset"));
-        }
     }
 
     /**

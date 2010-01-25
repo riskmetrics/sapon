@@ -31,8 +31,8 @@ import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPFactory;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.classloader.MultiParentClassLoader;
 import org.apache.axis2.clustering.ClusteringFault;
@@ -102,7 +102,7 @@ public abstract class AbstractMessageReceiver implements MessageReceiver {
 				AsyncMessageReceiverWorker worker = new AsyncMessageReceiverWorker(
 						messageCtx);
 				messageCtx.getEnvelope().build();
-				messageCtx.getConfigurationContext().getThreadPool().execute(
+				messageCtx.getConfigurationContext().getExecutor().execute(
 						worker);
 				return;
 			}

@@ -231,7 +231,7 @@ class OutInAxisOperationClient extends OperationClient {
                 send(mc);
                 completed = true;
             } else {
-                sc.getConfigurationContext().getThreadPool().execute(
+                sc.getConfigurationContext().getExecutor().execute(
                         new NonBlockingInvocationWorker(mc, axisCallback));
             }
         }
