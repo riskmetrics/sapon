@@ -24,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.SocketException;
 import java.net.URL;
@@ -43,18 +42,9 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.wsdl.Definition;
-import javax.wsdl.Import;
-import javax.wsdl.Port;
-import javax.wsdl.Service;
-import javax.wsdl.Types;
 import javax.wsdl.WSDLException;
-import javax.wsdl.extensions.http.HTTPAddress;
-import javax.wsdl.extensions.schema.Schema;
-import javax.wsdl.extensions.soap.SOAPAddress;
-import javax.wsdl.extensions.soap12.SOAP12Address;
 import javax.wsdl.factory.WSDLFactory;
 import javax.wsdl.xml.WSDLReader;
-import javax.wsdl.xml.WSDLWriter;
 import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -66,7 +56,6 @@ import org.apache.axis2.alt.ModuleConfigAccessor;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.client.ServiceClient;
 import org.apache.axis2.context.MessageContext;
-import org.apache.axis2.context.OldMessageContext;
 import org.apache.axis2.context.ServiceContext;
 import org.apache.axis2.dataretrieval.AxisDataLocator;
 import org.apache.axis2.dataretrieval.AxisDataLocatorImpl;
@@ -75,9 +64,7 @@ import org.apache.axis2.dataretrieval.Data;
 import org.apache.axis2.dataretrieval.DataRetrievalException;
 import org.apache.axis2.dataretrieval.DataRetrievalRequest;
 import org.apache.axis2.dataretrieval.LocatorType;
-import org.apache.axis2.dataretrieval.OutputForm;
 import org.apache.axis2.dataretrieval.SchemaSupplier;
-import org.apache.axis2.dataretrieval.WSDLSupplier;
 import org.apache.axis2.deployment.DeploymentConstants;
 import org.apache.axis2.deployment.util.ExcludeInfo;
 import org.apache.axis2.deployment.util.PhasesInfo;
@@ -101,7 +88,6 @@ import org.apache.axis2.util.IOUtils;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.Loader;
 import org.apache.axis2.util.LoggingControl;
-import org.apache.axis2.util.XMLPrettyPrinter;
 import org.apache.axis2.util.XMLUtils;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.commons.logging.Log;
@@ -114,10 +100,6 @@ import org.apache.ws.commons.schema.XmlSchemaObjectCollection;
 import org.apache.ws.commons.schema.utils.NamespaceMap;
 import org.apache.ws.commons.schema.utils.NamespacePrefixList;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -235,8 +217,6 @@ public class AxisService extends AxisDescriptionBase
 	 * Keeps track whether the schema locations are adjusted
 	 */
 	private boolean schemaLocationsAdjusted = false;
-
-	private boolean wsdlImportLocationAdjusted = false;
 
 	/**
 	 * A table that keeps a mapping of unique xsd names (Strings) against the
@@ -916,124 +896,6 @@ public class AxisService extends AxisDescriptionBase
 		}
 	}
 
-	private void printDefinitionObject(Definition definition, OutputStream out,
-			String requestIP) throws AxisFault, WSDLException {
-		if (isModifyUserWSDLPortAddress()) {
-			setPortAddress(definition, requestIP);
-		}
-		if (!wsdlImportLocationAdjusted) {
-			changeImportAndIncludeLocations(definition);
-			wsdlImportLocationAdjusted = true;
-		}
-		WSDLWriter writer = WSDLFactory.newInstance().newWSDLWriter();
-		writer.writeWSDL(definition, out);
-	}
-
-	public void printUserWSDL(OutputStream out, String wsdlName)
-	throws AxisFault {
-		Definition definition = null;
-		// first find the correct wsdl definition
-		Parameter wsdlParameter = getParameter(WSDLConstants.WSDL_4_J_DEFINITION);
-		if (wsdlParameter != null) {
-			definition = (Definition) wsdlParameter.getValue();
-		}
-
-		if (definition != null) {
-			try {
-				printDefinitionObject(getWSDLDefinition(definition, wsdlName),
-						out, null);
-			} catch (WSDLException e) {
-				throw AxisFault.makeFault(e);
-			}
-		} else {
-			printWSDLError(out);
-		}
-
-	}
-
-	/**
-	 * Find the definition object for given name
-	 *
-	 * @param parentDefinition
-	 * @param name
-	 * @return wsdl definition
-	 */
-	private Definition getWSDLDefinition(Definition parentDefinition, String name)
-	{
-		if (name == null) {
-			return parentDefinition;
-		}
-
-		Definition importedDefinition = null;
-	    for(List<Import> values: parentDefinition.getImports().values()) {
-			for (Import wsdlImport: values) {
-				if (wsdlImport.getLocationURI().endsWith(name)) {
-					importedDefinition = wsdlImport.getDefinition();
-					break;
-				} else {
-					importedDefinition = getWSDLDefinition(wsdlImport
-							.getDefinition(), name);
-				}
-				if (importedDefinition != null) {
-					break;
-				}
-			}
-			if (importedDefinition != null) {
-				break;
-			}
-		}
-		return importedDefinition;
-	}
-
-	/**
-	 * this procesdue recursively adjust the wsdl imports locations and the
-	 * schmea import and include locations.
-	 *
-	 * @param definition
-	 */
-	private void changeImportAndIncludeLocations(Definition definition) throws AxisFault {
-
-		// adjust the schema locations in types section
-		Types types = definition.getTypes();
-		if (types != null) {
-			List<?> extensibilityElements = types.getExtensibilityElements();
-			for (Object extensibilityElement: extensibilityElements) {
-				if (extensibilityElement instanceof Schema) {
-					Schema schema = (Schema) extensibilityElement;
-					changeLocations(schema.getElement());
-				}
-			}
-		}
-
-		for(List<Import> values: definition.getImports().values()) {
-			for (Import wsdlImport: values) {
-				String originalImportString = wsdlImport.getLocationURI();
-				if (originalImportString.indexOf("://") == -1 && originalImportString.indexOf("?wsdl=") == -1){
-					wsdlImport.setLocationURI(this.getServiceEPR() + "?wsdl=" + originalImportString);
-				}
-				changeImportAndIncludeLocations(wsdlImport.getDefinition());
-			}
-		}
-
-	}
-
-	/**
-	 * change the schema Location in the elemment
-	 *
-	 * @param element
-	 */
-
-	private void changeLocations(Element element) throws AxisFault {
-		NodeList nodeList = element.getChildNodes();
-		String tagName;
-		for (int i = 0; i < nodeList.getLength(); i++) {
-			tagName = nodeList.item(i).getLocalName();
-			if (IMPORT_TAG.equals(tagName) || INCLUDE_TAG.equals(tagName)) {
-				processImport(nodeList.item(i));
-			}
-		}
-	}
-
 	private void updateSchemaLocation(XmlSchema schema) throws AxisFault {
 		XmlSchemaObjectCollection includes = schema.getIncludes();
 		for (int j = 0; j < includes.getCount(); j++) {
@@ -1053,21 +915,6 @@ public class AxisService extends AxisDescriptionBase
 			if (schemaLocation.indexOf("://") == -1 && schemaLocation.indexOf("?xsd=") == -1) {
 				String newscheamlocation = this.getServiceEPR() + "?xsd=" + schemaLocation;
 				xmlSchemaExternal.setSchemaLocation(newscheamlocation);
-			}
-		}
-	}
-
-	private void processImport(Node importNode) throws AxisFault {
-		NamedNodeMap nodeMap = importNode.getAttributes();
-		Node attribute;
-		String attributeValue;
-		for (int i = 0; i < nodeMap.getLength(); i++) {
-			attribute = nodeMap.item(i);
-			if (attribute.getNodeName().equals("schemaLocation")) {
-				attributeValue = attribute.getNodeValue();
-				if (attributeValue.indexOf("://") == -1 && attributeValue.indexOf("?xsd=") == -1) {
-					attribute.setNodeValue(this.getServiceEPR() + "?xsd=" + attributeValue);
-				}
 			}
 		}
 	}
@@ -1186,217 +1033,6 @@ public class AxisService extends AxisDescriptionBase
 			}
 		}
 		return 1;
-	}
-
-	/**
-	 * Produces a WSDL for this AxisService and prints it to the specified
-	 * OutputStream.
-	 *
-	 * @param out
-	 *            destination stream. The WSDL will be sent here.
-	 * @param requestIP
-	 *            the hostname the WSDL request was directed at. This should be
-	 *            the address that appears in the generated WSDL.
-	 * @throws AxisFault
-	 *             if an error occurs
-	 */
-	public void printWSDL(OutputStream out, String requestIP) throws AxisFault {
-		// If we're looking for pre-existing WSDL, use that.
-		if (isUseUserWSDL()) {
-			printUserWSDL(out, null);
-			return;
-		}
-
-		// If we find a WSDLSupplier, use that
-		WSDLSupplier supplier = (WSDLSupplier) getParameterValue("WSDLSupplier");
-		if (supplier != null) {
-			try {
-				Definition definition = supplier.getWSDL(this);
-				if (definition != null) {
-					changeImportAndIncludeLocations(definition);
-					printDefinitionObject(getWSDLDefinition(definition, null),
-							out, requestIP);
-				}
-			} catch (Exception e) {
-				printWSDLError(out, e);
-			}
-			return;
-		}
-
-		// Otherwise, generate WSDL ourselves
-		String[] eprArray = requestIP == null ? new String[] { this.endpointName }
-		                                      : calculateEPRs(requestIP);
-		getWSDL(out, eprArray);
-	}
-
-	/**
-	 * Print the WSDL with a default URL. This will be called only during
-	 * codegen time.
-	 *
-	 * @param out
-	 * @throws AxisFault
-	 */
-	public void printWSDL(OutputStream out) throws AxisFault {
-		printWSDL(out, null);
-	}
-
-	private AxisEndpoint getAxisEndpoint(String port) {
-		// if service has a single endpoint, this will cause the [serviceName] address
-		// to be used in wsdl instead of the [serviceName].[endpointName]
-		if (endpointMap.size() == 1 && endpointMap.containsKey(getEndpointName())) {
-			return null;
-		} else {
-			return endpointMap.get(port);
-		}
-	}
-
-	private void setPortAddress(Definition definition, String requestIP)
-		throws AxisFault
-	{
-		for(final Service serviceElement: definition.getServices().values()) {
-			for(final Port port: serviceElement.getPorts().values()) {
-				AxisEndpoint endpoint = getAxisEndpoint(port.getName());
-				for(final Object extensibilityEle: port.getExtensibilityElements()) {
-					if (extensibilityEle instanceof SOAPAddress) {
-						SOAPAddress soapAddress = (SOAPAddress) extensibilityEle;
-						soapAddress.setLocationURI(
-								findLocationURI(endpoint,
-												soapAddress.getLocationURI(),
-												requestIP));
-					} else if (extensibilityEle instanceof SOAP12Address) {
-						SOAP12Address soapAddress = (SOAP12Address) extensibilityEle;
-						soapAddress.setLocationURI(
-								findLocationURI(endpoint,
-												soapAddress.getLocationURI(),
-												requestIP));
-					} else if (extensibilityEle instanceof HTTPAddress) {
-						HTTPAddress httpAddress = (HTTPAddress) extensibilityEle;
-						httpAddress.setLocationURI(
-								findLocationURI(endpoint,
-												httpAddress.getLocationURI(),
-												requestIP));
-					}
-					// TODO : change the Endpoint refrence addess as well.
-				}
-			}
-		}
-	}
-
-	private String findLocationURI(	final AxisEndpoint endpoint,
-									final String existingAddress,
-									final String requestIP)
-		throws AxisFault
-	{
-		if (endpoint != null) {
-			return endpoint.calculateEndpointURL();
-		} else if (existingAddress == null || existingAddress.equals("REPLACE_WITH_ACTUAL_URL")) {
-			return getEPRs()[0];
-		} else if (requestIP == null) {
-			return getLocationURI(getEPRs(), existingAddress);
-		} else {
-			return getLocationURI(calculateEPRs(requestIP), existingAddress);
-		}
-	}
-
-	/**
-	 * this method returns the new IP address corresponding to the already
-	 * existing ip
-	 *
-	 * @param eprs
-	 * @param epr
-	 * @return corresponding Ip address
-	 */
-	private String getLocationURI(String[] eprs, String epr)
-		throws AxisFault
-	{
-		String returnIP = null;
-		if (epr == null) {
-			throw new AxisFault("No epr is given in the wsdl port");
-		}
-
-		final int colonIndex = epr.indexOf(':');
-		if (colonIndex < 0) {
-			throw new AxisFault("invalid epr is given epr ==> " + epr);
-		}
-
-		final String existingProtocol = epr.substring(0, colonIndex).trim();
-		String eprProtocol;
-		for (String epr2 : eprs) {
-			eprProtocol = epr2.substring(0, epr2.indexOf(":")).trim();
-			if (eprProtocol.equals(existingProtocol)) {
-				returnIP = epr2;
-				break;
-			}
-		}
-		if (returnIP != null) {
-			return returnIP;
-		} else {
-			throw new AxisFault(
-					"Server does not have an epr for the wsdl epr==> " + epr);
-		}
-	}
-
-	private void getWSDL(OutputStream out, String[] serviceURL)
-		throws AxisFault
-	{
-		// Retrieve WSDL using the same data retrieval path for GetMetadata
-		// request.
-		DataRetrievalRequest request = new DataRetrievalRequest();
-		request.putDialect(DRConstants.SPEC.DIALECT_TYPE_WSDL);
-		request.putOutputForm(OutputForm.INLINE_FORM);
-
-		MessageContext context = new OldMessageContext();
-		context.setAxisService(this);
-		context.setTo(new EndpointReference(serviceURL[0]));
-
-		Data[] result = getData(request, context);
-		OMElement wsdlElement;
-		if (result != null && result.length > 0) {
-			wsdlElement = (OMElement) (result[0].getData());
-			try {
-				XMLPrettyPrinter.prettify(wsdlElement, out);
-				out.flush();
-				out.close();
-			} catch (Exception e) {
-				throw AxisFault.makeFault(e);
-			}
-		}
-	}
-
-	private void printWSDLError(OutputStream out) throws AxisFault {
-		printWSDLError(out, null);
-	}
-
-	private void printWSDLError(OutputStream out, Exception e) throws AxisFault {
-		try {
-			String wsdlntfound = "<error>"
-				+ "<description>Unable to generate WSDL 1.1 for this service</description>"
-				+ "<reason>If you wish Axis2 to automatically generate the WSDL 1.1, then please "
-				+ "set useOriginalwsdl as false in your services.xml</reason>";
-			out.write(wsdlntfound.getBytes());
-			if (e != null) {
-				PrintWriter pw = new PrintWriter(out);
-				e.printStackTrace(pw);
-				pw.flush();
-			}
-			out.write("</error>".getBytes());
-			out.flush();
-			out.close();
-		} catch (IOException ex) {
-			throw AxisFault.makeFault(ex);
-		}
-	}
-
-	/**
-	 * Gets the description about the service which is specified in
-	 * services.xml.
-	 *
-	 * @return Returns String.
-	 * @deprecated Use getDocumentation() instead
-	 */
-	@Deprecated
-	public String getServiceDescription() {
-		return getDocumentation();
 	}
 
 	/**
