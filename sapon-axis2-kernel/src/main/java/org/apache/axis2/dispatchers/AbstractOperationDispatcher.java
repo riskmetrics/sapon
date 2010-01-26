@@ -68,7 +68,6 @@ public abstract class AbstractOperationDispatcher extends AbstractHandler {
                                                                                           .getName().getLocalPart()));
                 }
 
-                msgctx.setAxisOperation(axisOperation);
                 //setting axisMessage into messageContext
                 msgctx.setAxisMessage(axisOperation.getMessage(
                         WSDLConstants.MESSAGE_LABEL_IN_VALUE));
