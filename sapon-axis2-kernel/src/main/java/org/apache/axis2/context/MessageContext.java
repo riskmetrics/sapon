@@ -34,42 +34,14 @@ public interface MessageContext
     static final String REMOTE_ADDR = "REMOTE_ADDR";
     static final String TRANSPORT_ADDR = "TRANSPORT_ADDR";
     static final String TRANSPORT_HEADERS = "TRANSPORT_HEADERS";
-    /**
-     * Field TRANSPORT_OUT
-     */
+
     static final String TRANSPORT_OUT = "TRANSPORT_OUT";
-
-    /**
-     * Field TRANSPORT_IN
-     */
     static final String TRANSPORT_IN = "TRANSPORT_IN";
-
-    /**
-     * Field CHARACTER_SET_ENCODING
-     */
-    static final String CHARACTER_SET_ENCODING = "CHARACTER_SET_ENCODING";
-
-    /**
-     * Field UTF_8. This is the 'utf-8' value for CHARACTER_SET_ENCODING
-     * property.
-     */
-    static final String UTF_8 = "UTF-8";
-
-    /**
-     * Field UTF_16. This is the 'utf-16' value for CHARACTER_SET_ENCODING
-     * property.
-     */
-    static final String UTF_16 = "utf-16";
-
-    /**
-     * Field TRANSPORT_SUCCEED
-     */
     static final String TRANSPORT_SUCCEED = "TRANSPORT_SUCCEED";
 
-    /**
-     * Field DEFAULT_CHAR_SET_ENCODING. This is the default value for
-     * CHARACTER_SET_ENCODING property.
-     */
+    static final String CHARACTER_SET_ENCODING = "CHARACTER_SET_ENCODING";
+    static final String UTF_8 = "UTF-8";
+    static final String UTF_16 = "utf-16";
     static final String DEFAULT_CHAR_SET_ENCODING = UTF_8;
 
     /**
@@ -91,19 +63,14 @@ public interface MessageContext
     static ThreadLocal<MessageContext> currentMessageContext
     	= new ThreadLocal<MessageContext>();
 
-
 	String getLogCorrelationID();
 
-	boolean hasAxisMessage();
 	AxisMessage getAxisMessage();
 	void setAxisMessage(AxisMessage axisMessage);
-	boolean hasAxisOperation();
 	AxisOperation getAxisOperation();
 	void setAxisOperation(AxisOperation axisOperation);
-	boolean hasAxisService();
 	AxisService getAxisService();
 	void setAxisService(AxisService axisService);
-	boolean hasAxisServiceGroup();
 	AxisServiceGroup getAxisServiceGroup();
 	void setAxisServiceGroup(AxisServiceGroup axisServiceGroup);
 

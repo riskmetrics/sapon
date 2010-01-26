@@ -312,10 +312,6 @@ public class OldMessageContext extends AbstractContext<OperationContext>
         paused = true;
     }
 
-    public boolean hasAxisOperation() {
-    	return axisOperation != null;
-    }
-
     public AxisOperation getAxisOperation() {
         if (LoggingControl.debugLoggingAllowed) {
             checkActivateWarning("getAxisOperation");
@@ -1743,21 +1739,6 @@ public class OldMessageContext extends AbstractContext<OperationContext>
     public void setFailureReason(Exception failureReason) {
         this.failureReason = failureReason;
     }
-
-	@Override
-	public boolean hasAxisMessage() {
-		return axisMessage != null;
-	}
-
-	@Override
-	public boolean hasAxisService() {
-		return axisService != null;
-	}
-
-	@Override
-	public boolean hasAxisServiceGroup() {
-		return axisServiceGroup != null;
-	}
 
 	@Override
 	public void setFault(boolean b) {
