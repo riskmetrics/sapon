@@ -293,9 +293,9 @@ public class AxisConfiguration extends AxisDescriptionBase
                 }
             }
         }
-        Iterator<AxisModule> enModule = getEngagedModules().iterator();
-        while (enModule.hasNext()) {
-            axisServiceGroup.engageModule(enModule.next());
+
+        for(AxisModule enModule: getEngagedModules()) {
+            axisServiceGroup.engageModule(enModule);
         }
 
         ArrayList<AxisService> servicesIAdded = new ArrayList<AxisService>();
@@ -480,10 +480,7 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     public void notifyObservers(int event_type, AxisService service) {
         AxisEvent event = new AxisEvent(event_type);
-
-        for (int i = 0; i < observersList.size(); i++) {
-            AxisObserver axisObserver = observersList.get(i);
-
+        for(AxisObserver axisObserver: observersList) {
             try {
                 if (!service.isClientSide()) {
                     axisObserver.serviceUpdate(event, service);
@@ -497,10 +494,7 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     public void notifyObservers(int event_type, AxisModule moule) {
         AxisEvent event = new AxisEvent(event_type);
-
-        for (int i = 0; i < observersList.size(); i++) {
-            AxisObserver axisObserver = observersList.get(i);
-
+        for(AxisObserver axisObserver: observersList) {
             try {
                 axisObserver.moduleUpdate(event, moule);
             } catch (Throwable e) {
@@ -512,10 +506,7 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     public void notifyObservers(int event_type, AxisServiceGroup serviceGroup) {
         AxisEvent event = new AxisEvent(event_type);
-
-        for (int i = 0; i < observersList.size(); i++) {
-            AxisObserver axisObserver = observersList.get(i);
-
+        for(AxisObserver axisObserver: observersList) {
             try {
                 axisObserver.serviceGroupUpdate(event, serviceGroup);
             } catch (Throwable e) {
