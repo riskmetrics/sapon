@@ -492,11 +492,11 @@ public class AxisEngine {
             flowComplete(msgContext);
             return true;
         case CONTINUE:
-            String errorMsg = "Unrecognized InvocationResponse";
+        	return false;
+        default:
+        	String errorMsg = "Unrecognized InvocationResponse";
             log.error(msgContext.getLogCorrelationID() + " " + errorMsg);
             throw new AxisFault(errorMsg);
-        default:
-        	return false;
         }
     }
 
