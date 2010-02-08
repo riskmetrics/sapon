@@ -33,8 +33,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.RolePlayer;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.RelatesTo;
@@ -88,7 +88,7 @@ public abstract class AddressingInHandlerTestBase extends TestCase {
         mc.setConfigurationContext(context);
         if (rolePlayer != null) {
             mc.getConfigurationContext().getAxisConfiguration()
-                    .addParameter(Constants.SOAP_ROLE_PLAYER_PARAMETER, rolePlayer);
+                    .addParameter(Axis2Constants.SOAP_ROLE_PLAYER_PARAMETER, rolePlayer);
         }
         basicExtractAddressingInformationFromHeaders(testfile, mc);
 

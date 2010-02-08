@@ -44,6 +44,8 @@ public class SwitchMediator extends AbstractMediator implements ManagedLifecycle
     /** The default switch case, if any */
     private SwitchCase defaultCase = null;
 
+    private boolean initialized = false;
+
     public void init(SynapseEnvironment se) {
         for (ManagedLifecycle swCase : cases) {
             swCase.init(se);
@@ -51,6 +53,10 @@ public class SwitchMediator extends AbstractMediator implements ManagedLifecycle
         if (defaultCase != null) {
             defaultCase.init(se);
         }
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {

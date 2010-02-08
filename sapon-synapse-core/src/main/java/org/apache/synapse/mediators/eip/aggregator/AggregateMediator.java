@@ -83,6 +83,8 @@ public class AggregateMediator extends AbstractMediator implements ManagedLifecy
     /** Lock object to provide the synchronized access to the activeAggregates on checking */
     private final Object lock = new Object();
 
+    private boolean initialized = false;
+
     public AggregateMediator() {
         try {
             aggregationExpression = new SynapseXPath("s11:Body/child::*[position()=1] | " +
@@ -101,6 +103,11 @@ public class AggregateMediator extends AbstractMediator implements ManagedLifecy
         if (onCompleteSequence != null) {
             onCompleteSequence.init(se);
         }
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {

@@ -24,8 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
@@ -60,7 +60,6 @@ import org.apache.synapse.config.SynapsePropertiesLoader;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2TransportHelper;
-import org.apache.synapse.core.axis2.MessageContextCreatorForAxis2;
 import org.apache.synapse.core.axis2.ProxyService;
 import org.apache.synapse.core.axis2.SynapseDispatcher;
 import org.apache.synapse.core.axis2.SynapseMessageReceiver;
@@ -107,6 +106,12 @@ public class Axis2SynapseController implements SynapseController {
      */
     public void init(SynapseServerInfo synapseServerInfo,
                      ServerContextInformation serverContextInformation) {
+    	if(synapseServerInfo == null) {
+    		throw new IllegalArgumentException("synapseServerInfo cannot be null");
+    	}
+    	if(serverContextInformation == null) {
+    		throw new IllegalArgumentException("serverContextInformation cannot be null");
+    	}
 
         log.info("Initializing Synapse at : " + new Date());
 
@@ -118,8 +123,8 @@ public class Axis2SynapseController implements SynapseController {
             System.setProperty(JMX_AGENT_NAME, "org.apache.synapse");
         }
 
-        if (serverContextInformation == null || serverContextInformation.getServerContext() == null
-                || synapseServerInfo.isCreateNewInstance()) {
+        if (serverContextInformation.getServerContext() == null
+        		|| synapseServerInfo.isCreateNewInstance()) {
 
             if (log.isDebugEnabled()) {
                 log.debug("Initializing Synapse in a new axis2 server environment instance");
@@ -317,18 +322,8 @@ public class Axis2SynapseController implements SynapseController {
      * @return SynapseEnvironment instance
      */
     public SynapseEnvironment createSynapseEnvironment() {
-
-        try {
-            deploySynapseService();
-            deployProxyServices();
-        } catch (AxisFault axisFault) {
-            log.fatal("Synapse startup failed...", axisFault);
-            throw new SynapseException("Synapse startup failed", axisFault);
-        }
-
         synapseEnvironment = new Axis2SynapseEnvironment(
                 configurationContext, synapseConfiguration);
-        MessageContextCreatorForAxis2.setSynEnv(synapseEnvironment);
 
         Parameter synapseEnvironmentParameter = new Parameter(
                 SynapseConstants.SYNAPSE_ENV, synapseEnvironment);
@@ -341,6 +336,15 @@ public class Axis2SynapseController implements SynapseController {
         }
         synapseConfiguration.init(synapseEnvironment);
         synapseEnvironment.setInitialized(true);
+
+        try {
+            deploySynapseService(synapseEnvironment);
+            deployProxyServices();
+        } catch (AxisFault axisFault) {
+            log.fatal("Synapse startup failed...", axisFault);
+            throw new SynapseException("Synapse startup failed", axisFault);
+        }
+
         return synapseEnvironment;
     }
 
@@ -378,7 +382,6 @@ public class Axis2SynapseController implements SynapseController {
 
         // Set the Axis2 ConfigurationContext to the SynapseConfiguration
         synapseConfiguration.setAxisConfiguration(configurationContext.getAxisConfiguration());
-        MessageContextCreatorForAxis2.setSynConfig(synapseConfiguration);
 
         // set the Synapse configuration into the Axis2 configuration
         Parameter synapseConfigurationParameter = new Parameter(
@@ -514,19 +517,20 @@ public class Axis2SynapseController implements SynapseController {
      *
      * @throws AxisFault if an error occurs during Axis2 service initialization
      */
-    private void deploySynapseService() throws AxisFault {
-
+    private void deploySynapseService(SynapseEnvironment synEnv)
+    	throws AxisFault
+    {
         log.info("Deploying the Synapse service...");
         // Dynamically initialize the Synapse Service and deploy it into Axis2
         AxisConfiguration axisCfg = configurationContext.getAxisConfiguration();
         AxisService synapseService = new AxisService(SynapseConstants.SYNAPSE_SERVICE_NAME);
         AxisOperation mediateOperation = new InOutAxisOperation(
                 SynapseConstants.SYNAPSE_OPERATION_NAME);
-        mediateOperation.setMessageReceiver(new SynapseMessageReceiver());
+        mediateOperation.setMessageReceiver(new SynapseMessageReceiver(synEnv));
         synapseService.addOperation(mediateOperation);
         List<String> transports = new ArrayList<String>();
-        transports.add(Constants.TRANSPORT_HTTP);
-        transports.add(Constants.TRANSPORT_HTTPS);
+        transports.add(Axis2Constants.TRANSPORT_HTTP);
+        transports.add(Axis2Constants.TRANSPORT_HTTPS);
         synapseService.setExposedTransports(transports);
         axisCfg.addService(synapseService);
     }
@@ -569,7 +573,7 @@ public class Axis2SynapseController implements SynapseController {
                 }
             }
 
-            proxy.buildAxisService(synapseConfiguration,
+            proxy.buildAxisService(synapseEnvironment,
                     configurationContext.getAxisConfiguration());
             log.info("Deployed Proxy service : " + proxy.getName());
             if (!proxy.isStartOnLoad()) {

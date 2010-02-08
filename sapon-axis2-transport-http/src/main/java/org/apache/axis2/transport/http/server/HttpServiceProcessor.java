@@ -19,18 +19,19 @@
 
 package org.apache.axis2.transport.http.server;
 
+import java.io.IOException;
+import java.net.SocketException;
+import java.net.SocketTimeoutException;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicLong;
+
+import org.apache.axis2.AxisFault;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.ConnectionClosedException;
 import org.apache.http.HttpException;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
-
-import java.io.IOException;
-import java.net.SocketException;
-import java.net.SocketTimeoutException;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * I/O processor intended to process requests and fill in responses.
@@ -56,7 +57,7 @@ public class HttpServiceProcessor implements IOProcessor {
      * <p>
      * This field is needed to allow the equals method to work properly when this
      * HttpServiceProcessor has to be removed from the list of processors.
-     * 
+     *
      * @see DefaultHttpConnectionManager
      */
     private final long id;
@@ -82,18 +83,20 @@ public class HttpServiceProcessor implements IOProcessor {
                 this.httpservice.handleRequest(this.conn, context);
             }
         } catch (ConnectionClosedException ex) {
-            LOG.debug("Client closed connection");
+            LOG.debug("Client closed connection", ex);
+        } catch (AxisFault af) {
+            LOG.debug("af", af);
         } catch (IOException ex) {
             if (ex instanceof SocketTimeoutException) {
-                LOG.debug(ex.getMessage());
+                LOG.debug(ex.getMessage(), ex);
             } else if (ex instanceof SocketException) {
-                LOG.debug(ex.getMessage());
+                LOG.debug(ex.getMessage(), ex);
             } else {
                 LOG.warn(ex.getMessage(), ex);
             }
         } catch (HttpException ex) {
             if (LOG.isWarnEnabled()) {
-                LOG.warn("HTTP protocol error: " + ex.getMessage());
+                LOG.warn("HTTP protocol error: " + ex.getMessage(), ex);
             }
         } finally {
             destroy();
@@ -131,10 +134,11 @@ public class HttpServiceProcessor implements IOProcessor {
 
     /**
      * Returns the unique ID of this HttpServiceProcessor.
-     * 
+     *
      * @return The unique ID of this HttpServiceProcessor.
      */
-    public int hashCode() {
+    @Override
+	public int hashCode() {
         final int PRIME = 31;
         int result = 1;
         result = PRIME * result + (int) (id ^ (id >>> 32));
@@ -144,20 +148,25 @@ public class HttpServiceProcessor implements IOProcessor {
 
    /**
     * Indicates whether some other object is "equal to" this one.
-    * 
-    * @return <code>true</code> if this HttpServiceProcessor refere to the same 
+    *
+    * @return <code>true</code> if this HttpServiceProcessor refere to the same
     * object as obj or they have the same {@linkplain #id}, <code>false</code> otherwise.
     */
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (obj == null)
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
+    @Override
+	public boolean equals(Object obj) {
+        if (this == obj) {
+			return true;
+		}
+        if (obj == null) {
+			return false;
+		}
+        if (getClass() != obj.getClass()) {
+			return false;
+		}
         final HttpServiceProcessor other = (HttpServiceProcessor) obj;
-        if (id != other.id)
-            return false;
+        if (id != other.id) {
+			return false;
+		}
         return true;
     }
 

@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.OperationContext;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.SynapseMessageContext;
@@ -42,7 +42,9 @@ import org.apache.synapse.util.MessageHelper;
  * specifies an Action and/or To address to be set to the cloned message. The number of cloned
  * messages created is the number of targets specified
  */
-public class CloneMediator extends AbstractMediator implements ManagedLifecycle {
+public class CloneMediator extends AbstractMediator
+	implements ManagedLifecycle
+{
 
     /**
      * Continue processing the parent message or not?
@@ -52,6 +54,8 @@ public class CloneMediator extends AbstractMediator implements ManagedLifecycle 
 
     /** the list of targets to which cloned copies of the message will be given for mediation */
     private List<Target> targets = new ArrayList<Target>();
+
+    private boolean initialized = false;
 
     /**
      * This will implement the mediate method of the Mediator interface and will provide the
@@ -88,7 +92,7 @@ public class CloneMediator extends AbstractMediator implements ManagedLifecycle 
         OperationContext opCtx
             = ((Axis2SynapseMessageContext) synCtx).getAxis2MessageContext().getOperationContext();
         if (!continueParent && opCtx != null) {
-            opCtx.setProperty(Constants.RESPONSE_WRITTEN, "SKIP");
+            opCtx.setProperty(Axis2Constants.RESPONSE_WRITTEN, "SKIP");
         }
 
         // finalize tracing and debugging
@@ -158,10 +162,13 @@ public class CloneMediator extends AbstractMediator implements ManagedLifecycle 
                 seq.init(se);
             }
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).init(se);
-            }
+            endpoint.init(se);
         }
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {
@@ -172,9 +179,7 @@ public class CloneMediator extends AbstractMediator implements ManagedLifecycle 
                 seq.destroy();
             }
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).destroy();
-            }
+            endpoint.destroy();
         }
     }
 }

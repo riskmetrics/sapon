@@ -24,8 +24,8 @@ import java.util.List;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNode;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.OperationContext;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.SynapseMessageContext;
@@ -68,6 +68,8 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
 
     /** The target for the newly splitted messages */
     private Target target = null;
+
+    private boolean initialized = false;
 
     /**
      * Splits the message by iterating over the results of the given XPath expression
@@ -139,7 +141,7 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
         OperationContext opCtx
             = ((Axis2SynapseMessageContext) synCtx).getAxis2MessageContext().getOperationContext();
         if (!continueParent && opCtx != null) {
-            opCtx.setProperty(Constants.RESPONSE_WRITTEN,"SKIP");
+            opCtx.setProperty(Axis2Constants.RESPONSE_WRITTEN,"SKIP");
         }
 
         log.debug("End : Iterate mediator");
@@ -252,22 +254,25 @@ public class IterateMediator extends AbstractMediator implements ManagedLifecycl
     public void init(SynapseEnvironment se) {
         if (target != null) {
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).init(se);
-            }
+            endpoint.init(se);
+
             ManagedLifecycle seq = target.getSequence();
             if (seq != null) {
                 seq.init(se);
             }
         }
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void destroy() {
         if (target != null) {
             Endpoint endpoint = target.getEndpoint();
-            if (endpoint instanceof ManagedLifecycle) {
-                ((ManagedLifecycle) endpoint).destroy();
-            }
+            endpoint.destroy();
+
             ManagedLifecycle seq = target.getSequence();
             if (seq != null) {
                 seq.destroy();

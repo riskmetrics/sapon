@@ -315,18 +315,17 @@ public class SALSessions {
             if (isClustered) {
 
                 List<String> toBeRemoved = new ArrayList<String>();
-                for(final Object name: configCtx.getPropertyNames()) {
-                    if (name instanceof String && ((String) name).startsWith(SESSION_IDS)) {
-                        String key = (String) name;
-                        SessionInformation info = (SessionInformation) configCtx.getProperty(key);
+                for(final String name: configCtx.getPropertyNames()) {
+                    if (name.startsWith(SESSION_IDS)) {
+                        SessionInformation info = (SessionInformation) configCtx.getProperty(name);
 
                         if (info != null && info.isExpired()) {
                             if (log.isDebugEnabled()) {
                                 log.debug("Clustered Environment :" +
-                                        "Expired session with id :" + key);
+                                        "Expired session with id :" + name);
                             }
 
-                            toBeRemoved.add(key);
+                            toBeRemoved.add(name);
                         }
                     }
                 }

@@ -34,7 +34,7 @@ import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisBinding;
@@ -67,7 +67,7 @@ public class XFormURLEncodedBuilder implements Builder {
         SOAPFactory soapFactory;
         AxisBindingOperation axisBindingOperation =
                 (AxisBindingOperation) messageContext.getProperty(
-                        Constants.AXIS_BINDING_OPERATION);
+                        Axis2Constants.AXIS_BINDING_OPERATION);
         String queryParameterSeparator = null;
         String templatedPath = null;
         if (axisBindingOperation != null) {
@@ -113,7 +113,7 @@ public class XFormURLEncodedBuilder implements Builder {
 
         extractParametersFromRequest(parameterMap, query, queryParameterSeparator,
                                      (String) messageContext.getProperty(
-                                             Constants.Configuration.CHARACTER_SET_ENCODING),
+                                             Axis2Constants.Configuration.CHARACTER_SET_ENCODING),
                                      inputStream);
 
 

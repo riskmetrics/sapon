@@ -22,7 +22,7 @@ package org.apache.axis2.deployment;
 import junit.framework.TestCase;
 
 import org.apache.axiom.soap.RolePlayer;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.engine.AxisConfiguration;
 
@@ -34,7 +34,7 @@ public class SOAPRoleConfigurationTest extends TestCase{
 		AxisConfiguration axisConfig = ConfigurationContextFactory
             .createConfigurationContextFromFileSystem(filename , filename + "/axis2.xml")
             .getAxisConfiguration();
-		RolePlayer rolePlayer = (RolePlayer)axisConfig.getParameterValue(Constants.SOAP_ROLE_PLAYER_PARAMETER);
+		RolePlayer rolePlayer = (RolePlayer)axisConfig.getParameterValue(Axis2Constants.SOAP_ROLE_PLAYER_PARAMETER);
 		assertNotNull(rolePlayer);
 		assertFalse(rolePlayer.isUltimateDestination());
 		assertEquals(1, rolePlayer.getRoles().size());

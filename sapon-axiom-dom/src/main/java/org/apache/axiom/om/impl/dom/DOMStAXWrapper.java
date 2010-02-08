@@ -872,7 +872,7 @@ public class DOMStAXWrapper implements OMXMLStreamReader, XMLStreamConstants {
         if (OMConstants.IS_BINARY.equals(s)) {
             if (lastNode instanceof OMText) {
                 OMText text = (OMText) lastNode;
-                return new Boolean(text.isBinary());
+                return Boolean.valueOf(text.isBinary());
             }
             return Boolean.FALSE;
         } else if (OMConstants.DATA_HANDLER.equals(s)) {

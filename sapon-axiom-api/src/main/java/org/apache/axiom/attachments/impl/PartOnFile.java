@@ -41,9 +41,7 @@ import org.apache.axiom.attachments.lifecycle.impl.FileAccessor;
  */
 public class PartOnFile extends AbstractPart {
 
-    FileAccessor fileAccessor;
-    LifecycleManager manager;
-
+    private FileAccessor fileAccessor;
 
     /**
      * Create a PartOnFile from the specified InputStream

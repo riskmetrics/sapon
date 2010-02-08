@@ -159,8 +159,8 @@ public class SynapseXPath extends AXIOMXPath {
         }
 
         SynapseXPath synXPath = new SynapseXPath(newXPath.toString());
-        for (String prefix : nameSpaces.keySet()) {
-            synXPath.addNamespace(prefix, nameSpaces.get(prefix));
+        for (Map.Entry<String, String> e: nameSpaces.entrySet()) {
+            synXPath.addNamespace(e.getKey(), e.getValue());
         }
         return synXPath;
     }

@@ -526,13 +526,13 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 	{
 		//TODO:  this needs a redesign.
 		boolean disableSOAP11 = isTrueParam(axisService,
-	    		org.apache.axis2.Constants.Configuration.DISABLE_SOAP11);
+	    		org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP11);
 		boolean disableSOAP12 = isTrueParam(axisService,
-				org.apache.axis2.Constants.Configuration.DISABLE_SOAP12);
+				org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP12);
 	    boolean disableREST = isTrueParam(axisService,
-				org.apache.axis2.Constants.Configuration.DISABLE_REST);
+				org.apache.axis2.Axis2Constants.Configuration.DISABLE_REST);
 		boolean disableSilverlight = isTrueParam(axisService,
-				org.apache.axis2.Constants.Configuration.DISABLE_SILVERLIGHT);
+				org.apache.axis2.Axis2Constants.Configuration.DISABLE_SILVERLIGHT);
 
 		for(AxisEndpoint axisEndpoint: axisService.getEndpoints().values()) {
 			if (!axisEndpoint.isActive()) {
@@ -1179,22 +1179,20 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
         }
 
 		if (!policyURIs.isEmpty()) {
-			String value = null;
-
-			/*
-			 * We need to create a String that is like 'uri1 uri2 .." to set as
-			 * the value of the wsp:PolicyURIs attribute.
-			 */
-            for (Object policyURI : policyURIs) {
-                String uri = (String)policyURI;
-                value = (value == null) ? uri : value + " " + uri;
+			//Set wsp:PolicyURIs attribute to "uri1 uri2 ..."
+			final StringBuilder value = new StringBuilder();
+            for (String policyURI : policyURIs) {
+            	if(value.length() > 0) {
+            		value.append(" ");
+            	}
+            	value.append(policyURI);
             }
 
 			OMNamespace ns = factory.createOMNamespace(
 					org.apache.neethi.Constants.URI_POLICY_NS,
 					org.apache.neethi.Constants.ATTR_WSP);
 			OMAttribute URIs = factory.createOMAttribute("PolicyURIs", ns,
-					value);
+					value.toString());
 			element.addAttribute(URIs);
 		}
 	}

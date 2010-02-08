@@ -22,7 +22,7 @@ package org.apache.axis2.addressing;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisOperation;
 import org.apache.axis2.description.Parameter;
@@ -134,7 +134,7 @@ public class AddressingHelper {
         // there are some information  that the fault thrower wants to pass to the fault path.
         // Means that the fault is a ws-addressing one hence use the ws-addressing fault action.
         Object faultInfoForHeaders =
-                messageContext.getLocalProperty(Constants.FAULT_INFORMATION_FOR_HEADERS);
+                messageContext.getLocalProperty(Axis2Constants.FAULT_INFORMATION_FOR_HEADERS);
         // if the exception is due to a problem in the faultTo header itself, we can not use those
         // fault informatio to send the error. Try to send using replyTo, leave it to transport
         boolean doNotSendFaultUsingFaultTo = false;

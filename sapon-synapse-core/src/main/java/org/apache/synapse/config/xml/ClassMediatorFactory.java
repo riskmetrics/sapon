@@ -28,6 +28,7 @@ import org.apache.synapse.Mediator;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.commons.util.PropertyHelper;
 import org.apache.synapse.mediators.ext.ClassMediator;
+import org.apache.synapse.mediators.ext.FlexMediator;
 
 /**
  * Creates an instance of a Class mediator using XML configuration specified
@@ -66,27 +67,31 @@ public class ClassMediatorFactory extends AbstractMediatorFactory {
             throw new SynapseException(msg, e);
         }
 
-        for(OMElement child: elem.getChildrenWithName(PROP_Q)) {
-            String propName = child.getAttribute(ATT_NAME).getAttributeValue();
-            if (propName == null) {
-                handleException(
-                    "A Class mediator property must specify the name attribute");
-            } else {
-                if (child.getAttribute(ATT_VALUE) != null) {
-                    String value = child.getAttribute(ATT_VALUE).getAttributeValue();
-                    classMediator.addProperty(propName, value);
-                    PropertyHelper.setInstanceProperty(propName, value, m);
-                } else {
-                    OMNode omElt = child.getFirstElement();
-                    if (omElt != null) {
-                        classMediator.addProperty(propName, omElt);
-                        PropertyHelper.setInstanceProperty(propName, omElt, m);
-                    } else {
-                        handleException("A Class mediator property must specify " +
-                            "name and value attributes, or a name and a child XML fragment");
-                    }
-                }
-            }
+        if(m instanceof FlexMediator) {
+        	((FlexMediator)m).initWith(elem);
+        } else {
+	        for(OMElement child: elem.getChildrenWithName(PROP_Q)) {
+	            String propName = child.getAttribute(ATT_NAME).getAttributeValue();
+	            if (propName == null) {
+	                handleException(
+	                    "A Class mediator property must specify the name attribute");
+	            } else {
+	                if (child.getAttribute(ATT_VALUE) != null) {
+	                    String value = child.getAttribute(ATT_VALUE).getAttributeValue();
+	                    classMediator.addProperty(propName, value);
+	                    PropertyHelper.setInstanceProperty(propName, value, m);
+	                } else {
+	                    OMNode omElt = child.getFirstElement();
+	                    if (omElt != null) {
+	                        classMediator.addProperty(propName, omElt);
+	                        PropertyHelper.setInstanceProperty(propName, omElt, m);
+	                    } else {
+	                        handleException("A Class mediator property must specify " +
+	                            "name and value attributes, or a name and a child XML fragment");
+	                    }
+	                }
+	            }
+	        }
         }
 
         // after successfully creating the mediator

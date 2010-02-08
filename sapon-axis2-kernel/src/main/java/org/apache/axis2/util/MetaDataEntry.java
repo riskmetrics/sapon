@@ -19,16 +19,18 @@
 
 package org.apache.axis2.util;
 
-import org.apache.axis2.context.externalize.SafeObjectInputStream;
-import org.apache.axis2.context.externalize.SafeObjectOutputStream;
-import org.apache.axis2.context.externalize.SafeSerializable;
-
-import javax.xml.namespace.QName;
 import java.io.Externalizable;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.util.ArrayList;
+import java.util.List;
+
+import javax.xml.namespace.QName;
+
+import org.apache.axis2.context.externalize.SafeObjectInputStream;
+import org.apache.axis2.context.externalize.SafeObjectOutputStream;
+import org.apache.axis2.context.externalize.SafeSerializable;
 
 
 /**
@@ -36,7 +38,7 @@ import java.util.ArrayList;
  * about an object.
  */
 public class MetaDataEntry implements Externalizable, SafeSerializable {
-    // serialization identifier
+
     private static final long serialVersionUID = 8978361069526299875L;
 
     // supported revision levels, add a new level to manage compatible changes
@@ -44,18 +46,16 @@ public class MetaDataEntry implements Externalizable, SafeSerializable {
     // current revision level of this object
     private static final int revisionID = REVISION_2;
 
-    // data to keep on an object
-
     private String className = null;
     private String qnameAsString = null;
     private String extraName = null;
 
     // list of MetaDataEntry objects that are owned by the
     // original object referred to by this MetaDataEntry
-    private ArrayList children = null;
+    private List<MetaDataEntry> children = null;
 
     // marker to indicate end-of-list
-    public static String END_OF_LIST = "LAST_ENTRY";
+    public static final String END_OF_LIST = "LAST_ENTRY";
 
     /**
      * Simple constructor
@@ -91,7 +91,7 @@ public class MetaDataEntry implements Externalizable, SafeSerializable {
      * @param qnameAsString an expanded version of the QName of this object
      * @param children an ArrayList containing MetaDataEntries for owned objects
      */
-    public MetaDataEntry(String className, String qnameAsString, ArrayList children) {
+    public MetaDataEntry(String className, String qnameAsString, List<MetaDataEntry> children) {
         this.className = className;
         this.qnameAsString = qnameAsString;
         this.children = children;
@@ -211,7 +211,7 @@ public class MetaDataEntry implements Externalizable, SafeSerializable {
      *
      * @return the array list
      */
-    public ArrayList getChildren() {
+    public List<MetaDataEntry> getChildren() {
         return children;
     }
 
@@ -221,7 +221,7 @@ public class MetaDataEntry implements Externalizable, SafeSerializable {
      *
      * @param L the ArrayList of MetaDataEntry objects
      */
-    public void setChildren(ArrayList L) {
+    public void setChildren(List<MetaDataEntry> L) {
         children = L;
     }
 
@@ -232,7 +232,7 @@ public class MetaDataEntry implements Externalizable, SafeSerializable {
      */
     public void addToList(MetaDataEntry e) {
         if (children == null) {
-            children = new ArrayList();
+            children = new ArrayList<MetaDataEntry>();
         }
         children.add(e);
     }
@@ -261,8 +261,8 @@ public class MetaDataEntry implements Externalizable, SafeSerializable {
         // write out contents of this object
 
         //---------------------------------------------------------
-        // in order to handle future changes to the message 
-        // context definition, be sure to maintain the 
+        // in order to handle future changes to the message
+        // context definition, be sure to maintain the
         // object level identifiers
         //---------------------------------------------------------
         // serialization version ID

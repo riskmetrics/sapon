@@ -26,8 +26,8 @@ import java.util.Stack;
 import java.util.Timer;
 
 import org.apache.axiom.om.OMException;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.addressing.RelatesTo;
@@ -51,23 +51,25 @@ import org.apache.synapse.endpoints.dispatch.Dispatcher;
 import org.apache.synapse.util.ResponseAcceptEncodingProcessor;
 
 /**
- * This is the message receiver that receives the responses for outgoing messages sent out
- * by Synapse. It holds a callbackStore that maps the [unique] messageID of each message to
- * a callback object that gets executed on timeout or when a response is received (before timeout)
+ * This is the message receiver that receives the responses for outgoing
+ * messages sent out by Synapse. It holds a callbackStore that maps the
+ * [unique] messageID of each message to a callback object that gets executed
+ * on timeout or when a response is received (before timeout)
  *
- * The AnonymousServiceFactory uses this MessageReceiver for all Anonymous services created by it.
- * This however - effectively - is a singleton class
+ * The AnonymousServiceFactory uses this MessageReceiver for all Anonymous
+ * services created by it.  This however - effectively - is a singleton class
  */
-public class SynapseCallbackReceiver implements MessageReceiver {
-
+public class SynapseCallbackReceiver
+	implements MessageReceiver
+{
     private static final Log log = LogFactory.getLog(SynapseCallbackReceiver.class);
 
     /** This is the synchronized callbackStore that maps outgoing messageID's to callback objects */
     private final Map<String, AsyncCallback> callbackStore;  // will made thread safe in the constructor
 
     /**
-     * Create the *single* instance of this class that would be used by all anonymous services
-     * used for outgoing messaging.
+     * Create the *single* instance of this class that would be used by all
+     * anonymous services used for outgoing messaging.
      * @param synCfg the Synapse configuration
      */
     public SynapseCallbackReceiver(SynapseConfiguration synCfg) {
@@ -107,58 +109,55 @@ public class SynapseCallbackReceiver implements MessageReceiver {
 
         String messageID = null;
 
-        if (messageCtx.getOptions() != null && messageCtx.getOptions().getRelatesTo() != null) {
-            // never take a chance with a NPE at this stage.. so check at each level :-)
-            Options options = messageCtx.getOptions();
-            if (options != null) {
-                RelatesTo relatesTo = options.getRelatesTo();
-                if (relatesTo != null) {
-                    messageID = relatesTo.getValue();
-                }
+        Options options = messageCtx.getOptions();
+        if (options != null) {
+        	RelatesTo relatesTo = options.getRelatesTo();
+        	if (relatesTo != null) {
+        		messageID = relatesTo.getValue();
             }
         }
-//        else if (messageCtx.getProperty(SandeshaClientConstants.SEQUENCE_KEY) == null) {
-//            messageID = (String) messageCtx.getProperty(SynapseConstants.RELATES_TO_FOR_POX);
-//        }
 
-        if (messageID != null) {
-            AxisCallback callback = callbackStore.remove(messageID);
-            if (log.isDebugEnabled()) {
-                log.debug("Callback removed for request message id : " + messageID +
-                        ". Pending callbacks count : " + callbackStore.size());
-            }
-
-            RelatesTo[] relates = messageCtx.getRelationships();
-            if (relates != null && relates.length > 1) {
-                // we set a relates to to the response message so that if WSA is not used, we
-                // could still link back to the original message. But if WSA was used, this
-                // gets duplicated, and we should remove it
-                removeDuplicateRelatesTo(messageCtx, relates);
-            }
-
-            if (callback != null) {
-                handleMessage(messageID, messageCtx, ((AsyncCallback) callback).getSynapseOutMsgCtx());
-
-            } else {
+        if (messageID == null) {
+        	if (!messageCtx.isPropertyTrue(NhttpConstants.SC_ACCEPTED)){
                 // TODO invoke a generic synapse error handler for this message
-                log.warn("Synapse received a response for the request with message Id : " +
-                        messageID + " But a callback is not registered (anymore) to process this response");
-            }
+                log.warn("Synapse received a response message without a message Id");
+        	}
+        }
 
-        } else if (!messageCtx.isPropertyTrue(NhttpConstants.SC_ACCEPTED)){
-            // TODO invoke a generic synapse error handler for this message
-            log.warn("Synapse received a response message without a message Id");
+        AxisCallback callback = callbackStore.remove(messageID);
+        if (log.isDebugEnabled()) {
+        	log.debug("Callback removed for request message id : " + messageID +
+        			". Pending callbacks count : " + callbackStore.size());
+        }
+
+        RelatesTo[] relates = messageCtx.getRelationships();
+        if (relates != null && relates.length > 1) {
+        	// we set a relates to to the response message so that if WSA is not used, we
+        	// could still link back to the original message. But if WSA was used, this
+        	// gets duplicated, and we should remove it
+        	removeDuplicateRelatesTo(messageCtx, relates);
+        }
+
+        if (callback != null) {
+        	handleMessage(messageID, messageCtx, ((AsyncCallback) callback).getSynapseOutMsgCtx());
+        } else {
+        	// TODO invoke a generic synapse error handler for this message
+        	log.warn("Synapse received a response for the request with message Id : " +
+        			messageID + " But a callback is not registered (anymore) to process this response");
         }
     }
 
     /**
-     * Handle the response or error (during a failed send) message received for an outgoing request
+     * Handle the response or error (during a failed send) message received for
+     * an outgoing request
      *
      * @param messageID        Request message ID
-     * @param response         the Axis2 MessageContext that has been received and has to be handled
-     * @param synapseOutMsgCtx the corresponding (outgoing) Synapse MessageContext for the above
-     *                         Axis2 MC, that holds Synapse specific information such as the error
-     *                         handler stack and local properties etc.
+     * @param response         the Axis2 MessageContext that has been received
+     *                         and has to be handled
+     * @param synapseOutMsgCtx the corresponding (outgoing) SynapseMessageContext
+     *                         for the above Axis2 MC, that holds Synapse
+     *                         specific information such as the error handler
+     *                         stack and local properties etc.
      * @throws AxisFault       if the message cannot be processed
      */
     private void handleMessage(	String messageID,
@@ -170,10 +169,7 @@ public class SynapseCallbackReceiver implements MessageReceiver {
         Object o = response.getProperty(SynapseConstants.SENDING_FAULT);
         if (o != null && Boolean.TRUE.equals(o)) {
 
-        	if(synapseOutMsgCtx instanceof Axis2SynapseMessageContext) {
-				StatisticsReporter.reportFaultForAll((Axis2SynapseMessageContext)synapseOutMsgCtx);
-				// there is a sending fault. propagate the fault to fault handlers.
-			}
+        	StatisticsReporter.reportFaultForAll(synapseOutMsgCtx);
 
             Stack<FaultHandler> faultStack = synapseOutMsgCtx.getFaultStack();
             if (faultStack != null && !faultStack.isEmpty()) {
@@ -249,8 +245,8 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             response.setProperty(SynapseConstants.ISRESPONSE_PROPERTY, Boolean.TRUE);
             response.setProperty(MessageContext.TRANSPORT_OUT,
                     axisOutMsgCtx.getProperty(MessageContext.TRANSPORT_OUT));
-            response.setProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO,
-                    axisOutMsgCtx.getProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO));
+            response.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
+                    axisOutMsgCtx.getProperty(Axis2Constants.OUT_TRANSPORT_INFO));
             response.setTransportIn(axisOutMsgCtx.getTransportIn());
             response.setTransportOut(axisOutMsgCtx.getTransportOut());
 
@@ -259,14 +255,14 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             if (axisOutMsgCtx.isDoingMTOM()) {
                 response.setDoingMTOM(true);
                 response.setProperty(
-                        org.apache.axis2.Constants.Configuration.ENABLE_MTOM,
-                        org.apache.axis2.Constants.VALUE_TRUE);
+                        Axis2Constants.Configuration.ENABLE_MTOM,
+                        Axis2Constants.VALUE_TRUE);
             }
             if (axisOutMsgCtx.isDoingSwA()) {
                 response.setDoingSwA(true);
                 response.setProperty(
-                        org.apache.axis2.Constants.Configuration.ENABLE_SWA,
-                        org.apache.axis2.Constants.VALUE_TRUE);
+                        Axis2Constants.Configuration.ENABLE_SWA,
+                        Axis2Constants.VALUE_TRUE);
             }
 
             // when axis2 receives a soap message without addressing headers it users
@@ -290,8 +286,8 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             }
 
              // copy the message type property thats used by the out message to the response message
-            response.setProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE,
-                axisOutMsgCtx.getProperty(org.apache.axis2.Constants.Configuration.MESSAGE_TYPE));
+            response.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
+                axisOutMsgCtx.getProperty(Axis2Constants.Configuration.MESSAGE_TYPE));
 
             // compare original received message (axisOutMsgCtx) soap version with the response
             // if they are different change to original version
@@ -312,7 +308,7 @@ public class SynapseCallbackReceiver implements MessageReceiver {
             response.setFaultTo(axisOutMsgCtx.getFaultTo());
 
             if (axisOutMsgCtx.isPropertyTrue(NhttpConstants.IGNORE_SC_ACCEPTED)) {
-                response.setProperty(NhttpConstants.FORCE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                response.setProperty(NhttpConstants.FORCE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
             }
 
             // create the synapse message context for the response
@@ -341,9 +337,7 @@ public class SynapseCallbackReceiver implements MessageReceiver {
                 dispatcher.updateSession(synapseInMessageContext);
             }
 
-            if(synapseOutMsgCtx instanceof Axis2SynapseMessageContext) {
-            	StatisticsReporter.reportForAll((Axis2SynapseMessageContext)synapseInMessageContext);
-            }
+            StatisticsReporter.reportForAll(synapseInMessageContext);
 
             // send the response message through the synapse mediation flow
             try {

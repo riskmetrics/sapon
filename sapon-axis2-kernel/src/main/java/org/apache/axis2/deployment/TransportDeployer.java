@@ -25,7 +25,7 @@ import java.util.List;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.om.OMElement;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.axis2.description.Parameter;
@@ -53,7 +53,7 @@ public class TransportDeployer implements Deployer {
         try {
             deploymentFileData.setClassLoader(isDirectory,
                     axisConfig.getModuleClassLoader(),
-                    (File) axisConfig.getParameterValue(Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                    (File) axisConfig.getParameterValue(Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
 
             ClassLoader loader = deploymentFileData.getClassLoader();
             Thread.currentThread().setContextClassLoader(loader);

@@ -33,8 +33,8 @@ import javax.xml.namespace.QName;
 
 import org.apache.axiom.soap.SOAP11Constants;
 import org.apache.axiom.soap.SOAP12Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
@@ -122,10 +122,10 @@ public class AxisHttpService {
     }
 
     public void handleRequest(final AxisHttpConnection conn, final HttpContext context)
-            throws IOException, HttpException {
+            throws IOException, HttpException, AxisFault {
 
         MessageContext msgContext = configurationContext.createMessageContext();
-        msgContext.setIncomingTransportName(Constants.TRANSPORT_HTTP);
+        msgContext.setIncomingTransportName(Axis2Constants.TRANSPORT_HTTP);
 
         if (conn != null) {
             msgContext.setProperty(MessageContext.REMOTE_ADDR,
@@ -240,7 +240,7 @@ public class AxisHttpService {
             final AxisHttpRequest request,
             final AxisHttpResponse response,
             final HttpContext context,
-            final MessageContext msgContext) throws HttpException, IOException {
+            final MessageContext msgContext) throws HttpException, IOException, AxisFault {
         if (LOG.isDebugEnabled()) {
             LOG.debug("Request method: " + request.getMethod());
             LOG.debug("Target URI: " + request.getRequestURI());
@@ -248,32 +248,32 @@ public class AxisHttpService {
 
         try {
             TransportOutDescription transportOut = this.configurationContext.getAxisConfiguration()
-                    .getTransportOut(Constants.TRANSPORT_HTTP);
+                    .getTransportOut(Axis2Constants.TRANSPORT_HTTP);
             TransportInDescription transportIn = this.configurationContext.getAxisConfiguration()
-                    .getTransportIn(Constants.TRANSPORT_HTTP);
+                    .getTransportIn(Axis2Constants.TRANSPORT_HTTP);
 
             String sessionKey = (String) context.getAttribute(HTTPConstants.COOKIE_STRING);
             msgContext.setTransportIn(transportIn);
             msgContext.setTransportOut(transportOut);
             msgContext.setServerSide(true);
             msgContext.setProperty(HTTPConstants.COOKIE_STRING, sessionKey);
-            msgContext.setProperty(Constants.Configuration.TRANSPORT_IN_URL,
+            msgContext.setProperty(Axis2Constants.Configuration.TRANSPORT_IN_URL,
                                    request.getRequestURI());
 
             // set the transport Headers
             Map<String, String> headerMap = new HashMap<String, String>();
-            for (Iterator it = request.headerIterator(); it.hasNext();) {
+            for (Iterator<?> it = request.headerIterator(); it.hasNext();) {
                 Header header = (Header) it.next();
                 headerMap.put(header.getName(), header.getValue());
             }
             msgContext.setProperty(MessageContext.TRANSPORT_HEADERS,
                                    headerMap);
-            msgContext.setProperty(Constants.Configuration.CONTENT_TYPE,
+            msgContext.setProperty(Axis2Constants.Configuration.CONTENT_TYPE,
                                    request.getContentType());
 
             msgContext.setProperty(MessageContext.TRANSPORT_OUT,
                                    response.getOutputStream());
-            msgContext.setProperty(Constants.OUT_TRANSPORT_INFO,
+            msgContext.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
                                    response);
             msgContext.setTo(new EndpointReference(request.getRequestURI()));
             msgContext.setProperty(RequestResponseTransport.TRANSPORT_CONTROL,
@@ -291,7 +291,7 @@ public class AxisHttpService {
 
             msgContext.setProperty(MessageContext.TRANSPORT_OUT,
                                    response.getOutputStream());
-            msgContext.setProperty(Constants.OUT_TRANSPORT_INFO,
+            msgContext.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
                                    response);
 
             MessageContext faultContext =
@@ -300,13 +300,13 @@ public class AxisHttpService {
             if (AddressingHelper.isFaultRedirected(msgContext)) {
                 response.setStatus(HttpStatus.SC_ACCEPTED);
             } else {
-                String state = (String) msgContext.getProperty(Constants.HTTP_RESPONSE_STATE);
+                String state = (String) msgContext.getProperty(Axis2Constants.HTTP_RESPONSE_STATE);
                 if (state != null) {
                     int stateInt = Integer.parseInt(state);
                     response.setStatus(stateInt);
                     if (stateInt == HttpServletResponse.SC_UNAUTHORIZED) { // Unauthorized
                         String realm =
-                                (String) msgContext.getProperty(Constants.HTTP_BASIC_AUTH_REALM);
+                                (String) msgContext.getProperty(Axis2Constants.HTTP_BASIC_AUTH_REALM);
                         response.addHeader("WWW-Authenticate",
                                            "basic realm=\"" + realm + "\"");
                     }

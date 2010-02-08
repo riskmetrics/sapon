@@ -35,8 +35,8 @@ import org.apache.axiom.om.impl.builder.StAXBuilder;
 import org.apache.axiom.om.util.StAXUtils;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
@@ -126,7 +126,7 @@ public class BaseUtils {
         format.setDoingSWA(msgContext.isDoingSwA());
 
         format.setCharSetEncoding(TransportUtils.getCharSetEncoding(msgContext));
-        Object mimeBoundaryProperty = msgContext.getProperty(Constants.Configuration.MIME_BOUNDARY);
+        Object mimeBoundaryProperty = msgContext.getProperty(Axis2Constants.Configuration.MIME_BOUNDARY);
         if (mimeBoundaryProperty != null) {
             format.setMimeBoundary((String) mimeBoundaryProperty);
         }

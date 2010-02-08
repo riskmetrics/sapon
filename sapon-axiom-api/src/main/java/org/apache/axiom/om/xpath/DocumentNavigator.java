@@ -702,7 +702,7 @@ public class DocumentNavigator extends DefaultNavigator {
         return ((OMNode) contextNode).getParent();
     }
 
-    class OMNamespaceEx implements OMNamespace {
+    static class OMNamespaceEx implements OMNamespace {
         OMNamespace originalNsp = null;
         OMContainer parent = null;
 
@@ -732,7 +732,7 @@ public class DocumentNavigator extends DefaultNavigator {
         }
     }
 
-    class OMAttributeEx implements OMAttribute {
+    static class OMAttributeEx implements OMAttribute {
         OMAttribute attribute = null;
         OMContainer parent = null;
         OMFactory factory;
@@ -741,6 +741,7 @@ public class DocumentNavigator extends DefaultNavigator {
                       OMFactory factory) {
             this.attribute = attribute;
             this.parent = parent;
+            this.factory = factory;
         }
 
         public String getLocalName() {

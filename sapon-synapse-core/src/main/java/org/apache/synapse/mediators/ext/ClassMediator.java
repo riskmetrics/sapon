@@ -30,22 +30,26 @@ import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.mediators.AbstractMediator;
 
 /**
- * The class mediator delegates the mediation to a single instance of a specified
- * class. The specified class must implement the Mediator interface and optionally
- * may implement the ManagedLifecycle interface. At initialization time, a single
- * instance of the class is instantiated using a public no argument constructor, and
- * any one-time properties (parameter constants specified through the Synapse config)
- * are set on the instance. If each request needs synchronization, the user must
- * implement it within the specified class.
+ * The class mediator delegates the mediation to a single instance of a
+ * specified class. The specified class must implement the Mediator interface
+ * and optionally may implement the ManagedLifecycle interface. At
+ * initialization time, a single instance of the class is instantiated using a
+ * public no argument constructor, and any one-time properties (parameter
+ * constants specified through the Synapse config) are set on the instance. If
+ * each request needs synchronization, the user must implement it within the
+ * specified class.
  *
  * @see Mediator
  */
-public class ClassMediator extends AbstractMediator implements ManagedLifecycle {
-
-    /** The reference to the actual class that implments the Mediator interface */
+public class ClassMediator extends AbstractMediator
+	implements ManagedLifecycle
+{
     private Mediator mediator = null;
+
     /** A list of simple properties that would be set on the class before being used */
     private final Map<String, Object> properties = new HashMap<String, Object>();
+
+    private boolean initialized = false;
 
     /**
 	 * Don't use a new instance... do one instance of the object per instance of
@@ -56,9 +60,6 @@ public class ClassMediator extends AbstractMediator implements ManagedLifecycle 
 	 * @return as per standard semantics
 	 */
 	public boolean mediate(SynapseMessageContext synCtx) {
-
-
-
         if (log.isDebugEnabled()) {
             log.debug("Start : Class mediator");
 
@@ -107,6 +108,11 @@ public class ClassMediator extends AbstractMediator implements ManagedLifecycle 
         if (mediator instanceof ManagedLifecycle) {
             ((ManagedLifecycle) mediator).init(se);
         }
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     public void setMediator(Mediator mediator) {

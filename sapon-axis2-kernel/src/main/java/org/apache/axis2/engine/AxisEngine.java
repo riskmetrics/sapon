@@ -356,7 +356,7 @@ public class AxisEngine {
                         MessageContext.TRANSPORT_NON_BLOCKING);
                 if (isTransportNonBlocking != null &&
                         ((Boolean) isTransportNonBlocking).booleanValue()) {
-                    msgContext.getConfigurationContext().getThreadPool().execute(
+                    msgContext.getConfigurationContext().getExecutor().execute(
                             new TransportNonBlockingInvocationWorker(msgContext, sender));
                 } else {
                     sender.invoke(msgContext);
@@ -492,11 +492,11 @@ public class AxisEngine {
             flowComplete(msgContext);
             return true;
         case CONTINUE:
-            String errorMsg = "Unrecognized InvocationResponse";
+        	return false;
+        default:
+        	String errorMsg = "Unrecognized InvocationResponse";
             log.error(msgContext.getLogCorrelationID() + " " + errorMsg);
             throw new AxisFault(errorMsg);
-        default:
-        	return false;
         }
     }
 

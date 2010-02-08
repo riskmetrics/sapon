@@ -22,7 +22,7 @@ package org.apache.synapse;
 import java.io.File;
 import java.util.concurrent.CountDownLatch;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -110,7 +110,7 @@ public class SynapseShellStarter {
         if (args.length == 1) {
             log.warn("Configuring server manager using deprecated " +
                     "system properties; please update your configuration");
-            information.setAxis2XmlLocation(System.getProperty(Constants.AXIS2_CONF));
+            information.setAxis2XmlLocation(System.getProperty(Axis2Constants.AXIS2_CONF));
             information.setSynapseHome(System.getProperty(SynapseConstants.SYNAPSE_HOME));
             information.setSynapseXMLLocation(System.getProperty(SynapseConstants.SYNAPSE_XML));
             information.setResolveRoot(System.getProperty(SynapseConstants.RESOLVE_ROOT));

@@ -20,8 +20,11 @@
 package org.apache.axis2.transport.http;
 
 
+import java.io.IOException;
+import java.net.URL;
+
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
 import org.apache.axis2.i18n.Messages;
@@ -39,40 +42,37 @@ import org.apache.commons.httpclient.methods.PutMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import java.io.IOException;
-import java.net.URL;
-
 public class HTTPSender extends AbstractHTTPSender {
 
     private static final Log log = LogFactory.getLog(HTTPSender.class);
 
-    public void send(MessageContext msgContext, URL url, String soapActionString)
+    @Override
+	public void send(MessageContext msgContext, URL url, String soapActionString)
             throws IOException {
 
         // execute the HtttpMethodBase - a connection manager can be given for
         // handle multiple
 
         String httpMethod =
-                (String) msgContext.getProperty(Constants.Configuration.HTTP_METHOD);
+                (String) msgContext.getProperty(Axis2Constants.Configuration.HTTP_METHOD);
 
-        if ((httpMethod != null)) {
-
-            if (Constants.Configuration.HTTP_METHOD_GET.equalsIgnoreCase(httpMethod)) {
-                this.sendViaGet(msgContext, url, soapActionString);
-
-                return;
-            } else if (Constants.Configuration.HTTP_METHOD_DELETE.equalsIgnoreCase(httpMethod)) {
-                this.sendViaDelete(msgContext, url, soapActionString);
-
-                return;
-            } else if (Constants.Configuration.HTTP_METHOD_PUT.equalsIgnoreCase(httpMethod)) {
-                this.sendViaPut(msgContext, url, soapActionString);
-
-                return;
-            }
+        try {
+        	if ((httpMethod != null)) {
+        		if (Axis2Constants.Configuration.HTTP_METHOD_GET.equalsIgnoreCase(httpMethod)) {
+        			this.sendViaGet(msgContext, url, soapActionString);
+        			return;
+        		} else if (Axis2Constants.Configuration.HTTP_METHOD_DELETE.equalsIgnoreCase(httpMethod)) {
+        			this.sendViaDelete(msgContext, url, soapActionString);
+        			return;
+        		} else if (Axis2Constants.Configuration.HTTP_METHOD_PUT.equalsIgnoreCase(httpMethod)) {
+        			this.sendViaPut(msgContext, url, soapActionString);
+        			return;
+        		}
+        	}
+        	this.sendViaPost(msgContext, url, soapActionString);
+        } catch(AxisFault af) {
+        	throw new IOException(af);
         }
-
-        this.sendViaPost(msgContext, url, soapActionString);
     }
 
     /**
@@ -259,42 +259,45 @@ public class HTTPSender extends AbstractHTTPSender {
      */
     private void handleResponse(MessageContext msgContext,
                                 HttpMethodBase method) throws IOException {
+    	try {
+	        int statusCode = method.getStatusCode();
+	        if (statusCode == HttpStatus.SC_OK) {
+	            processResponse(method, msgContext);
+	        } else if (statusCode == HttpStatus.SC_ACCEPTED) {
+	        } else if (statusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR ||
+	                statusCode == HttpStatus.SC_BAD_REQUEST) {
+	            Header contenttypeHeader =
+	                    method.getResponseHeader(HTTPConstants.HEADER_CONTENT_TYPE);
+	            String value = null;
+	            if (contenttypeHeader != null) {
+	                value = contenttypeHeader.getValue();
+	            }
+	             OperationContext opContext = msgContext.getOperationContext();
+	            if(opContext!=null){
+	                MessageContext inMessageContext =
+	                        opContext.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
+	                if(inMessageContext!=null){
+	                    inMessageContext.setProcessingFault(true);
+	                }
+	            }
+	            if (value != null) {
 
-        int statusCode = method.getStatusCode();
-        if (statusCode == HttpStatus.SC_OK) {
-            processResponse(method, msgContext);
-        } else if (statusCode == HttpStatus.SC_ACCEPTED) {
-        } else if (statusCode == HttpStatus.SC_INTERNAL_SERVER_ERROR ||
-                statusCode == HttpStatus.SC_BAD_REQUEST) {
-            Header contenttypeHeader =
-                    method.getResponseHeader(HTTPConstants.HEADER_CONTENT_TYPE);
-            String value = null;
-            if (contenttypeHeader != null) {
-                value = contenttypeHeader.getValue();
-            }
-             OperationContext opContext = msgContext.getOperationContext();
-            if(opContext!=null){
-                MessageContext inMessageContext =
-                        opContext.getMessageContext(WSDLConstants.MESSAGE_LABEL_IN_VALUE);
-                if(inMessageContext!=null){
-                    inMessageContext.setProcessingFault(true);
-                }
-            }
-            if (value != null) {
-
-                processResponse(method, msgContext);
-            }
-            Object isTransportNonBlocking = msgContext.getProperty(
-                    MessageContext.TRANSPORT_NON_BLOCKING);
-            if (isTransportNonBlocking != null && (Boolean)isTransportNonBlocking) {
-                throw new AxisFault(Messages.getMessage("transportError",
-                        String.valueOf(statusCode),
-                        method.getStatusText()));
-            }
-        } else {
-            throw new AxisFault(Messages.getMessage("transportError",
-                                                    String.valueOf(statusCode),
-                                                    method.getStatusText()));
-        }
+	                processResponse(method, msgContext);
+	            }
+	            Object isTransportNonBlocking = msgContext.getProperty(
+	                    MessageContext.TRANSPORT_NON_BLOCKING);
+	            if (isTransportNonBlocking != null && (Boolean)isTransportNonBlocking) {
+	                throw new AxisFault(Messages.getMessage("transportError",
+	                        String.valueOf(statusCode),
+	                        method.getStatusText()));
+	            }
+	        } else {
+	            throw new AxisFault(Messages.getMessage("transportError",
+	                                                    String.valueOf(statusCode),
+	                                                    method.getStatusText()));
+	        }
+    	} catch(AxisFault af) {
+    		throw new IOException(af);
+    	}
     }
 }

@@ -26,9 +26,10 @@ import org.apache.synapse.endpoints.Endpoint;
 import org.apache.synapse.endpoints.IndirectEndpoint;
 
 /**
- * Creates an {@link IndirectEndpoint} using a XML configuration. Key can be a name of an endpoint defined
- * in the same Synapse configuration or a registry key pointing to an endpoint configuration in the
- * registry (e.g. &lt;endpoint key="registry/endpoint1.xml"/&gt;).
+ * Creates an {@link IndirectEndpoint} using a XML configuration. Key can be a
+ * name of an endpoint defined in the same Synapse configuration or a registry
+ * key pointing to an endpoint configuration in the registry (e.g. &lt;endpoint
+ * key="registry/endpoint1.xml"/&gt;).
  *
  * &lt;endpoint key="key"/&gt;
  */
@@ -42,7 +43,8 @@ public class IndirectEndpointFactory extends EndpointFactory {
         return instance;
     }
 
-    protected Endpoint createEndpoint(OMElement epConfig, boolean anonymousEndpoint) {
+    @Override
+	protected Endpoint createEndpoint(OMElement epConfig, boolean anonymousEndpoint) {
 
         IndirectEndpoint indirectEndpoint = new IndirectEndpoint();
         String ref = epConfig.getAttributeValue(new QName("key"));

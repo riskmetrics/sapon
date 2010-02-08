@@ -33,7 +33,8 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisService;
 import org.apache.axis2.description.TransportInDescription;
@@ -72,15 +73,19 @@ public class ListingAgent extends AbstractAgent {
         initTransportListener(httpServletRequest);
 
         String query = httpServletRequest.getQueryString();
-        if (query != null) {
-            if (query.indexOf("wsdl2") > 0 || query.indexOf("wsdl") > 0 ||
-                query.indexOf("xsd") > 0 || query.indexOf("policy") > 0) {
-                processListService(httpServletRequest, httpServletResponse);
-            } else {
-                super.handle(httpServletRequest, httpServletResponse);
-            }
-        } else {
-            super.handle(httpServletRequest, httpServletResponse);
+        try {
+	        if (query != null) {
+	            if (query.indexOf("wsdl2") > 0 || query.indexOf("wsdl") > 0 ||
+	                query.indexOf("xsd") > 0 || query.indexOf("policy") > 0) {
+	                processListService(httpServletRequest, httpServletResponse);
+	            } else {
+	                super.handle(httpServletRequest, httpServletResponse);
+	            }
+	        } else {
+	            super.handle(httpServletRequest, httpServletResponse);
+	        }
+        } catch(AxisFault af) {
+        	throw new ServletException(af);
         }
     }
 
@@ -114,12 +119,12 @@ public class ListingAgent extends AbstractAgent {
     }
 
     protected void processListFaultyServices(HttpServletRequest req, HttpServletResponse res)
-            throws IOException, ServletException {
+            throws IOException, ServletException, AxisFault {
         String serviceName = req.getParameter("serviceName");
         if (serviceName != null) {
             AxisService service = configContext.getAxisConfiguration().getService(serviceName);
             try {
-                req.getSession().setAttribute(Constants.SINGLE_SERVICE, service);
+                req.getSession().setAttribute(Axis2Constants.SINGLE_SERVICE, service);
             } catch (Throwable t) {
                 log.info("Old Servlet API :" + t);
             }
@@ -205,7 +210,7 @@ public class ListingAgent extends AbstractAgent {
 
     public void processListService(HttpServletRequest req,
                                    HttpServletResponse res)
-            throws IOException, ServletException {
+            throws IOException, ServletException, AxisFault {
 
         String url;
         try {
@@ -353,7 +358,7 @@ public class ListingAgent extends AbstractAgent {
                     return;
                 } else {
                     try {
-                        req.getSession().setAttribute(Constants.SINGLE_SERVICE,
+                        req.getSession().setAttribute(Axis2Constants.SINGLE_SERVICE,
                                 serviceObj);
                     } catch (Throwable t) {
                         log.info("Old Servlet API :" + t);
@@ -361,7 +366,7 @@ public class ListingAgent extends AbstractAgent {
                 }
             } else {
                 try {
-                    req.getSession().setAttribute(Constants.SINGLE_SERVICE, null);
+                    req.getSession().setAttribute(Axis2Constants.SINGLE_SERVICE, null);
                 } catch (Throwable t){
                     log.info("Old Servlet API :" + t);
                 }
@@ -379,7 +384,7 @@ public class ListingAgent extends AbstractAgent {
 
         populateSessionInformation(req);
         try {
-            req.getSession().setAttribute(Constants.ERROR_SERVICE_MAP,
+            req.getSession().setAttribute(Axis2Constants.ERROR_SERVICE_MAP,
                                           configContext.getAxisConfiguration().getFaultyServices());
         } catch (Throwable t){
             log.info("Old Servlet API :" + t);

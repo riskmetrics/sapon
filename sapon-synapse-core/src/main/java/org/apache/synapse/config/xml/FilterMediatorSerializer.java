@@ -21,7 +21,7 @@ package org.apache.synapse.config.xml;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.synapse.Mediator;
-import org.apache.synapse.mediators.filters.FilterMediator;
+import org.apache.synapse.mediators.filters.XPathOrRegexFilterMediator;
 
 /**
  * <pre>
@@ -48,11 +48,11 @@ public class FilterMediatorSerializer extends AbstractListMediatorSerializer {
 
     public OMElement serializeMediator(OMElement parent, Mediator m) {
 
-        if (!(m instanceof FilterMediator)) {
+        if (!(m instanceof XPathOrRegexFilterMediator)) {
             handleException("Unsupported mediator passed in for serialization : " + m.getType());
         }
 
-        FilterMediator mediator = (FilterMediator) m;
+        XPathOrRegexFilterMediator mediator = (XPathOrRegexFilterMediator) m;
         OMElement filter = fac.createOMElement("filter", synNS);
 
         if (mediator.getSource() != null && mediator.getRegex() != null) {
@@ -109,6 +109,6 @@ public class FilterMediatorSerializer extends AbstractListMediatorSerializer {
     }
 
     public String getMediatorClassName() {
-        return FilterMediator.class.getName();
+        return XPathOrRegexFilterMediator.class.getName();
     }
 }

@@ -38,7 +38,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.RolePlayer;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.builder.ApplicationXMLBuilder;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.builder.MIMEBuilder;
@@ -64,7 +64,6 @@ import org.apache.axis2.transport.TransportListener;
 import org.apache.axis2.transport.TransportSender;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.axis2.util.Loader;
-import org.apache.axis2.util.TargetResolver;
 import org.apache.axis2.util.ThreadContextMigrator;
 import org.apache.axis2.util.ThreadContextMigratorUtil;
 import org.apache.commons.logging.Log;
@@ -123,11 +122,6 @@ public class AxisConfigBuilder extends DescriptionBuilder {
             Iterable<OMElement> trs_Reivers =
                     config_element.getChildrenWithName(new QName(TAG_TRANSPORT_RECEIVER));
             processTransportReceivers(trs_Reivers);
-
-            // Process TargetResolvers
-            OMElement targetResolvers =
-                    config_element.getFirstChildWithName(new QName(TAG_TARGET_RESOLVERS));
-            processTargetResolvers(axisConfig, targetResolvers);
 
             // Process ThreadContextMigrators
             OMElement threadContextMigrators =
@@ -222,7 +216,7 @@ public class AxisConfigBuilder extends DescriptionBuilder {
             // process roleplayer configuration
             OMElement rolePlayerElement =
                     config_element
-                            .getFirstChildWithName(new QName(Constants.SOAP_ROLE_CONFIGURATION_ELEMENT));
+                            .getFirstChildWithName(new QName(Axis2Constants.SOAP_ROLE_CONFIGURATION_ELEMENT));
 
             if (rolePlayerElement != null) {
                 processSOAPRoleConfig(axisConfig, rolePlayerElement);
@@ -256,30 +250,9 @@ public class AxisConfigBuilder extends DescriptionBuilder {
         }
     }
 
-    private void processTargetResolvers(AxisConfiguration axisConfig, OMElement targetResolvers) {
-        if (targetResolvers != null) {
-            for(OMElement targetResolver: targetResolvers.getChildrenWithName(new QName(TAG_TARGET_RESOLVER))) {
-                OMAttribute classNameAttribute =
-                        targetResolver.getAttribute(new QName(TAG_CLASS_NAME));
-                String className = classNameAttribute.getAttributeValue();
-                try {
-                    Class<?> classInstance = Loader.loadClass(className);
-                    TargetResolver tr = (TargetResolver) classInstance.newInstance();
-                    axisConfig.addTargetResolver(tr);
-                } catch (Exception e) {
-                    if (log.isTraceEnabled()) {
-                        log.trace(
-                                "processTargetResolvers: Exception thrown initialising TargetResolver: " +
-                                        e.getMessage());
-                    }
-                }
-            }
-        }
-    }
-
-    private void processThreadContextMigrators(AxisConfiguration axisConfig, OMElement targetResolvers) {
-        if (targetResolvers != null) {
-            for(OMElement threadContextMigrator: targetResolvers.getChildrenWithName(new QName(TAG_THREAD_CONTEXT_MIGRATOR))) {
+    private void processThreadContextMigrators(AxisConfiguration axisConfig, OMElement threadContextMigrators) {
+        if (threadContextMigrators != null) {
+            for(OMElement threadContextMigrator: threadContextMigrators.getChildrenWithName(new QName(TAG_THREAD_CONTEXT_MIGRATOR))) {
                 OMAttribute listIdAttribute =
                     threadContextMigrator.getAttribute(new QName(TAG_LIST_ID));
                 String listId = listIdAttribute.getAttributeValue();
@@ -320,9 +293,9 @@ public class AxisConfigBuilder extends DescriptionBuilder {
 
     private void processSOAPRoleConfig(AxisConfiguration axisConfig, OMElement soaproleconfigElement) {
     	if (soaproleconfigElement != null) {
-    		final boolean isUltimateReceiever = JavaUtils.isTrue(soaproleconfigElement.getAttributeValue(new QName(Constants.SOAP_ROLE_IS_ULTIMATE_RECEIVER_ATTRIBUTE)), true);
+    		final boolean isUltimateReceiever = JavaUtils.isTrue(soaproleconfigElement.getAttributeValue(new QName(Axis2Constants.SOAP_ROLE_IS_ULTIMATE_RECEIVER_ATTRIBUTE)), true);
     		List<String> roles = new ArrayList<String>();
-    		for(OMElement roleElement: soaproleconfigElement.getChildrenWithName(new QName(Constants.SOAP_ROLE_ELEMENT))) {
+    		for(OMElement roleElement: soaproleconfigElement.getChildrenWithName(new QName(Axis2Constants.SOAP_ROLE_ELEMENT))) {
     			roles.add(roleElement.getText());
     		}
     		final List<String> unmodifiableRoles = Collections.unmodifiableList(roles);
@@ -339,7 +312,7 @@ public class AxisConfigBuilder extends DescriptionBuilder {
     		} catch (AxisFault e) {
     			if (log.isTraceEnabled()) {
     				log.trace(
-    						"processTargetResolvers: Exception thrown initialising TargetResolver: " +
+    						"processSOAPRoleConfig: Exception thrown initialising SOAPRoleConfig: " +
     						e.getMessage());
     			}
     		}

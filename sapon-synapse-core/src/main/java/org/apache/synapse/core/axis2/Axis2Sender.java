@@ -21,8 +21,8 @@ package org.apache.synapse.core.axis2;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.soap.SOAPFactory;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.context.MessageContext;
@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.synapse.NhttpConstants;
 import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
+import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.endpoints.EndpointDefinition;
 import org.apache.synapse.util.MessageHelper;
 import org.apache.synapse.util.POXUtils;
@@ -49,16 +50,11 @@ public class Axis2Sender {
      * @param endpoint the endpoint definition where the message should be sent
      * @param synapseInMessageContext the Synapse message context
      */
-    public static void sendOn(EndpointDefinition endpoint,
-        org.apache.synapse.SynapseMessageContext synapseInMessageContext) {
-
+    public static void sendOn(	EndpointDefinition endpoint,
+    							SynapseMessageContext synapseInMessageContext )
+    {
         try {
-            Axis2FlexibleMEPClient.send(
-                // The endpoint where we are sending to
-                endpoint,
-                // The Axis2 Message context of the Synapse MC
-                synapseInMessageContext);
-
+            Axis2FlexibleMEPClient.send(endpoint, synapseInMessageContext);
         } catch (Exception e) {
             handleException("Unexpected error during sending message out", e);
         }
@@ -76,7 +72,7 @@ public class Axis2Sender {
         // prevent it from going into any other transport sender
         if (messageContext.isPropertyTrue(NhttpConstants.SC_ACCEPTED) &&
             messageContext.getTransportOut() != null &&
-            !messageContext.getTransportOut().getName().startsWith(Constants.TRANSPORT_HTTP)) {
+            !messageContext.getTransportOut().getName().startsWith(Axis2Constants.TRANSPORT_HTTP)) {
                 return;
         }
 
@@ -98,7 +94,7 @@ public class Axis2Sender {
                 messageContext.setWSAAction("");
                 messageContext.setSoapAction("");
                 messageContext.setProperty(
-                        NhttpConstants.IGNORE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                        NhttpConstants.IGNORE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
                 messageContext.setProperty(
                         AddressingConstants.DISABLE_ADDRESSING_FOR_OUT_MESSAGES, Boolean.FALSE);
             }
@@ -112,7 +108,7 @@ public class Axis2Sender {
                 messageContext.setWSAAction("");
                 messageContext.setSoapAction("");
                 messageContext.setProperty(
-                        NhttpConstants.IGNORE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                        NhttpConstants.IGNORE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
                 messageContext.setProperty(
                         AddressingConstants.DISABLE_ADDRESSING_FOR_OUT_MESSAGES, Boolean.FALSE);
             }
@@ -133,7 +129,7 @@ public class Axis2Sender {
                 fac.createSOAPHeader(messageContext.getEnvelope());
             }
 
-            Axis2FlexibleMEPClient.clearSecurtityProperties(messageContext.getOptions());
+            Axis2FlexibleMEPClient.clearSecurityProperties(messageContext.getOptions());
 
             AxisEngine.send(messageContext);
 

@@ -26,7 +26,7 @@ import org.apache.axiom.om.util.DetachableInputStream;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 
 import javax.xml.stream.XMLStreamException;
@@ -42,13 +42,13 @@ public class SOAPBuilder implements Builder {
         XMLStreamReader streamReader;
         try {
             String charSetEncoding = (String) messageContext
-                    .getProperty(Constants.Configuration.CHARACTER_SET_ENCODING);
+                    .getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING);
             
             // Apply a detachable inputstream.  This can be used later
             // to (a) get the length of the incoming message or (b)
             // free transport resources.
             DetachableInputStream is = new DetachableInputStream(inputStream);
-            messageContext.setProperty(Constants.DETACHABLE_INPUT_STREAM, is);
+            messageContext.setProperty(Axis2Constants.DETACHABLE_INPUT_STREAM, is);
             
             // Get the actual encoding by looking at the BOM of the InputStream
             PushbackInputStream pis = BuilderUtil.getPushbackInputStream(is);

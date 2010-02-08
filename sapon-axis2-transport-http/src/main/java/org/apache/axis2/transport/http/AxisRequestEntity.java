@@ -19,17 +19,16 @@
 
 package org.apache.axis2.transport.http;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.util.zip.GZIPOutputStream;
+
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.MessageFormatter;
 import org.apache.axis2.util.JavaUtils;
 import org.apache.commons.httpclient.methods.RequestEntity;
-
-import javax.xml.stream.FactoryConfigurationError;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.util.zip.GZIPOutputStream;
 
 /**
  * This Request Entity is used by the HTTPCommonsTransportSender. This wraps the
@@ -92,12 +91,9 @@ public class AxisRequestEntity implements RequestEntity {
                 ((GZIPOutputStream) outStream).finish();
             }
             outStream.flush();
-        } catch (FactoryConfigurationError e) {
-            throw AxisFault.makeFault(e);
-        } catch (IOException e) {
-            throw AxisFault.makeFault(e);
+        } catch (Exception e) {
+            throw new IOException(AxisFault.makeFault(e));
         }
-
     }
 
     public long getContentLength() {

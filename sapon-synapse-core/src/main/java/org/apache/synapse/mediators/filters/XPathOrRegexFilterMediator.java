@@ -26,6 +26,7 @@ import org.apache.synapse.Mediator;
 import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.mediators.AbstractListMediator;
+import org.apache.synapse.mediators.FilterMediator;
 import org.apache.synapse.mediators.ListMediator;
 import org.apache.synapse.util.xpath.SynapseXPath;
 import org.jaxen.JaxenException;
@@ -34,9 +35,9 @@ import org.jaxen.JaxenException;
  * The filter mediator combines the regex and xpath filtering functionality. If an xpath
  * is set, it is evaluated; else the given regex is evaluated against the source xpath.
  */
-public class FilterMediator extends AbstractListMediator implements
-    org.apache.synapse.mediators.FilterMediator {
-
+public class XPathOrRegexFilterMediator extends AbstractListMediator
+	implements FilterMediator
+{
     private SynapseXPath source = null;
     private Pattern regex = null;
     private SynapseXPath xpath = null;

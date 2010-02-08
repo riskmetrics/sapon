@@ -288,20 +288,6 @@ public class DigestGenerator {
     }
 
     /**
-     * Gets the String representation of the byte array
-     *
-     * @param array
-     * @return Returns the String of the byte
-     */
-    public String getStringRepresentation(byte[] array) {
-        String str = "";
-        for (byte element : array) {
-			str += element;
-		}
-        return str;
-    }
-
-    /**
      * Compares two OMNodes for the XML equality
      *
      * @param node

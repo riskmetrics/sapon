@@ -30,7 +30,7 @@ import java.util.List;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.Deployer;
 import org.apache.axis2.deployment.DeploymentClassLoader;
@@ -90,7 +90,7 @@ public class ExtensionDeployer implements Deployer {
             boolean isDirectory = deploymentFileData.getFile().isDirectory();
             deploymentFileData.setClassLoader(isDirectory, getClass().getClassLoader(),
                     (File) cfgCtx.getAxisConfiguration().getParameterValue(
-                            Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                            Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
 
             DeploymentClassLoader urlCl
                 = (DeploymentClassLoader)deploymentFileData.getClassLoader();
@@ -135,7 +135,7 @@ public class ExtensionDeployer implements Deployer {
     }
 
     private <T> List<T> getProviders(Class<T> providerClass, URLClassLoader loader)
-            throws IOException {
+            throws DeploymentException, IOException {
 
         List<T> providers = new LinkedList<T>();
         String providerClassName = providerClass.getName();

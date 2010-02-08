@@ -28,125 +28,133 @@ import org.apache.synapse.aspects.AspectConfiguration;
 
 
 /**
- * An Endpoint definition contains the information about an endpoint. It is used by leaf
- * level endpoints to store this information (e.g. AddressEndpoint and WSDLEndpoint).
+ * An Endpoint definition contains the information about an endpoint. It is
+ * used by leaf level endpoints to store this information (e.g. AddressEndpoint
+ * and WSDLEndpoint).
  */
 public class EndpointDefinition implements AspectConfigurable {
 
-    /** Who is the leaf level Endpoint which uses me? */
+    //Who is the leaf level Endpoint which uses me?
     private Endpoint leafEndpoint = null;
-    /**
-     * The simple address this endpoint resolves to - if explicitly specified
-     */
+
+    //The simple address this endpoint resolves to - if explicitly specified
     private String address = null;
-    /**
-     * Should messages be sent in an WS-RM Sequence ?
-     */
+
+    //Should messages be sent in an WS-RM Sequence ?
     private boolean reliableMessagingOn = false;
-    /**
-     * Should messages be sent using WS-A?
-     */
+
+    //Should messages be sent using WS-A?
     private boolean addressingOn = false;
-    /**
-     * The addressing namespace version
-     */
+
+    //The addressing namespace version
     private String addressingVersion = null;
-    /**
-     * Should messages be sent using WS-Security?
-     */
+
+    //Should messages be sent using WS-Security?
     private boolean securityOn = false;
-    /**
-     * The "key" for any WS-RM Policy overrides to be used
-     */
+
+    //The "key" for any WS-RM Policy overrides to be used
     private String wsRMPolicyKey = null;
-    /**
-     * The "key" for any Rampart Security Policy to be used
-     */
+
+    //The "key" for any Rampart Security Policy to be used
     private String wsSecPolicyKey = null;
-    /**
-     * The "key" for any Rampart Security Policy to be used for inbound messages
-     */
+
+    //The "key" for any Rampart Security Policy to be used for inbound messages
     private String inboundWsSecPolicyKey = null;
-    /**
-     * The "key" for any Rampart Security Policy to be used for outbound messages
-     */
+
+    //The "key" for any Rampart Security Policy to be used for outbound messages
     private String outboundWsSecPolicyKey = null;
-    /**
-     * use a separate listener - implies addressing is on *
-     */
+
+    //use a separate listener - implies addressing is on *
     private boolean useSeparateListener = false;
-    /**
-     * force REST (POST) on *
-     */
+
     private boolean forcePOX = false;
-    /**
-     * force REST (GET) on *
-     */
     private boolean forceGET = false;
-    /**
-     * force SOAP11 on *
-     */
     private boolean forceSOAP11 = false;
-    /**
-     * force SOAP11 on *
-     */
     private boolean forceSOAP12 = false;
-    /**
-     * force REST on ?
-     */
     private boolean forceREST = false;
-    /**
-     * use MTOM *
-     */
     private boolean useMTOM = false;
-    /**
-     * use SWA *
-     */
     private boolean useSwa = false;
-    /**
-     * Endpoint message format. pox/soap11/soap12
-     */
+
+    //Endpoint message format. pox/soap11/soap12
     private String format = null;
 
-    /**
-     * The charset encoding for messages sent to the endpoint.
-     */
+    //The charset encoding for messages sent to the endpoint.
     private String charSetEncoding;
 
-    /**
-     * timeout duration for waiting for a response in ms. if the user has set some timeout action
-     * and the timeout duration is not set, default is set to 0. note that if the user has
-     * not set any timeout configuration, default timeout action is set to NONE, which won't do
-     * anything for timeouts.
-     */
+    //timeout duration for waiting for a response in ms. if the user has set
+    //some timeout action and the timeout duration is not set, default is set
+    //to 0. note that if the user has not set any timeout configuration,
+    //default timeout action is set to NONE, which won't do anything for timeouts.
     private long timeoutDuration = 0;
 
-    /**
-     * action to perform when a timeout occurs (NONE | DISCARD | DISCARD_AND_FAULT) *
-     */
+    //action to perform when a timeout occurs (NONE | DISCARD | DISCARD_AND_FAULT) *
     private int timeoutAction = SynapseConstants.NONE;
 
-    /** The initial suspend duration when an endpoint is marked inactive */
+    //The initial suspend duration when an endpoint is marked inactive
     private long initialSuspendDuration = -1;
-    /** The suspend duration ratio for the next duration - this is the geometric series multipler */
+
+    //The suspend duration ratio for the next duration - this is the geometric series multipler
     private float suspendProgressionFactor = 1;
-    /** This is the maximum duration for which a node will be suspended */
+
+    //This is the maximum duration for which a node will be suspended
     private long suspendMaximumDuration = Long.MAX_VALUE;
-    /** A list of error codes, which directly puts an endpoint into suspend mode */
+
+    //A list of error codes, which directly puts an endpoint into suspend mode
     private final List<Integer> suspendErrorCodes = new ArrayList<Integer>();
 
-    /** No of retries to attempt on timeout, before an endpoint is makred inactive */
+    //No of retries to attempt on timeout, before an endpoint is makred inactive
     private int retriesOnTimeoutBeforeSuspend = 0;
-    /** The delay between retries for a timeout out endpoint */
+
+    //The delay between retries for a timeout out endpoint
     private int retryDurationOnTimeout = 0;
-    /** A list of error codes which puts the endpoint into timeout mode */
+
+    //A list of error codes which puts the endpoint into timeout mode
     private final List<Integer> timeoutErrorCodes = new ArrayList<Integer>();
 
     private AspectConfiguration aspectConfiguration;
-    /**
-     * The variable that indicate tracing on or off for the current mediator
-     */
+
+    //The variable that indicate tracing on or off for the current mediator
     private int traceState = SynapseConstants.TRACING_UNSET;
+
+    public EndpointDefinition() {}
+
+    /**
+     * Copy constructor.
+     * @param that
+     */
+    public EndpointDefinition(EndpointDefinition that) {
+        this.leafEndpoint = that.leafEndpoint;
+        this.address = that.address;
+        this.reliableMessagingOn = that.reliableMessagingOn;
+        this.addressingOn = that.addressingOn;
+        this.addressingVersion = that.addressingVersion;
+        this.securityOn = that.securityOn;
+        this.wsRMPolicyKey = that.wsRMPolicyKey;
+        this.wsSecPolicyKey = that.wsSecPolicyKey;
+        this.inboundWsSecPolicyKey = that.inboundWsSecPolicyKey;
+        this.outboundWsSecPolicyKey = that.outboundWsSecPolicyKey;
+        this.useSeparateListener = that.useSeparateListener;
+        this.forcePOX = that.forcePOX;
+        this.forceGET = that.forceGET;
+        this.forceSOAP11 = that.forceSOAP11;
+        this.forceSOAP12 = that.forceSOAP12;
+        this.forceREST = that.forceREST;
+        this.useMTOM = that.useMTOM;
+        this.useSwa = that.useSwa;
+        this.format = that.format;
+        this.charSetEncoding = that.charSetEncoding;
+        this.timeoutDuration = that.timeoutDuration;
+        this.timeoutAction = that.timeoutAction;
+        this.initialSuspendDuration = that.initialSuspendDuration;
+        this.suspendProgressionFactor = that.suspendProgressionFactor;
+        this.suspendMaximumDuration = that.suspendMaximumDuration;
+        this.suspendErrorCodes.addAll(that.suspendErrorCodes);
+        this.retriesOnTimeoutBeforeSuspend = that.retriesOnTimeoutBeforeSuspend;
+        this.retryDurationOnTimeout = that.retryDurationOnTimeout;
+        this.timeoutErrorCodes.addAll(that.timeoutErrorCodes);
+        this.aspectConfiguration = that.aspectConfiguration;
+        this.traceState = that.traceState;
+    }
 
     /**
      * This should return the absolute EPR address referenced by the named endpoint. This may be
@@ -499,7 +507,8 @@ public class EndpointDefinition implements AspectConfigurable {
         timeoutErrorCodes.add(code);
     }
 
-    public String toString() {
+    @Override
+	public String toString() {
         if (leafEndpoint != null) {
             return leafEndpoint.toString();
         } else if (address != null) {

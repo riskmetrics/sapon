@@ -29,6 +29,7 @@ import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.aspects.ComponentType;
 import org.apache.synapse.aspects.statistics.StatisticsReporter;
+import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.endpoints.Endpoint;
 import org.apache.synapse.mediators.MediatorFaultHandler;
 
@@ -39,16 +40,17 @@ public class ProxyServiceMessageReceiver extends SynapseMessageReceiver {
 
     private static final Log log = LogFactory.getLog(ProxyServiceMessageReceiver.class);
 
-    /** The name of the Proxy Service */
     private String name = null;
-    /** The proxy service */
     private ProxyService proxy = null;
+
+    public ProxyServiceMessageReceiver(SynapseEnvironment synEnv) {
+    	super(synEnv);
+    }
 
     @Override
 	public void receive(MessageContext mc) throws AxisFault {
 
-        String remoteAddr = (String) mc.getProperty(
-            MessageContext.REMOTE_ADDR);
+        String remoteAddr = (String) mc.getProperty(MessageContext.REMOTE_ADDR);
 
         if (log.isDebugEnabled()) {
             log.debug("Proxy Service " + name + " received a new message" +
@@ -71,13 +73,11 @@ public class ProxyServiceMessageReceiver extends SynapseMessageReceiver {
             }
         }
 
-        SynapseMessageContext synCtx = MessageContextCreatorForAxis2.getSynapseMessageContext(mc);
+        SynapseMessageContext synCtx = getSynapseMessageContext(mc);
 
-        if(synCtx instanceof Axis2SynapseMessageContext) {
-        	StatisticsReporter.reportForComponent(	(Axis2SynapseMessageContext)synCtx,
-        											proxy.getAspectConfiguration(),
-        											ComponentType.PROXYSERVICE);
-        }
+        StatisticsReporter.reportForComponent(	synCtx,
+        										proxy.getAspectConfiguration(),
+        										ComponentType.PROXYSERVICE);
 
         // get service log for this message and attach to the message context also set proxy name
         Log serviceLog = LogFactory.getLog(SynapseConstants.SERVICE_LOGGER_PREFIX + name);

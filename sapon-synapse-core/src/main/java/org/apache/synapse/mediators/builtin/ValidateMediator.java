@@ -220,7 +220,7 @@ public class ValidateMediator extends AbstractListMediator {
     /**
      * This class handles validation errors to be used for the error reporting
      */
-    private class MyErrorHandler extends DefaultHandler {
+    private static class MyErrorHandler extends DefaultHandler {
 
         private boolean validationError = false;
         private SAXParseException saxParseException = null;

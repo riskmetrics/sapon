@@ -46,7 +46,9 @@ import org.apache.synapse.util.concurrent.SynapseThreadPool;
 /**
  * This is the Axis2 implementation of the SynapseEnvironment
  */
-public class Axis2SynapseEnvironment implements SynapseEnvironment {
+public class Axis2SynapseEnvironment
+	implements SynapseEnvironment
+{
 
     private static final Log log = LogFactory.getLog(Axis2SynapseEnvironment.class);
 
@@ -55,10 +57,10 @@ public class Axis2SynapseEnvironment implements SynapseEnvironment {
     private ExecutorService executorService;
     private boolean initialized = false;
 
-    /** The StatisticsCollector object */
     private StatisticsCollector statisticsCollector;
 
     public Axis2SynapseEnvironment(SynapseConfiguration synCfg) {
+    	this.synapseConfig = synCfg;
 
         int coreThreads = SynapseThreadPool.SYNAPSE_CORE_THREADS;
         int maxThreads  = SynapseThreadPool.SYNAPSE_MAX_THREADS;
@@ -93,27 +95,21 @@ public class Axis2SynapseEnvironment implements SynapseEnvironment {
     {
         this(synapseConfig);
         this.configContext = cfgCtx;
-        this.synapseConfig = synapseConfig;
     }
 
     /**
-     * This will be used for sending the message provided, to the endpoint specified by the
-     * EndpointDefinition using the axis2 environment.
+     * This will be used for sending the message provided, to the endpoint
+     * specified by the EndpointDefinition using the axis2 environment.
      *
-     * @param endpoint - EndpointDefinition to be used to find the endpoint information
-     *                      and the properties of the sending process
+     * @param endpoint - EndpointDefinition to be used to find the endpoint
+     *                   information and the properties of the sending process
      * @param synCtx   - Synapse MessageContext to be sent
      */
     public void send(EndpointDefinition endpoint, SynapseMessageContext synCtx) {
         if (synCtx.isResponse()) {
-        	if(synCtx instanceof Axis2SynapseMessageContext) {
-        		StatisticsReporter.reportForAll((Axis2SynapseMessageContext)synCtx);
-        	}
-
+        	StatisticsReporter.reportForAll(synCtx);
             if (endpoint != null) {
-
                 Axis2Sender.sendOn(endpoint, synCtx);
-
             } else {
                 Axis2Sender.sendBack(synCtx);
             }

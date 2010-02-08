@@ -20,7 +20,7 @@
 package org.apache.axis2.description;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.context.MessageContext;
@@ -44,7 +44,7 @@ public class ClientUtils {
                                                                          EndpointReference epr,
                                                                          MessageContext msgctx)
             throws AxisFault {
-        String transportURI = (String) msgctx.getProperty(Constants.Configuration.TRANSPORT_URL);
+        String transportURI = (String) msgctx.getProperty(Axis2Constants.Configuration.TRANSPORT_URL);
         if (transportURI != null && !"".equals(transportURI)) {
             int index = transportURI.indexOf(':');
             String transport = (index > 0) ? transportURI.substring(0, index) : null;
@@ -124,12 +124,12 @@ public class ClientUtils {
                 }
             }
             if (msgCtxt.getAxisService() != null) {
-                if (!msgCtxt.isEngaged(Constants.MODULE_ADDRESSING)) {
+                if (!msgCtxt.isEngaged(Axis2Constants.MODULE_ADDRESSING)) {
                     log.error(Messages.getMessage("2channelNeedAddressing"));
                     throw new AxisFault(Messages.getMessage("2channelNeedAddressing"));
                 }
             } else {
-                if (!ac.isEngaged(Constants.MODULE_ADDRESSING)) {
+                if (!ac.isEngaged(Axis2Constants.MODULE_ADDRESSING)) {
                     log.error(Messages.getMessage("2channelNeedAddressing"));
                     throw new AxisFault(Messages.getMessage("2channelNeedAddressing"));
                 }

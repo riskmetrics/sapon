@@ -33,7 +33,7 @@ import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPFault;
 import org.apache.axiom.soap.SOAPFaultDetail;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.alt.Flows;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.MessageFormatter;
@@ -164,7 +164,7 @@ public class ApplicationXMLFormatter implements MessageFormatter {
 
         String encoding = format.getCharSetEncoding();
         String contentType;
-        contentType = (String) messageContext.getProperty(Constants.Configuration.CONTENT_TYPE);
+        contentType = (String) messageContext.getProperty(Axis2Constants.Configuration.CONTENT_TYPE);
 
         if (log.isDebugEnabled()) {
             log.debug("contentType set from messageContext =" + contentType);

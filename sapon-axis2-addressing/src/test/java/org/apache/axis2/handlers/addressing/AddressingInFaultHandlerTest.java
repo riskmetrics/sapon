@@ -29,8 +29,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.MessageContext;
@@ -96,7 +96,7 @@ public class AddressingInFaultHandlerTest extends TestCase {
         AddressingInFaultHandler aifh = new AddressingInFaultHandler();
         aifh.invoke(msgContext);
 
-        return (AxisFault)msgContext.getProperty(Constants.INBOUND_FAULT_OVERRIDE);
+        return (AxisFault)msgContext.getProperty(Axis2Constants.INBOUND_FAULT_OVERRIDE);
     }
 
 }

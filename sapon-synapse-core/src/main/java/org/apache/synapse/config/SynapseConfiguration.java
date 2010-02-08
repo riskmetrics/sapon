@@ -112,6 +112,8 @@ public class SynapseConfiguration implements ManagedLifecycle {
      */
     private String pathToConfigFile = null;
 
+    private boolean initialized = false;
+
 
     /**
      * Holds Event Sources defined through Synapse
@@ -488,7 +490,8 @@ public class SynapseConfiguration implements ManagedLifecycle {
      *
      * @deprecated
      */
-    public void addEndpoint(String key, Entry entry) {
+    @Deprecated
+	public void addEndpoint(String key, Entry entry) {
         assertAlreadyExists(key, ENTRY);
         localRegistry.put(key, entry);
     }
@@ -952,6 +955,12 @@ public class SynapseConfiguration implements ManagedLifecycle {
                 stp.init(se);
             }
         }
+
+        initialized = true;
+    }
+
+    public boolean isInitialized() {
+    	return initialized;
     }
 
     private void handleException(String msg) {

@@ -24,8 +24,8 @@ import org.apache.axiom.soap.SOAPFaultText;
 import org.apache.axiom.soap.SOAPFaultValue;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.client.Options;
 import org.apache.axis2.context.MessageContext;
@@ -91,11 +91,8 @@ public class MessageHelper {
         newCtx.setResponse(synCtx.isResponse());
 
         // copy all the synapse level properties to the newCtx
-        for (Object o : synCtx.getPropertyKeySet()) {
-            // If there are non String keyed properties neglect them rather than trow exception
-            if (o instanceof String) {
-                newCtx.setProperty((String) o, synCtx.getProperty((String) o));
-            }
+        for (String s: synCtx.getPropertyKeySet()) {
+        	newCtx.setProperty(s, synCtx.getProperty(s));
         }
 
         // Make deep copy of fault stack so that parent will not be lost it's fault stack
@@ -152,8 +149,8 @@ public class MessageHelper {
         // copying transport related parts from the original
         newMC.setTransportIn(mc.getTransportIn());
         newMC.setTransportOut(mc.getTransportOut());
-        newMC.setProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO,
-            mc.getProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO));
+        newMC.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
+            mc.getProperty(Axis2Constants.OUT_TRANSPORT_INFO));
 
         newMC.setProperty(MessageContext.TRANSPORT_HEADERS, getClonedTransportHeaders(mc));
 
@@ -185,17 +182,17 @@ public class MessageHelper {
         newMC.setTo(ori.getTo());
         newMC.setSoapAction(ori.getSoapAction());
 
-        newMC.setProperty(org.apache.axis2.Constants.Configuration.CHARACTER_SET_ENCODING,
-                ori.getProperty(org.apache.axis2.Constants.Configuration.CHARACTER_SET_ENCODING));
-        newMC.setProperty(org.apache.axis2.Constants.Configuration.ENABLE_MTOM,
-                ori.getProperty(org.apache.axis2.Constants.Configuration.ENABLE_MTOM));
-        newMC.setProperty(org.apache.axis2.Constants.Configuration.ENABLE_SWA,
-                ori.getProperty(org.apache.axis2.Constants.Configuration.ENABLE_SWA));
-        newMC.setProperty(Constants.Configuration.HTTP_METHOD,
-            ori.getProperty(Constants.Configuration.HTTP_METHOD));
+        newMC.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING,
+                ori.getProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING));
+        newMC.setProperty(Axis2Constants.Configuration.ENABLE_MTOM,
+                ori.getProperty(Axis2Constants.Configuration.ENABLE_MTOM));
+        newMC.setProperty(Axis2Constants.Configuration.ENABLE_SWA,
+                ori.getProperty(Axis2Constants.Configuration.ENABLE_SWA));
+        newMC.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
+            ori.getProperty(Axis2Constants.Configuration.HTTP_METHOD));
         //coping the Message type from req to res to get the message formatters working correctly.
-        newMC.setProperty(Constants.Configuration.MESSAGE_TYPE,
-                ori.getProperty(Constants.Configuration.MESSAGE_TYPE));
+        newMC.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
+                ori.getProperty(Axis2Constants.Configuration.MESSAGE_TYPE));
 
         newMC.setDoingREST(ori.isDoingREST());
         newMC.setDoingMTOM(ori.isDoingMTOM());

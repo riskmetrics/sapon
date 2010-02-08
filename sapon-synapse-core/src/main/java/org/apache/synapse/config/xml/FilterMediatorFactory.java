@@ -28,7 +28,7 @@ import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.synapse.Mediator;
 import org.apache.synapse.SynapseConstants;
-import org.apache.synapse.mediators.filters.FilterMediator;
+import org.apache.synapse.mediators.filters.XPathOrRegexFilterMediator;
 import org.jaxen.JaxenException;
 
 /**
@@ -62,7 +62,7 @@ public class FilterMediatorFactory extends AbstractListMediatorFactory {
 
     public Mediator createMediator(OMElement elem) {
         
-        FilterMediator filter = new FilterMediator();
+        XPathOrRegexFilterMediator filter = new XPathOrRegexFilterMediator();
 
         OMAttribute attXpath  = elem.getAttribute(ATT_XPATH);
         OMAttribute attSource = elem.getAttribute(ATT_SOURCE);

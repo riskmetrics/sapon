@@ -38,14 +38,16 @@ import org.apache.synapse.endpoints.EndpointDefinition;
 import org.apache.synapse.endpoints.IndirectEndpoint;
 
 /**
- * All endpoint factories should extend from this abstract class. Use EndpointFactory to obtain the
- * correct endpoint for particular endpoint configuration. As endpoints can be nested inside
- * each other, EndpointFactory implementations may call other EndpointFactory implementations
- * recursively to obtain the required endpoint hierarchy.
+ * All endpoint factories should extend from this abstract class. Use
+ * EndpointFactory to obtain the correct endpoint for particular endpoint
+ * configuration. As endpoints can be nested inside each other, EndpointFactory
+ * implementations may call other EndpointFactory implementations recursively
+ * to obtain the required endpoint hierarchy.
  * <p/>
- * This also serves as the {@link XMLToObjectMapper} implementation for specific endpoint
- * implementations. If the endpoint type is not known use {@link XMLToEndpointMapper} as the
- * generic {@link XMLToObjectMapper} for all endpoints.
+ * This also serves as the {@link XMLToObjectMapper} implementation for
+ * specific endpoint implementations. If the endpoint type is not known use
+ * {@link XMLToEndpointMapper} as the generic {@link XMLToObjectMapper} for all
+ * endpoints.
  */
 public abstract class EndpointFactory implements XMLToObjectMapper {
 
@@ -56,8 +58,9 @@ public abstract class EndpointFactory implements XMLToObjectMapper {
     }
 
     /**
-     * Core method which is exposed for the external use, and this will find the proper
-     * {@link EndpointFactory} and create the endpoint which is of the format {@link Endpoint}.
+     * Core method which is exposed for the external use, and this will find
+     * the proper {@link EndpointFactory} and create the endpoint which is of
+     * the format {@link Endpoint}.
      *
      * @param elem        XML from which the endpoint will be built
      * @param isAnonymous whether this is an anonymous endpoint or not

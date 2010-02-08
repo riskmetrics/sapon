@@ -600,12 +600,13 @@ public class DefaultSchemaGenerator implements Java2WSDLConstants, SchemaGenerat
             if (type.getComponentType().isArray()) {
                 // this is a doble array element
                 Class<?> simpleType = type.getComponentType();
-                String simpleTypeName = "";
+                final StringBuilder simpleTypeNameBuff = new StringBuilder();
                 while (simpleType.isArray()) {
-                    simpleTypeName += "ArrayOf";
+                    simpleTypeNameBuff.append("ArrayOf");
                     simpleType = simpleType.getComponentType();
                 }
-                simpleTypeName += simpleType.getSimpleName();
+                simpleTypeNameBuff.append(simpleType.getSimpleName());
+                String simpleTypeName = simpleTypeNameBuff.toString();
 
                 if (xmlSchema.getTypeByName(simpleTypeName) == null) {
                     XmlSchemaComplexType xmlSchemaComplexType = new XmlSchemaComplexType(xmlSchema);
@@ -781,12 +782,13 @@ public class DefaultSchemaGenerator implements Java2WSDLConstants, SchemaGenerat
             if (type.getComponentType().isArray()) {
                 // this is a doble array element
                 Class<?> simpleType = type.getComponentType();
-                String simpleTypeName = "";
+                final StringBuilder simpleTypeNameBuff = new StringBuilder();
                 while (simpleType.isArray()) {
-                    simpleTypeName += "ArrayOf";
+                    simpleTypeNameBuff.append("ArrayOf");
                     simpleType = simpleType.getComponentType();
                 }
-                simpleTypeName += simpleType.getSimpleName();
+                simpleTypeNameBuff.append(simpleType.getSimpleName());
+                final String simpleTypeName = simpleTypeNameBuff.toString();
 
                 XmlSchema xmlSchema = getXmlSchema(schemaTargetNameSpace);
                 if (xmlSchema.getTypeByName(simpleTypeName) == null) {
@@ -838,7 +840,7 @@ public class DefaultSchemaGenerator implements Java2WSDLConstants, SchemaGenerat
                 type = type.getComponentType();
             }
         }
-        if (AxisFault.class.getName().equals(type)) {
+        if (AxisFault.class.equals(type)) {
             return null;
         }
         String classTypeName;

@@ -43,7 +43,7 @@ import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
 import org.apache.axiom.soap.SOAPProcessingException;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.addressing.EndpointReference;
@@ -95,24 +95,24 @@ public class MessageContextBuilder {
 
         newmsgCtx.setProperty(WSDL2Constants.ENDPOINT_LOCAL_NAME,
                               inMessageContext.getProperty(WSDL2Constants.ENDPOINT_LOCAL_NAME));
-        newmsgCtx.setProperty(Constants.AXIS_BINDING_OPERATION,
-                              inMessageContext.getProperty(Constants.AXIS_BINDING_OPERATION));
+        newmsgCtx.setProperty(Axis2Constants.AXIS_BINDING_OPERATION,
+                              inMessageContext.getProperty(Axis2Constants.AXIS_BINDING_OPERATION));
 
         // Setting the character set encoding
-        newmsgCtx.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING,
+        newmsgCtx.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING,
                               inMessageContext.getProperty(
-                                      Constants.Configuration.CHARACTER_SET_ENCODING));
+                                      Axis2Constants.Configuration.CHARACTER_SET_ENCODING));
         //Setting the message type property
-        newmsgCtx.setProperty(Constants.Configuration.MESSAGE_TYPE,
-                              inMessageContext.getProperty(Constants.Configuration.MESSAGE_TYPE));
+        newmsgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
+                              inMessageContext.getProperty(Axis2Constants.Configuration.MESSAGE_TYPE));
         newmsgCtx.setDoingREST(inMessageContext.isDoingREST());
 
         newmsgCtx.setOperationContext(inMessageContext.getOperationContext());
 
         newmsgCtx.setProperty(MessageContext.TRANSPORT_OUT,
                               inMessageContext.getProperty(MessageContext.TRANSPORT_OUT));
-        newmsgCtx.setProperty(Constants.OUT_TRANSPORT_INFO,
-                              inMessageContext.getProperty(Constants.OUT_TRANSPORT_INFO));
+        newmsgCtx.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
+                              inMessageContext.getProperty(Axis2Constants.OUT_TRANSPORT_INFO));
 
         handleCorrelationID(inMessageContext,newmsgCtx);
         return newmsgCtx;
@@ -133,16 +133,9 @@ public class MessageContextBuilder {
             newmsgCtx.setTo(new EndpointReference(AddressingConstants.Final.WSA_ANONYMOUS_URL));
         }
 
-        // do Target Resolution
-        TargetResolver targetResolver =
-                newmsgCtx.getConfigurationContext().getAxisConfiguration().getTargetResolverChain();
-        if (targetResolver != null) {
-            targetResolver.resolveTarget(newmsgCtx);
-        }
-
         // Determine ReplyTo for response message.
         AxisService axisService = inMessageContext.getAxisService();
-        if (axisService != null && Constants.SCOPE_SOAP_SESSION.equals(axisService.getScope())) {
+        if (axisService != null && Axis2Constants.SCOPE_SOAP_SESSION.equals(axisService.getScope())) {
             //If the wsa 2004/08 (submission) spec is in effect use the wsa anonymous URI as the default replyTo value.
             //This is necessary because the wsa none URI is not available in that spec.
             Object version = inMessageContext.getProperty(AddressingConstants.WS_ADDRESSING_VERSION);
@@ -159,9 +152,9 @@ public class MessageContextBuilder {
             String serviceGroupContextId = inMessageContext.getServiceGroupContextId();
             if (serviceGroupContextId != null && !"".equals(serviceGroupContextId)) {
                 EndpointReference replyToEPR = newmsgCtx.getReplyTo();
-                replyToEPR.addReferenceParameter(new QName(Constants.AXIS2_NAMESPACE_URI,
-                                                           Constants.SERVICE_GROUP_ID,
-                                                           Constants.AXIS2_NAMESPACE_PREFIX),
+                replyToEPR.addReferenceParameter(new QName(Axis2Constants.AXIS2_NAMESPACE_URI,
+                                                           Axis2Constants.SERVICE_GROUP_ID,
+                                                           Axis2Constants.AXIS2_NAMESPACE_PREFIX),
                                                  serviceGroupContextId);
             }
         } else {
@@ -189,10 +182,10 @@ public class MessageContextBuilder {
 
         // setting the out bound binding message
         AxisBindingMessage inboundAxisBindingMessage
-                = (AxisBindingMessage)inMessageContext.getProperty(Constants.AXIS_BINDING_MESSAGE);
+                = (AxisBindingMessage)inMessageContext.getProperty(Axis2Constants.AXIS_BINDING_MESSAGE);
         if (inboundAxisBindingMessage != null){
             AxisBindingOperation axisBindingOperation = inboundAxisBindingMessage.getAxisBindingOperation();
-            newmsgCtx.setProperty(Constants.AXIS_BINDING_MESSAGE,
+            newmsgCtx.setProperty(Axis2Constants.AXIS_BINDING_MESSAGE,
                     axisBindingOperation.getChild(WSDLConstants.MESSAGE_LABEL_OUT_VALUE));
         }
 
@@ -216,15 +209,15 @@ public class MessageContextBuilder {
     private static void handleCorrelationID(MessageContext inMessageContext,MessageContext outMessageContext)
     {
     	if (inMessageContext.getIncomingTransportName()!= null &&
-    	    inMessageContext.getIncomingTransportName().equals(Constants.TRANSPORT_JMS))
+    	    inMessageContext.getIncomingTransportName().equals(Axis2Constants.TRANSPORT_JMS))
     	{
     		log.debug("Incoming Transport is JMS, lets check for JMS correlation id");
 
 	    	String correlationId =
-	            (String) inMessageContext.getProperty(Constants.JMS_COORELATION_ID);
+	            (String) inMessageContext.getProperty(Axis2Constants.JMS_COORELATION_ID);
 	    	log.debug("Correlation id is " + correlationId);
 	        if (correlationId != null && correlationId.length() > 0) {
-	        	outMessageContext.setProperty(Constants.JMS_COORELATION_ID, correlationId);
+	        	outMessageContext.setProperty(Axis2Constants.JMS_COORELATION_ID, correlationId);
 	        }
     	}
     }
@@ -257,9 +250,9 @@ public class MessageContextBuilder {
                 faultMessageContext.setProperty(MessageContext.TRANSPORT_OUT,
                                                 processingContext.getProperty(
                                                         MessageContext.TRANSPORT_OUT));
-                faultMessageContext.setProperty(Constants.OUT_TRANSPORT_INFO,
+                faultMessageContext.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
                                                 processingContext.getProperty(
-                                                        Constants.OUT_TRANSPORT_INFO));
+                                                        Axis2Constants.OUT_TRANSPORT_INFO));
                 faultMessageContext.setProcessingFault(true);
                 return faultMessageContext;
             }
@@ -298,9 +291,9 @@ public class MessageContextBuilder {
         // there are some information  that the fault thrower wants to pass to the fault path.
         // Means that the fault is a ws-addressing one hence use the ws-addressing fault action.
         Object faultInfoForHeaders =
-                processingContext.getLocalProperty(Constants.FAULT_INFORMATION_FOR_HEADERS);
+                processingContext.getLocalProperty(Axis2Constants.FAULT_INFORMATION_FOR_HEADERS);
         if (faultInfoForHeaders != null) {
-            faultContext.setProperty(Constants.FAULT_INFORMATION_FOR_HEADERS, faultInfoForHeaders);
+            faultContext.setProperty(Axis2Constants.FAULT_INFORMATION_FOR_HEADERS, faultInfoForHeaders);
 
             // Note that this overrides any action set above
             faultContext.setWSAAction(Final.WSA_FAULT_ACTION);
@@ -328,13 +321,6 @@ public class MessageContextBuilder {
             (outboundToEPR != null && !outboundToEPR.hasAnonymousAddress())) {
             faultContext.setMessageID(UUIDGenerator.getUUID());
             faultContext.setReplyTo(new EndpointReference(AddressingConstants.Final.WSA_NONE_URI));
-        }
-
-        // do Target Resolution
-        TargetResolver targetResolver = faultContext.getConfigurationContext()
-                .getAxisConfiguration().getTargetResolverChain();
-        if (targetResolver != null) {
-            targetResolver.resolveTarget(faultContext);
         }
 
         // Ensure transport settings match the scheme for the To EPR
@@ -393,7 +379,7 @@ public class MessageContextBuilder {
                     }
                     if (context.getOperationContext() != null) {
                         context.getOperationContext().setProperty(
-                                Constants.DIFFERENT_EPR, Constants.VALUE_TRUE);
+                                Axis2Constants.DIFFERENT_EPR, Axis2Constants.VALUE_TRUE);
                     }
                 }
             }
@@ -596,13 +582,13 @@ public class MessageContextBuilder {
         Object flagFromContext = null;
         if (oc != null) {
             flagFromContext = context.getOperationContext()
-                    .getProperty(Constants.Configuration.SEND_STACKTRACE_DETAILS_WITH_FAULTS);
+                    .getProperty(Axis2Constants.Configuration.SEND_STACKTRACE_DETAILS_WITH_FAULTS);
         }
         if (flagFromContext != null) {
             sendStacktraceDetailsWithFaults = JavaUtils.isTrue(flagFromContext);
         } else {
             Parameter param = context.getParameter(
-                    Constants.Configuration.SEND_STACKTRACE_DETAILS_WITH_FAULTS);
+                    Axis2Constants.Configuration.SEND_STACKTRACE_DETAILS_WITH_FAULTS);
             if (param != null) {
                 sendStacktraceDetailsWithFaults = JavaUtils.isTrue(param.getValue());
             }
@@ -642,7 +628,7 @@ public class MessageContextBuilder {
     private static String getFaultReasonFromException(Throwable e, MessageContext context) {
         Throwable throwable = e;
         Parameter param = context.getParameter(
-                Constants.Configuration.DRILL_DOWN_TO_ROOT_CAUSE_FOR_FAULT_REASON);
+                Axis2Constants.Configuration.DRILL_DOWN_TO_ROOT_CAUSE_FOR_FAULT_REASON);
         boolean drillDownToRootCauseForFaultReason =
                 param != null && ((String) param.getValue()).equalsIgnoreCase("true");
         if (drillDownToRootCauseForFaultReason) {

@@ -42,7 +42,7 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.classloader.JarFileClassLoader;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.repository.util.ArchiveReader;
@@ -274,7 +274,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             loadCustomServices(repoURL);
         } catch (MalformedURLException e) {
             log.error(e.getMessage(), e);
-        } catch (IOException e) {
+        } catch (AxisFault e) {
             log.error(e.getMessage(), e);
         }
     }
@@ -303,7 +303,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
                                     new URL[]{moduleurl},
                                     axisConfig.getModuleClassLoader(),
                                     true,
-                                    (File) axisConfig.getParameterValue(Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                                    (File) axisConfig.getParameterValue(Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
                     AxisModule module = new AxisModule();
                     module.setModuleClassLoader(deploymentClassLoader);
                     module.setParent(axisConfig);
@@ -326,7 +326,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             axisConfig.validateSystemPredefinedPhases();
         } catch (MalformedURLException e) {
             throw new DeploymentException(e);
-        } catch (IOException e) {
+        } catch (AxisFault e) {
             throw new DeploymentException(e);
         }
     }
@@ -345,7 +345,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             }
             ModuleBuilder moduleBuilder = new ModuleBuilder(moduleStream, module, axisConfig);
             moduleBuilder.populateModule();
-        } catch (IOException e) {
+        } catch (AxisFault e) {
             throw new DeploymentException(e);
         }
     }
@@ -359,7 +359,7 @@ public abstract class DeploymentEngine implements DeploymentConstants {
                     new URL[]{servicesURL},
                     axisConfig.getServiceClassLoader(),
                     true,
-                    (File) axisConfig.getParameterValue(Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                    (File) axisConfig.getParameterValue(Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
             String metainf = "meta-inf";
             serviceGroup.setServiceGroupClassLoader(serviceClassLoader);
             //processing wsdl.list
@@ -506,6 +506,8 @@ public abstract class DeploymentEngine implements DeploymentConstants {
             throw new DeploymentException(e);
         } catch (XMLStreamException e) {
             throw new DeploymentException(e);
+        } catch (AxisFault e) {
+        	throw new DeploymentException(e);
         }
         return null;
     }

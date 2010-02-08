@@ -40,7 +40,6 @@ import org.apache.axis2.alt.ModuleConfigAccessor;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.builder.unknowncontent.UnknownContentBuilder;
 import org.apache.axis2.clustering.ClusterManager;
-import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.dataretrieval.AxisDataLocator;
 import org.apache.axis2.deployment.DeploymentException;
 import org.apache.axis2.deployment.ModuleDeployer;
@@ -62,7 +61,6 @@ import org.apache.axis2.description.java2wsdl.Java2WSDLConstants;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.phaseresolver.PhaseResolver;
 import org.apache.axis2.transport.MessageFormatter;
-import org.apache.axis2.util.TargetResolver;
 import org.apache.axis2.util.Utils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -133,8 +131,6 @@ public class AxisConfiguration extends AxisDescriptionBase
     //To keep track of whether the system has started or not
     private boolean start;
 
-    private final List<TargetResolver> targetResolvers;
-
     private ClusterManager clusterManager;
 
     private AxisConfigurator configurator;
@@ -165,7 +161,6 @@ public class AxisConfiguration extends AxisDescriptionBase
         children = new HashMap<String, AxisServiceGroup>();
 
         this.phasesinfo = new PhasesInfo();
-        targetResolvers = new ArrayList<TargetResolver>();
     }
 
     public void addMessageReceiver(String mepURL,
@@ -208,7 +203,7 @@ public class AxisConfiguration extends AxisDescriptionBase
         module.setParent(this);
 
         // check whether the module version paramter is there , if so set the module version as that
-        Parameter verisonParamter = module.getParameter(org.apache.axis2.Constants.MODULE_VERSION);
+        Parameter verisonParamter = module.getParameter(org.apache.axis2.Axis2Constants.MODULE_VERSION);
         if (verisonParamter !=null ) {
             String version = (String) verisonParamter.getValue();
             module.setVersion(version);
@@ -298,9 +293,9 @@ public class AxisConfiguration extends AxisDescriptionBase
                 }
             }
         }
-        Iterator<AxisModule> enModule = getEngagedModules().iterator();
-        while (enModule.hasNext()) {
-            axisServiceGroup.engageModule(enModule.next());
+
+        for(AxisModule enModule: getEngagedModules()) {
+            axisServiceGroup.engageModule(enModule);
         }
 
         ArrayList<AxisService> servicesIAdded = new ArrayList<AxisService>();
@@ -485,10 +480,7 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     public void notifyObservers(int event_type, AxisService service) {
         AxisEvent event = new AxisEvent(event_type);
-
-        for (int i = 0; i < observersList.size(); i++) {
-            AxisObserver axisObserver = observersList.get(i);
-
+        for(AxisObserver axisObserver: observersList) {
             try {
                 if (!service.isClientSide()) {
                     axisObserver.serviceUpdate(event, service);
@@ -502,10 +494,7 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     public void notifyObservers(int event_type, AxisModule moule) {
         AxisEvent event = new AxisEvent(event_type);
-
-        for (int i = 0; i < observersList.size(); i++) {
-            AxisObserver axisObserver = observersList.get(i);
-
+        for(AxisObserver axisObserver: observersList) {
             try {
                 axisObserver.moduleUpdate(event, moule);
             } catch (Throwable e) {
@@ -517,10 +506,7 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     public void notifyObservers(int event_type, AxisServiceGroup serviceGroup) {
         AxisEvent event = new AxisEvent(event_type);
-
-        for (int i = 0; i < observersList.size(); i++) {
-            AxisObserver axisObserver = observersList.get(i);
-
+        for(AxisObserver axisObserver: observersList) {
             try {
                 axisObserver.serviceGroupUpdate(event, serviceGroup);
             } catch (Throwable e) {
@@ -965,31 +951,6 @@ public class AxisConfiguration extends AxisDescriptionBase
 
     public void setStart(boolean start) {
         this.start = start;
-    }
-
-    /**
-     * getTargetResolverChain returns an instance of
-     * TargetResolver which iterates over the registered
-     * TargetResolvers, calling each one in turn when
-     * resolveTarget is called.
-     */
-    public TargetResolver getTargetResolverChain() {
-        if (targetResolvers.isEmpty()) {
-            return null;
-        }
-        return new TargetResolver() {
-            public void resolveTarget(MessageContext messageContext) {
-                Iterator<TargetResolver> iter = targetResolvers.iterator();
-                while (iter.hasNext()) {
-                    TargetResolver tr = iter.next();
-                    tr.resolveTarget(messageContext);
-                }
-            }
-        };
-    }
-
-    public void addTargetResolver(TargetResolver tr) {
-        targetResolvers.add(tr);
     }
 
     public void addLocalPolicyAssertion(QName name) {

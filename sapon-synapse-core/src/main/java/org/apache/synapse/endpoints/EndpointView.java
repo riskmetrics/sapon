@@ -30,14 +30,14 @@ import org.apache.commons.logging.LogFactory;
 /**
  * This class is the metrics collector and JMX control point for Endpoints
  */
-public class EndpointView implements EndpointViewMBean, MessageLevelMetricsCollector {
+public class EndpointView
+	implements EndpointViewMBean, MessageLevelMetricsCollector
+{
 
     private static final Log log = LogFactory.getLog(EndpointView.class);
     private static final Long ONE = (long) 1;
 
-    /** The name of the endpoint */
     private String endpointName = null;
-    /** The actual Endpoint implementation we manage */
     private Endpoint endpoint = null;
 
     // metrics collected / maintained
@@ -672,12 +672,15 @@ public class EndpointView implements EndpointViewMBean, MessageLevelMetricsColle
 
     //---------- utility methods ---------------
     private static void addTableMaps(Map<Integer, Long> t, Map<Integer, Long> s) {
-        for (Integer o : s.keySet()) {
-            if (t.containsKey(o)) {
-                t.put(o, t.get(o) + s.get(o));
-            } else {
-                t.put(o, s.get(o));
+        for (Map.Entry<Integer, Long> e : s.entrySet()) {
+        	Integer skey = e.getKey();
+        	Long sval = e.getValue();
+
+        	Long tval = t.get(skey);
+        	if(tval == null) {
+        		tval = 0L;
             }
+        	t.put(skey, tval + sval);
         }
     }
 

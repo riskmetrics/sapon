@@ -88,7 +88,7 @@ public class PartOnMemoryEnhanced extends AbstractPart {
     }
 
 
-    class MyDataHandler extends DataHandler {
+    static class MyDataHandler extends DataHandler {
 
         DataSource ds;
         public MyDataHandler(DataSource ds) {

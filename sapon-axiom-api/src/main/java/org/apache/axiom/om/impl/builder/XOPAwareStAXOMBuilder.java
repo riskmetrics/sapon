@@ -19,6 +19,13 @@
 
 package org.apache.axiom.om.impl.builder;
 
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import javax.activation.DataHandler;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+
 import org.apache.axiom.attachments.Attachments;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
@@ -32,15 +39,9 @@ import org.apache.axiom.om.util.ElementHelper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import javax.activation.DataHandler;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
-public class XOPAwareStAXOMBuilder 
+public class XOPAwareStAXOMBuilder
     extends StAXOMBuilder implements XOPBuilder {
-    
+
     private static final Log log = LogFactory.getLog(XOPAwareStAXOMBuilder.class);
 
     /** <code>Attachments</code> handles deferred parsing of incoming MIME Messages. */
@@ -110,7 +111,8 @@ public class XOPAwareStAXOMBuilder
      * @return Returns OMNode.
      * @throws OMException
      */
-    protected OMNode createOMElement() throws OMException {
+    @Override
+	protected OMNode createOMElement() throws OMException {
 
         String elementName = parser.getLocalName();
         String namespaceURI = parser.getNamespaceURI();
@@ -125,8 +127,8 @@ public class XOPAwareStAXOMBuilder
             if (lastNode == null) {
                 throw new OMException(
                         "XOP:Include element is not supported here");
-            } else if (lastNode.isComplete() & lastNode.getParent() != null) {
-                node = omfactory.createOMText(contentID, (OMElement) lastNode
+            } else if (lastNode.isComplete() && lastNode.getParent() != null) {
+                node = omfactory.createOMText(contentID, lastNode
                         .getParent(), this);
                 if (log.isDebugEnabled()) {
                     log.debug("Create createOMText for cid:" + contentID);
@@ -150,7 +152,7 @@ public class XOPAwareStAXOMBuilder
     public DataHandler getDataHandler(String blobContentID) throws OMException {
         return attachments.getDataHandler(blobContentID);
     }
-    
+
     public Attachments getAttachments() {
         return attachments;
     }

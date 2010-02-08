@@ -287,7 +287,7 @@ public class OperationContext extends AbstractContext<ServiceContext>
 
         MessageContext mc = getMessageContext(label);
         if (mc != null) {
-            messageContexts.remove(mc);
+            messageContexts.remove(label);
             setComplete(false);
             touch();
         }
@@ -388,7 +388,10 @@ public class OperationContext extends AbstractContext<ServiceContext>
         // match up the axis operation
         out.writeUTF("metaAxisService"); // write marker
         metaAxisService = null;
-        AxisService axisService = axisOperation.getService();
+        AxisService axisService = null;
+        if(axisOperation != null) {
+        	axisService = axisOperation.getService();
+        }
 
         if (axisService != null) {
             metaAxisService =
@@ -468,7 +471,12 @@ public class OperationContext extends AbstractContext<ServiceContext>
                 MessageContext copyMC = mc.extractCopyMessageContext();
 
                 // Don't persist the message of the other message contexts
-                copyMC.setEnvelope(null);
+                try {
+                	copyMC.setEnvelope(null);
+                } catch(AxisFault af) {
+                	throw new IOException("Could not set SOAPEnvelope while "
+                			+ "externalizing", af);
+                }
 
                 // put the modified entry in the list
                 tmpMsgCtxMap.put(key, copyMC);

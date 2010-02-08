@@ -25,12 +25,14 @@ import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.SynapseMessageContext;
 
 /**
- * Endpoint defines the behavior common to all Synapse endpoints. Synapse endpoints should be able
- * to send the given Synapse message context, rather than just providing the information for sending
- * the message. The task a particular endpoint does in its send(...) method is specific to the endpoint.
- * For example a loadbalance endpoint may choose another endpoint using its load balance policy and
- * call its send(...) method while an address endpoint (leaf level) may send the message to an actual
- * endpoint url. Endpoints may contain zero or more endpoints in them and build up a hierarchical
+ * Endpoint defines the behavior common to all Synapse endpoints. Synapse
+ * endpoints should be able to send the given Synapse message context, rather
+ * than just providing the information for sending the message. The task a
+ * particular endpoint does in its send(...) method is specific to the endpoint.
+ * For example a loadbalance endpoint may choose another endpoint using its
+ * load balance policy and call its send(...) method while an address endpoint
+ * (leaf level) may send the message to an actual endpoint url. Endpoints may
+ * contain zero or more endpoints in them and build up a hierarchical
  * structure of endpoints.
  */
 public interface Endpoint extends ManagedLifecycle {
@@ -40,33 +42,22 @@ public interface Endpoint extends ManagedLifecycle {
      *
      * @param synMessageContext MessageContext to be sent.
      */
-    public void send(SynapseMessageContext synMessageContext);
-
-    /**
-     * Endpoints that contain other endpoints should implement this method. It will be called if a
-     * child endpoint causes an exception. Action to be taken on such failure is up to the implementation.
-     * But it is good practice to first try addressing the issue. If it can't be addressed propagate the
-     * exception to parent endpoint by calling parent endpoint's onChildEndpointFail(...) method.
-     *
-     * @param endpoint          The child endpoint which caused the exception.
-     * @param synMessageContext MessageContext that was used in the failed attempt.
-     */
-    public void onChildEndpointFail(Endpoint endpoint, SynapseMessageContext synMessageContext);
+    void send(SynapseMessageContext synMessageContext);
 
     /**
      * Sets the parent endpoint for the current endpoint.
      *
-     * @param parentEndpoint parent endpoint containing this endpoint. It should handle the onChildEndpointFail(...)
-     *                       callback.
+     * @param parentEndpoint parent endpoint containing this endpoint. It
+     *                       should handle the onChildEndpointFail(...) callback.
      */
-    public void setParentEndpoint(Endpoint parentEndpoint);
+    void setParentEndpoint(Endpoint parentEndpoint);
 
     /**
      * Returns the name of the endpoint.
      *
      * @return Endpoint name.
      */
-    public String getName();
+    String getName();
 
     /**
      * Sets the name of the endpoint. Local registry use this name as the key for storing the
@@ -74,41 +65,48 @@ public interface Endpoint extends ManagedLifecycle {
      *
      * @param name Name for the endpoint.
      */
-    public void setName(String name);
+    void setName(String name);
 
     /**
      * An event notification whenever endpoint invocation is successful
      * Can be used to clear a timeout status etc
      */
-    public void onSuccess();
+    void onSuccess();
 
     /**
      * Returns true to indicate that the endpoint is ready to service requests
      * @return true if endpoint is ready to service requests
      */
-    public boolean readyToSend();
-
-    /**
-     * Has this Endpoint initialized?
-     * @return true if the endpoint is initialized
-     */
-    public boolean isInitialized();
+    boolean readyToSend();
 
     /**
      * Get the EndpointContext that has the run-time state of this endpoint
      * @return the runtime context
      */
-    public EndpointContext getContext();
-
-    /**
-     * Get the children of this endpoint
-     * @return the child endpoints
-     */
-    public List<Endpoint> getChildren();
+    EndpointContext getContext();
 
     /**
      * Get a reference to the metrics MBean for this endpoint
      * @return EndpointView instance
      */
-    public EndpointView getMetricsMBean();
+    EndpointView getMetricsMBean();
+
+    /**
+     * Get the children of this endpoint
+     * @return the child endpoints
+     */
+    List<Endpoint> getChildren();
+
+    /**
+     * Endpoints that contain other endpoints should implement this method. It
+     * will be called if a child endpoint causes an exception. Action to be
+     * taken on such failure is up to the implementation.  But it is good
+     * practice to first try addressing the issue. If it can't be addressed
+     * propagate the exception to parent endpoint by calling parent endpoint's
+     * onChildEndpointFail(...) method.
+     *
+     * @param endpoint          The child endpoint which caused the exception.
+     * @param synMessageContext MessageContext that was used in the failed attempt.
+     */
+    void onChildEndpointFail(Endpoint endpoint, SynapseMessageContext synMessageContext);
 }

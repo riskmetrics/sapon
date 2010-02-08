@@ -26,8 +26,8 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.OperationClient;
@@ -194,7 +194,7 @@ class OutInAxisOperationClient extends OperationClient {
         boolean useAsync = false;
         if (!mc.getOptions().isUseSeparateListener()) {
             Boolean useAsyncOption =
-                    (Boolean) mc.getProperty(Constants.Configuration.USE_ASYNC_OPERATIONS);
+                    (Boolean) mc.getProperty(Axis2Constants.Configuration.USE_ASYNC_OPERATIONS);
 			if (log.isDebugEnabled()) {
 				log.debug("OutInAxisOperationClient: useAsyncOption " + useAsyncOption);
 			}
@@ -231,7 +231,7 @@ class OutInAxisOperationClient extends OperationClient {
                 send(mc);
                 completed = true;
             } else {
-                sc.getConfigurationContext().getThreadPool().execute(
+                sc.getConfigurationContext().getExecutor().execute(
                         new NonBlockingInvocationWorker(mc, axisCallback));
             }
         }
@@ -290,7 +290,7 @@ class OutInAxisOperationClient extends OperationClient {
          * response message.
          */
         Boolean useCustomListener =
-                (Boolean) options.getProperty(Constants.Configuration.USE_CUSTOM_LISTENER);
+                (Boolean) options.getProperty(Axis2Constants.Configuration.USE_CUSTOM_LISTENER);
         if (useAsync) {
             useCustomListener = Boolean.TRUE;
         }
@@ -478,7 +478,7 @@ class OutInAxisOperationClient extends OperationClient {
     /**
      * This class acts as a callback that allows users to wait on the result.
      */
-    private class SyncCallBack implements AxisCallback {
+    private static class SyncCallBack implements AxisCallback {
         boolean complete;
         boolean receivedFault;
 

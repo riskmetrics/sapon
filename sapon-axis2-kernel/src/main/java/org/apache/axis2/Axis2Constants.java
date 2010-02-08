@@ -20,7 +20,7 @@
 
 package org.apache.axis2;
 
-public class Constants extends org.apache.axis2.namespace.Constants {
+public class Axis2Constants extends org.apache.axis2.namespace.Constants {
 
     public static final int SOAP_STYLE_RPC_ENCODED = 1000;
 

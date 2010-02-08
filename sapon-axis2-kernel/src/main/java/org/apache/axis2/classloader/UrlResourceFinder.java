@@ -203,12 +203,14 @@ public class UrlResourceFinder implements ResourceFinder {
                     }
                 }
 
-                // add the jar to our class path
-                classPath.put(resourceLocation.getCodeSource(), resourceLocation);
+                if(resourceLocation != null) {
+                	// add the jar to our class path
+                	classPath.put(resourceLocation.getCodeSource(), resourceLocation);
 
-                // push the manifest classpath on the stack (make sure to maintain the order)
-                List<URL> manifestClassPath = getManifestClassPath(resourceLocation);
-                locationStack.addAll(0, manifestClassPath);
+                	// push the manifest classpath on the stack (make sure to maintain the order)
+                	List<URL> manifestClassPath = getManifestClassPath(resourceLocation);
+                	locationStack.addAll(0, manifestClassPath);
+                }
             }
         } catch (Error e) {
             destroy();

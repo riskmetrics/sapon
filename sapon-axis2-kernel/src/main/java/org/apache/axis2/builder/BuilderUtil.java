@@ -62,7 +62,7 @@ import org.apache.axiom.soap.SOAPProcessingException;
 import org.apache.axiom.soap.impl.builder.MTOMStAXSOAPModelBuilder;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.deployment.DeploymentConstants;
 import org.apache.axis2.description.AxisMessage;
@@ -195,8 +195,8 @@ public class BuilderUtil {
             if (minOccurs > 0) {
                 if (nillable) {
                     OMNamespace xsi = soapFactory.createOMNamespace(
-                            Constants.URI_DEFAULT_SCHEMA_XSI,
-                            Constants.NS_PREFIX_SCHEMA_XSI);
+                            Axis2Constants.URI_DEFAULT_SCHEMA_XSI,
+                            Axis2Constants.NS_PREFIX_SCHEMA_XSI);
                     OMAttribute omAttribute =
                             soapFactory.createOMAttribute("nil", xsi, "true");
                     soapFactory.createOMElement(name, ns, parentElem)
@@ -428,7 +428,7 @@ public class BuilderUtil {
             || "null".equalsIgnoreCase(charSetEncoding)) {
             charSetEncoding = MessageContext.UTF_8;
         }
-        msgContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING,
+        msgContext.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING,
                                charSetEncoding);
 
         try {
@@ -489,13 +489,13 @@ public class BuilderUtil {
 
         if (fileCacheForAttachments) {
             Object attachmentRepoDirProperty = msgContext
-                    .getProperty(Constants.Configuration.ATTACHMENT_TEMP_DIR);
+                    .getProperty(Axis2Constants.Configuration.ATTACHMENT_TEMP_DIR);
 
             if (attachmentRepoDirProperty != null) {
                 attachmentRepoDir = (String)attachmentRepoDirProperty;
             } else {
                 Parameter attachmentRepoDirParameter = msgContext
-                        .getParameter(Constants.Configuration.ATTACHMENT_TEMP_DIR);
+                        .getParameter(Axis2Constants.Configuration.ATTACHMENT_TEMP_DIR);
                 attachmentRepoDir =
                         (attachmentRepoDirParameter != null) ? (String)attachmentRepoDirParameter
                                 .getValue()
@@ -503,13 +503,13 @@ public class BuilderUtil {
             }
 
             Object attachmentSizeThresholdProperty = msgContext
-                    .getProperty(Constants.Configuration.FILE_SIZE_THRESHOLD);
+                    .getProperty(Axis2Constants.Configuration.FILE_SIZE_THRESHOLD);
             if (attachmentSizeThresholdProperty != null
                 && attachmentSizeThresholdProperty instanceof String) {
                 attachmentSizeThreshold = (String)attachmentSizeThresholdProperty;
             } else {
                 Parameter attachmentSizeThresholdParameter = msgContext
-                        .getParameter(Constants.Configuration.FILE_SIZE_THRESHOLD);
+                        .getParameter(Axis2Constants.Configuration.FILE_SIZE_THRESHOLD);
                 attachmentSizeThreshold = attachmentSizeThresholdParameter
                         .getValue().toString();
             }
@@ -555,7 +555,7 @@ public class BuilderUtil {
 
     public static boolean isAttachmentsCacheEnabled(MessageContext msgContext) {
         Object cacheAttachmentProperty = msgContext
-                .getProperty(Constants.Configuration.CACHE_ATTACHMENTS);
+                .getProperty(Axis2Constants.Configuration.CACHE_ATTACHMENTS);
         String cacheAttachmentString;
         boolean fileCacheForAttachments;
 
@@ -563,11 +563,11 @@ public class BuilderUtil {
             cacheAttachmentString = (String)cacheAttachmentProperty;
         } else {
             Parameter parameter_cache_attachment =
-                    msgContext.getParameter(Constants.Configuration.CACHE_ATTACHMENTS);
+                    msgContext.getParameter(Axis2Constants.Configuration.CACHE_ATTACHMENTS);
             cacheAttachmentString = (parameter_cache_attachment != null) ?
                     (String)parameter_cache_attachment.getValue() : null;
         }
-        fileCacheForAttachments = (Constants.VALUE_TRUE.equals(cacheAttachmentString));
+        fileCacheForAttachments = (Axis2Constants.VALUE_TRUE.equals(cacheAttachmentString));
         return fileCacheForAttachments;
     }
 
@@ -710,7 +710,7 @@ public class BuilderUtil {
     	boolean useFallbackBuilder = false;
         AxisConfiguration configuration =
                 msgContext.getConfigurationContext().getAxisConfiguration();
-        Parameter useFallbackParameter = configuration.getParameter(Constants.Configuration.USE_DEFAULT_FALLBACK_BUILDER);
+        Parameter useFallbackParameter = configuration.getParameter(Axis2Constants.Configuration.USE_DEFAULT_FALLBACK_BUILDER);
         if (useFallbackParameter !=null){
         	useFallbackBuilder = JavaUtils.isTrueExplicitly(useFallbackParameter.getValue(),useFallbackBuilder);
         }
@@ -723,7 +723,7 @@ public class BuilderUtil {
             // sure that we respond using the received message serialization format.
 
             Object contentNegotiation = configuration
-                    .getParameterValue(Constants.Configuration.ENABLE_HTTP_CONTENT_NEGOTIATION);
+                    .getParameterValue(Axis2Constants.Configuration.ENABLE_HTTP_CONTENT_NEGOTIATION);
             if (JavaUtils.isTrueExplicitly(contentNegotiation)) {
                 Map<String, String> transportHeaders = getHeaders(msgContext);
                 if (transportHeaders != null) {
@@ -749,7 +749,7 @@ public class BuilderUtil {
                 }
             }
 
-            msgContext.setProperty(Constants.Configuration.MESSAGE_TYPE, type);
+            msgContext.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE, type);
         }
         return builder;
     }

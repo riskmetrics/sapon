@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.repository.util.ArchiveReader;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
@@ -63,7 +63,7 @@ public class ServiceDeployer implements Deployer {
         try {
             deploymentFileData.setClassLoader(isDirectory,
                                               axisConfig.getServiceClassLoader(),
-                    (File)axisConfig.getParameterValue(Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                    (File)axisConfig.getParameterValue(Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
             final Map<String, AxisService> wsdlservice
             	= archiveReader.processWSDLs(deploymentFileData);
             if (wsdlservice != null) {

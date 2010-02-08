@@ -36,7 +36,7 @@ import org.apache.axiom.om.OMText;
 
 public class UnknownContentOMDataSource implements OMDataSource {
 
-	public static QName unknownContentQName = new QName(
+	public static final QName unknownContentQName = new QName(
 			"http://ws.apache.org/axis2", "UnknownContent");
 
 	DataHandler genericContent;

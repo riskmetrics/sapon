@@ -38,20 +38,22 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * FileAccessor wraps the attachment temp file. It is created from PartOnFile.
- * The idea behind wrapping the file is to give rumtime an ability to track
- * when the file is accessed with streams or data handler  and accordingly trigger
- * events to handle the the files lifecycle.
- *
+ * The idea behind wrapping the file is to give runtime an ability to track
+ * when the file is accessed with streams or data handler and accordingly
+ * trigger events to handle the the files lifecycle.
  */
 public class FileAccessor extends Observable{
     private static final Log log = LogFactory.getLog(FileAccessor.class);
-    File file = null;
-    LifecycleManager manager;
+
+    private final File file;
+    private final LifecycleManager manager;
+
     private int accessCount = 0;
+
     public FileAccessor(LifecycleManager manager, File file) {
         super();
         this.manager = manager;
-        this.file = file;   
+        this.file = file;
     }
 
     public DataHandler getDataHandler(String contentType) throws MessagingException {
@@ -65,7 +67,7 @@ public class FileAccessor extends Observable{
        	setChanged();
        	notifyObservers();
        	DataHandler dataHandler = new DataHandler(dataSource);
-       	return new DataHandlerExtImpl(dataHandler, manager);        
+       	return new DataHandlerExtImpl(dataHandler, manager);
     }
 
     public String getFileName() throws MessagingException {
@@ -92,17 +94,12 @@ public class FileAccessor extends Observable{
     public long getSize() {
         return file.length();
     }
-    
+
     public File getFile() {
         return file;
-    }
-
-    public void setFile(File file) {
-        this.file = file;
     }
 
 	public int getAccessCount() {
 		return accessCount;
 	}
-
 }

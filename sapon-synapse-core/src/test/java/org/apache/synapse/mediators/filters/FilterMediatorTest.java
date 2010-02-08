@@ -55,7 +55,7 @@ public class FilterMediatorTest extends TestCase {
         setFilterConditionPassed(false);
 
         // create a new filter mediator
-        FilterMediator filter = new FilterMediator();
+        XPathOrRegexFilterMediator filter = new XPathOrRegexFilterMediator();
 
         // set xpath condition to IBM
         SynapseXPath xpath = new SynapseXPath("//*[wsx:symbol='IBM']");
@@ -75,7 +75,7 @@ public class FilterMediatorTest extends TestCase {
         setFilterConditionPassed(false);
 
         // create a new filter mediator
-        FilterMediator filter = new FilterMediator();
+        XPathOrRegexFilterMediator filter = new XPathOrRegexFilterMediator();
 
         // set xpath condition to MSFT
         SynapseXPath xpath = new SynapseXPath("//*[wsx:symbol='MSFT']");
@@ -95,7 +95,7 @@ public class FilterMediatorTest extends TestCase {
         setFilterConditionPassed(false);
 
         // create a new filter mediator
-        FilterMediator filter = new FilterMediator();
+        XPathOrRegexFilterMediator filter = new XPathOrRegexFilterMediator();
 
         // set source xpath condition to //symbol
         SynapseXPath source = new SynapseXPath("//wsx:symbol");
@@ -119,7 +119,7 @@ public class FilterMediatorTest extends TestCase {
         setFilterConditionPassed(false);
 
         // create a new filter mediator
-        FilterMediator filter = new FilterMediator();
+        XPathOrRegexFilterMediator filter = new XPathOrRegexFilterMediator();
 
         // set source xpath condition to //symbol
         SynapseXPath source = new SynapseXPath("//wsx:symbol");
@@ -143,7 +143,7 @@ public class FilterMediatorTest extends TestCase {
         setFilterConditionPassed(false);
 
         // create a new filter mediator
-        FilterMediator filter = new FilterMediator();
+        XPathOrRegexFilterMediator filter = new XPathOrRegexFilterMediator();
 
         // set source xpath condition to //symbol
         SynapseXPath source = new SynapseXPath("//wsx:symbol");
@@ -173,7 +173,7 @@ public class FilterMediatorTest extends TestCase {
         setFilterConditionPassed(false);
 
         // create a new filter mediator
-        FilterMediator filter = new FilterMediator();
+        XPathOrRegexFilterMediator filter = new XPathOrRegexFilterMediator();
 
         // set source xpath condition to //symbol
         SynapseXPath source = new SynapseXPath("//wsx:symbol");

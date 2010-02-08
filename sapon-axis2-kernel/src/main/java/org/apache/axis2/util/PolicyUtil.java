@@ -30,7 +30,6 @@ import javax.xml.stream.FactoryConfigurationError;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
-import javax.xml.transform.Transformer;
 
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
@@ -185,11 +184,7 @@ public class PolicyUtil {
 	}
 
 	private static InputStream nodeToStream(org.w3c.dom.Element element) {
-		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		Transformer tf;
 		try {
-			// tf = TransformerFactory.newInstance().newTransformer();
-			// tf.transform(new DOMSource(element), new StreamResult(baos));
 			String nodeString = DOM2Writer.nodeToString(element);
 			return new ByteArrayInputStream(nodeString.getBytes());
 		} catch (Exception e) {

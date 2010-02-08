@@ -27,7 +27,7 @@ import javax.xml.namespace.QName;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.addressing.AddressingHelper;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.context.ConfigurationContext;
@@ -130,10 +130,10 @@ public class DispatchPhase extends Phase {
 
         // We should send an early ack to the transport whever possible, but some modules need
         // to use the backchannel, so we need to check if they have disabled this code.
-        Boolean disableAck = (Boolean) msgContext.getProperty(Constants.Configuration.DISABLE_RESPONSE_ACK);
+        Boolean disableAck = (Boolean) msgContext.getProperty(Axis2Constants.Configuration.DISABLE_RESPONSE_ACK);
         if(disableAck == null) {
             disableAck = (Boolean) (msgContext.getAxisService() != null ?
-                    msgContext.getAxisService().getParameterValue(Constants.Configuration.DISABLE_RESPONSE_ACK) : null);
+                    msgContext.getAxisService().getParameterValue(Axis2Constants.Configuration.DISABLE_RESPONSE_ACK) : null);
         }
 
         if(disableAck == null || disableAck.booleanValue() == false) {
@@ -179,9 +179,9 @@ public class DispatchPhase extends Phase {
                     (serviceContext.getParent()).getId());
             return;
         }
-        if (Constants.SCOPE_TRANSPORT_SESSION.equals(scope)) {
+        if (Axis2Constants.SCOPE_TRANSPORT_SESSION.equals(scope)) {
             fillContextsFromSessionContext(msgContext);
-        } else if (Constants.SCOPE_SOAP_SESSION.equals(scope)) {
+        } else if (Axis2Constants.SCOPE_SOAP_SESSION.equals(scope)) {
             extractServiceGroupContextId(msgContext);
         }
 
@@ -259,7 +259,7 @@ public class DispatchPhase extends Phase {
 
         boolean disableREST = false;
         Parameter disableRESTParameter = service
-                        .getParameter(org.apache.axis2.Constants.Configuration.DISABLE_REST);
+                        .getParameter(org.apache.axis2.Axis2Constants.Configuration.DISABLE_REST);
         if (disableRESTParameter != null
                         && JavaUtils.isTrueExplicitly(disableRESTParameter.getValue())) {
                 disableREST = true;
@@ -267,7 +267,7 @@ public class DispatchPhase extends Phase {
 
         boolean disableSOAP11 = false;
         Parameter disableSOAP11Parameter = service
-                        .getParameter(org.apache.axis2.Constants.Configuration.DISABLE_SOAP11);
+                        .getParameter(org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP11);
         if (disableSOAP11Parameter != null
                         && JavaUtils.isTrueExplicitly(disableSOAP11Parameter.getValue())) {
                 disableSOAP11 = true;
@@ -275,7 +275,7 @@ public class DispatchPhase extends Phase {
 
         boolean disableSOAP12 = false;
         Parameter disableSOAP12Parameter = service
-                        .getParameter(org.apache.axis2.Constants.Configuration.DISABLE_SOAP12);
+                        .getParameter(org.apache.axis2.Axis2Constants.Configuration.DISABLE_SOAP12);
         if (disableSOAP12Parameter != null
                         && JavaUtils
                                         .isTrueExplicitly(disableSOAP12Parameter.getValue())) {
@@ -348,9 +348,9 @@ public class DispatchPhase extends Phase {
         }
     }
 
-    private static final QName SERVICE_GROUP_QNAME = new QName(Constants.AXIS2_NAMESPACE_URI,
-                                                               Constants.SERVICE_GROUP_ID,
-                                                               Constants.AXIS2_NAMESPACE_PREFIX);
+    private static final QName SERVICE_GROUP_QNAME = new QName(Axis2Constants.AXIS2_NAMESPACE_URI,
+                                                               Axis2Constants.SERVICE_GROUP_ID,
+                                                               Axis2Constants.AXIS2_NAMESPACE_PREFIX);
 
     private void extractServiceGroupContextId(MessageContext msgContext) throws AxisFault {
         SOAPHeader soapHeader = msgContext.getEnvelope().getHeader();

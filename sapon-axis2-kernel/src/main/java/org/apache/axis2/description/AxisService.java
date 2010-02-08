@@ -35,9 +35,11 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import javax.wsdl.Definition;
@@ -57,8 +59,8 @@ import javax.xml.namespace.QName;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.axiom.om.OMElement;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.alt.ModuleConfigAccessor;
 import org.apache.axis2.client.Options;
@@ -363,7 +365,7 @@ public class AxisService extends AxisDescriptionBase
 		this.invalidOperationsAliases = new ArrayList<String>();
 		moduleConfigmap = new HashMap<String, ModuleConfiguration>();
 		// by default service scope is for the request
-		scope = Constants.SCOPE_REQUEST;
+		scope = Axis2Constants.SCOPE_REQUEST;
 		httpLocationDispatcherMap = new HashMap<String, AxisOperation>();
 		messageReceivers = new HashMap<String, MessageReceiver>();
 		moduleRefs = new ArrayList<String>();
@@ -1072,7 +1074,7 @@ public class AxisService extends AxisDescriptionBase
 
 	private String getServiceEPR() {
 		String serviceEPR = null;
-		Parameter parameter = this.getParameter(Constants.Configuration.GENERATE_ABSOLUTE_LOCATION_URIS);
+		Parameter parameter = this.getParameter(Axis2Constants.Configuration.GENERATE_ABSOLUTE_LOCATION_URIS);
 		if ((parameter != null) && JavaUtils.isTrueExplicitly(parameter.getValue())) {
 			String[] eprs = this.getEPRs();
 			for (String epr : eprs) {
@@ -1105,8 +1107,9 @@ public class AxisService extends AxisDescriptionBase
 	 *         found/printed a schema
 	 * @throws IOException
 	 */
-	public int printXSD(OutputStream out, String xsd) throws IOException {
-
+	public int printXSD(OutputStream out, String xsd)
+		throws IOException, AxisFault
+	{
 		// If we find a SchemaSupplier, use that
 		SchemaSupplier supplier = (SchemaSupplier) getParameterValue("SchemaSupplier");
 		if (supplier != null) {
@@ -1684,10 +1687,10 @@ public class AxisService extends AxisDescriptionBase
 	 *            Constants.SCOPE_REQUEST.equals
 	 */
 	public void setScope(String scope) {
-		if (Constants.SCOPE_APPLICATION.equals(scope)
-				|| Constants.SCOPE_TRANSPORT_SESSION.equals(scope)
-				|| Constants.SCOPE_SOAP_SESSION.equals(scope)
-				|| Constants.SCOPE_REQUEST.equals(scope)) {
+		if (Axis2Constants.SCOPE_APPLICATION.equals(scope)
+				|| Axis2Constants.SCOPE_TRANSPORT_SESSION.equals(scope)
+				|| Axis2Constants.SCOPE_SOAP_SESSION.equals(scope)
+				|| Axis2Constants.SCOPE_REQUEST.equals(scope)) {
 			this.scope = scope;
 		}
 	}
@@ -1919,10 +1922,10 @@ public class AxisService extends AxisDescriptionBase
 				wsdlDefinition, wsdlServiceName, portName);
 		serviceBuilder.setServerSide(false);
 		AxisService axisService = serviceBuilder.populateService();
-		AxisEndpoint axisEndpoint = axisService.getEndpoints()
-		.get(axisService.getEndpointName());
-		options.setTo(new EndpointReference(axisEndpoint.getEndpointURL()));
+		AxisEndpoint axisEndpoint
+			= axisService.getEndpoints().get(axisService.getEndpointName());
 		if (axisEndpoint != null) {
+			options.setTo(new EndpointReference(axisEndpoint.getEndpointURL()));
 			options.setSoapVersionURI((String) axisEndpoint.getBinding()
 					.getProperty(WSDL2Constants.ATTR_WSOAP_VERSION));
 		}
@@ -2049,8 +2052,8 @@ public class AxisService extends AxisDescriptionBase
 			Map<String, MessageReceiver> messageReceiverClassMap, String targetNamespace,
 			ClassLoader loader, SchemaGenerator schemaGenerator,
 			AxisService axisService) throws AxisFault {
-		Parameter parameter = new Parameter(Constants.SERVICE_CLASS, implClass);
-		OMElement paraElement = Utils.getParameter(Constants.SERVICE_CLASS,
+		Parameter parameter = new Parameter(Axis2Constants.SERVICE_CLASS, implClass);
+		OMElement paraElement = Utils.getParameter(Axis2Constants.SERVICE_CLASS,
 				implClass, false);
 		parameter.setParameterElement(paraElement);
 		axisService.setUseDefaultChains(false);
@@ -2286,24 +2289,43 @@ public class AxisService extends AxisDescriptionBase
 			nameTable.put(s, sourceURI);
 			sourceURIToNewLocationMap.put(sourceURI, sourceURI);
 		} else {
-			String newURI = sourceURI.substring(sourceURI.lastIndexOf('/') + 1);
-			if (newURI.endsWith(".xsd")) {
+			StringBuilder newURIBuff
+				= new StringBuilder(sourceURI.substring(sourceURI.lastIndexOf('/') + 1));
+			if (endsWith(newURIBuff, ".xsd")) {
 				// remove the .xsd extension
-				newURI = newURI.substring(0, newURI.lastIndexOf("."));
+				newURIBuff.setLength(newURIBuff.length() - ".xsd".length());
 			} else {
-				newURI = "xsd" + count++;
+				//TODO:  um, what?
+				//newURI = "xsd" + count++;
 			}
 
-			newURI = customSchemaNameSuffix != null ? newURI
-					+ customSchemaNameSuffix : newURI;
+			if(customSchemaNameSuffix != null) {
+				newURIBuff.append(customSchemaNameSuffix);
+			}
+
+			String newURI = newURIBuff.toString();
 			// make it unique
-			while (nameTable.containsValue(newURI)) {
-				newURI = newURI + count++;
+			Set<String> vals = new HashSet<String>(nameTable.size());
+			vals.addAll(nameTable.values());
+			while (vals.contains(newURI)) {
+				newURI = newURIBuff.append(count++).toString();
 			}
-
 			nameTable.put(s, newURI);
 			sourceURIToNewLocationMap.put(sourceURI, newURI);
 		}
+	}
+
+	private static boolean endsWith(StringBuilder sb, String str) {
+		if(str.length() > sb.length()) {
+			return false;
+		}
+		final int baseIndex = sb.length() - str.length();
+		for(int i=0; i<str.length(); i++) {
+			if(sb.charAt(baseIndex + i) != str.charAt(i)) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	/**

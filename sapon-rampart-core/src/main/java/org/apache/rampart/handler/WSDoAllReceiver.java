@@ -27,8 +27,8 @@ import org.apache.axiom.om.OMException;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
@@ -79,7 +79,7 @@ public class WSDoAllReceiver extends WSDoAllHandler {
         String useDoomValue = (String) getProperty(msgContext,
                 WSSHandlerConstants.USE_DOOM);
         boolean useDoom = useDoomValue != null
-                && Constants.VALUE_TRUE.equalsIgnoreCase(useDoomValue);
+                && Axis2Constants.VALUE_TRUE.equalsIgnoreCase(useDoomValue);
 
         RequestData reqData = new RequestData();
         try {

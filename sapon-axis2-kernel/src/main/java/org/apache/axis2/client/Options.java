@@ -101,8 +101,8 @@ public class Options implements Externalizable, SafeSerializable {
 
     //I am going to set a reply to as customer reply To address ,
     // so that Axis2 does not need to wait for the reply
-    public static String  CUSTOM_REPLYTO_ADDRESS = "CUSTOM_REPLYTO_ADDRESS";
-    public static String  CUSTOM_REPLYTO_ADDRESS_TRUE = "true";
+    public static final String CUSTOM_REPLYTO_ADDRESS = "CUSTOM_REPLYTO_ADDRESS";
+    public static final String CUSTOM_REPLYTO_ADDRESS_TRUE = "true";
 
 
     /**
@@ -540,7 +540,7 @@ public class Options implements Externalizable, SafeSerializable {
      */
     public boolean isUseSeparateListener() {
         if (useSeparateListener == null && parent != null) {
-            useSeparateListener = new Boolean(parent.isUseSeparateListener());
+            useSeparateListener = Boolean.valueOf(parent.isUseSeparateListener());
         }
 
         return useSeparateListener != null

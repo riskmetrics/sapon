@@ -29,7 +29,7 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMException;
 import org.apache.axiom.om.impl.MTOMConstants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 
 public class MIMEBuilder implements Builder {
@@ -47,7 +47,7 @@ public class MIMEBuilder implements Builder {
         if ((charSetEncoding == null) || "null".equalsIgnoreCase(charSetEncoding)) {
             charSetEncoding = MessageContext.UTF_8;
         }
-        msgContext.setProperty(Constants.Configuration.CHARACTER_SET_ENCODING,
+        msgContext.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING,
                                charSetEncoding);
 
         // Setting the Attachments map to new SwA API

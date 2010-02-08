@@ -34,7 +34,7 @@ import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.context.MessageContext;
 
 /**
@@ -56,7 +56,7 @@ public class ApplicationXMLBuilder implements Builder {
                 // to (a) get the length of the incoming message or (b)
                 // free transport resources.
                 DetachableInputStream is = new DetachableInputStream(inputStream);
-                messageContext.setProperty(Constants.DETACHABLE_INPUT_STREAM, is);
+                messageContext.setProperty(Axis2Constants.DETACHABLE_INPUT_STREAM, is);
 
                 PushbackInputStream pushbackInputStream = new PushbackInputStream(is);
                 int b;
@@ -65,7 +65,7 @@ public class ApplicationXMLBuilder implements Builder {
                     StAXBuilder builder =
                             BuilderUtil.getPOXBuilder(pushbackInputStream,
                                     (String) messageContext.getProperty(
-                                            Constants.Configuration.CHARACTER_SET_ENCODING));
+                                            Axis2Constants.Configuration.CHARACTER_SET_ENCODING));
                     OMNodeEx documentElement = (OMNodeEx) builder.getDocumentElement();
                     documentElement.setParent(null);
                     SOAPBody body = soapEnvelope.getBody();

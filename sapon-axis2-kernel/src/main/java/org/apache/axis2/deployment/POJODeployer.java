@@ -33,8 +33,8 @@ import java.util.zip.ZipInputStream;
 
 import javax.jws.WebService;
 
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.deployment.repository.util.DeploymentFileData;
 import org.apache.axis2.deployment.util.Utils;
@@ -149,7 +149,7 @@ public class POJODeployer implements Deployer {
                             configCtx.getAxisConfiguration().getSystemClassLoader(),
                             true,
                             (File)configCtx.getAxisConfiguration().
-                                    getParameterValue(Constants.Configuration.ARTIFACTS_TEMP_DIR));
+                                    getParameterValue(Axis2Constants.Configuration.ARTIFACTS_TEMP_DIR));
                     Thread.currentThread().setContextClassLoader(classLoader);
                     className = className.replaceAll(".class", "");
                     className = className.replaceAll("/", ".");
@@ -241,13 +241,14 @@ public class POJODeployer implements Deployer {
                         }
                     }
                 }
+                axisService.setElementFormDefault(false);
+                axisService.setFileName(serviceLocation);
+                Utils.fillAxisService(axisService,
+                        configCtx.getAxisConfiguration(),
+                        new ArrayList<String>(),
+                        new ArrayList<String>());
             }
-            axisService.setElementFormDefault(false);
-            axisService.setFileName(serviceLocation);
-            Utils.fillAxisService(axisService,
-                    configCtx.getAxisConfiguration(),
-                    new ArrayList<String>(),
-                    new ArrayList<String>());
+
             //Not needed at this case, the message receivers always set to RPC if this executes
             //setMessageReceivers(axisService);
 

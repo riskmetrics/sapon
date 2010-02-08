@@ -28,7 +28,6 @@ import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.aspects.ComponentType;
 import org.apache.synapse.aspects.statistics.StatisticsReporter;
 import org.apache.synapse.core.SynapseEnvironment;
-import org.apache.synapse.core.axis2.Axis2SynapseMessageContext;
 import org.apache.synapse.mediators.AbstractListMediator;
 import org.apache.synapse.mediators.MediatorFaultHandler;
 
@@ -71,9 +70,9 @@ public class SequenceMediator extends AbstractListMediator implements Nameable {
      */
     @Override
 	public boolean mediate(SynapseMessageContext synCtx) {
-        if (isStatisticsEnable() && synCtx instanceof Axis2SynapseMessageContext) {
+        if (isStatisticsEnable()) {
             StatisticsReporter.reportForComponent(
-            		(Axis2SynapseMessageContext)synCtx,
+            		synCtx,
                     getAspectConfiguration(),
                     ComponentType.SEQUENCE);
         }
@@ -142,8 +141,8 @@ public class SequenceMediator extends AbstractListMediator implements Nameable {
 
             } finally {
 
-                if (isStatisticsEnable() && synCtx instanceof Axis2SynapseMessageContext) {
-                    StatisticsReporter.reportForComponent((Axis2SynapseMessageContext)synCtx,
+                if (isStatisticsEnable()) {
+                    StatisticsReporter.reportForComponent(synCtx,
                             getAspectConfiguration(),ComponentType.SEQUENCE);
                 }
             }

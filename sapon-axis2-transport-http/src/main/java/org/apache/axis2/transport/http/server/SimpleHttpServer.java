@@ -19,14 +19,15 @@
 
 package org.apache.axis2.transport.http.server;
 
+import java.io.IOException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.params.HttpParams;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A simple, but configurable and extensible HTTP server.
@@ -48,7 +49,7 @@ public class SimpleHttpServer {
     private ExecutorService requestExecutor = null;
 
     public SimpleHttpServer(ConfigurationContext configurationContext, WorkerFactory workerFactory,
-                            int port) throws IOException {
+                            int port) throws IOException, AxisFault {
         this(new HttpFactory(configurationContext, port, workerFactory), port);
     }
 

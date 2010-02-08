@@ -35,7 +35,7 @@ import javax.xml.stream.XMLStreamException;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMElement;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.builder.Builder;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.description.AxisOperation;
@@ -568,7 +568,7 @@ public class DescriptionBuilder implements DeploymentConstants {
     protected void processActionMappings(OMElement operation,
                                          AxisOperation op_descrip) {
         List<String> mappingList = new ArrayList<String>();
-        for(OMElement mappingElement: operation.getChildrenWithName(new QName(Constants.ACTION_MAPPING))) {
+        for(OMElement mappingElement: operation.getChildrenWithName(new QName(Axis2Constants.ACTION_MAPPING))) {
             String inputActionString = mappingElement.getText().trim();
             if (log.isTraceEnabled()) {
                 log.trace("Input Action Mapping found: " + inputActionString);
@@ -584,7 +584,7 @@ public class DescriptionBuilder implements DeploymentConstants {
         op_descrip.setWsamappingList(mappingList);
 
         OMElement outputAction = operation.getFirstChildWithName(new QName(
-                Constants.OUTPUT_ACTION_MAPPING));
+                Axis2Constants.OUTPUT_ACTION_MAPPING));
         if ((outputAction != null) && (outputAction.getText() != null)) {
             String outputActionString = outputAction.getText().trim();
             if (log.isTraceEnabled()) {
@@ -593,10 +593,10 @@ public class DescriptionBuilder implements DeploymentConstants {
             op_descrip.setOutputAction(outputActionString);
         }
 
-        for(OMElement faultMappingElement: operation.getChildrenWithName(new QName(Constants.FAULT_ACTION_MAPPING))) {
+        for(OMElement faultMappingElement: operation.getChildrenWithName(new QName(Axis2Constants.FAULT_ACTION_MAPPING))) {
             String faultActionString = faultMappingElement.getText().trim();
             String faultActionName = faultMappingElement
-                    .getAttributeValue(new QName(Constants.FAULT_ACTION_NAME));
+                    .getAttributeValue(new QName(Axis2Constants.FAULT_ACTION_NAME));
             if (faultActionName != null && faultActionString != null) {
                 if (log.isTraceEnabled()) {
                     log.trace("Fault Action Mapping found: " + faultActionName

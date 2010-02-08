@@ -27,6 +27,7 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.synapse.config.Entry;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.util.resolver.ResourceMap;
 
 public class ProxyServiceTest extends TestCase {
@@ -78,7 +79,8 @@ public class ProxyServiceTest extends TestCase {
         resourceMap.addResource("imported.wsdl", "imported_wsdl");
         resourceMap.addResource("imported.xsd", "imported_xsd");
         proxyService.setResourceMap(resourceMap);
-        AxisService axisService = proxyService.buildAxisService(synCfg, axisCfg);
+        SynapseEnvironment synEnv = new Axis2SynapseEnvironment(synCfg);
+        AxisService axisService = proxyService.buildAxisService(synEnv, axisCfg);
         // Serialize the WSDL. Note that we can't parse the WSDL because it will have imports
         // referring to locations such as "my-matches?xsd=xsd0.xsd".
         axisService.printWSDL(new ByteArrayOutputStream());
@@ -93,6 +95,7 @@ public class ProxyServiceTest extends TestCase {
         SynapseConfiguration synCfg = new SynapseConfiguration();
         AxisConfiguration axisCfg = new AxisConfiguration();
         testService.setWsdlURI(getClass().getResource("SimpleStockService.wsdl").toURI());
-        testService.buildAxisService(synCfg, axisCfg);
+        SynapseEnvironment synEnv = new Axis2SynapseEnvironment(synCfg);
+        testService.buildAxisService(synEnv, axisCfg);
     }
 }

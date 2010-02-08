@@ -22,8 +22,8 @@ package org.apache.synapse.core.axis2;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.soap.SOAPEnvelope;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.addressing.EndpointReference;
 import org.apache.axis2.client.OperationClient;
 import org.apache.axis2.client.Options;
@@ -37,7 +37,6 @@ import org.apache.axis2.description.TransportOutDescription;
 import org.apache.axis2.engine.AxisEngine;
 import org.apache.axis2.i18n.Messages;
 import org.apache.axis2.transport.TransportUtils;
-import org.apache.axis2.util.TargetResolver;
 import org.apache.axis2.wsdl.WSDLConstants;
 import org.apache.synapse.NhttpConstants;
 import org.apache.synapse.SynapseConstants;
@@ -60,7 +59,7 @@ public class DynamicAxisOperation extends OutInAxisOperation {
 		return new DynamicOperationClient(this, sc, options);
 	}
 
-	class DynamicOperationClient extends OperationClient {
+	static class DynamicOperationClient extends OperationClient {
 
 		DynamicOperationClient(OutInAxisOperation axisOp, ServiceContext sc, Options options) {
             super(axisOp, sc, options);
@@ -105,12 +104,6 @@ public class DynamicAxisOperation extends OutInAxisOperation {
             // set ClientOptions to the current outgoing message
             outMsgCtx.setOptions(options);
 
-			// do Target Resolution
-			TargetResolver tr = cfgCtx.getAxisConfiguration().getTargetResolverChain();
-            if (tr != null) {
-                tr.resolveTarget(outMsgCtx);
-            }
-
             // if the transport to use for sending is not specified, try to find it from the URL
 			TransportOutDescription transportOut = options.getTransportOut();
 			if (transportOut == null) {
@@ -134,14 +127,14 @@ public class DynamicAxisOperation extends OutInAxisOperation {
             if (options.isUseSeparateListener()) {
 
 				options.setTransportIn(outMsgCtx.getConfigurationContext()
-						.getAxisConfiguration().getTransportIn(Constants.TRANSPORT_HTTP));
+						.getAxisConfiguration().getTransportIn(Axis2Constants.TRANSPORT_HTTP));
 
 				SynapseCallbackReceiver callbackReceiver =
                         (SynapseCallbackReceiver) axisOp.getMessageReceiver();
 
                 ((Axis2SynapseMessageContext)((AsyncCallback)
                         axisCallback).getSynapseOutMsgCtx()).getAxis2MessageContext().setProperty(
-                        NhttpConstants.IGNORE_SC_ACCEPTED, Constants.VALUE_TRUE);
+                        NhttpConstants.IGNORE_SC_ACCEPTED, Axis2Constants.VALUE_TRUE);
                 callbackReceiver.addCallback(outMsgCtx.getMessageID(), (AsyncCallback)axisCallback);
 
                 EndpointReference replyToFromTransport = outMsgCtx.getConfigurationContext()
@@ -198,8 +191,8 @@ public class DynamicAxisOperation extends OutInAxisOperation {
 
                 responseMessageContext.setProperty(MessageContext.TRANSPORT_OUT,
                     msgctx.getProperty(MessageContext.TRANSPORT_OUT));
-                responseMessageContext.setProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO,
-                    msgctx.getProperty(org.apache.axis2.Constants.OUT_TRANSPORT_INFO));
+                responseMessageContext.setProperty(Axis2Constants.OUT_TRANSPORT_INFO,
+                    msgctx.getProperty(Axis2Constants.OUT_TRANSPORT_INFO));
 
                 responseMessageContext.setProperty(
                     org.apache.synapse.SynapseConstants.ISRESPONSE_PROPERTY, Boolean.TRUE);

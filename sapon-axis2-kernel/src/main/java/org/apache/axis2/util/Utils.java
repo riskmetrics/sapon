@@ -36,8 +36,8 @@ import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPFault;
+import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
-import org.apache.axis2.Constants;
 import org.apache.axis2.context.ConfigurationContext;
 import org.apache.axis2.context.ConfigurationContextFactory;
 import org.apache.axis2.context.MessageContext;
@@ -115,7 +115,7 @@ public class Utils {
         axisOp.setMessageReceiver(messageReceiver);
         axisOp.setStyle(WSDLConstants.STYLE_RPC);
         service.addOperation(axisOp);
-        service.mapActionToOperation(Constants.AXIS2_NAMESPACE_URI + "/" + opName.getLocalPart(),
+        service.mapActionToOperation(Axis2Constants.AXIS2_NAMESPACE_URI + "/" + opName.getLocalPart(),
                                      axisOp);
 
         return service;
@@ -139,14 +139,14 @@ public class Utils {
         AxisService service = new AxisService(serviceName.getLocalPart());
 
         service.setClassLoader(getContextClassLoader_DoPriv());
-        service.addParameter(new Parameter(Constants.SERVICE_CLASS, className));
+        service.addParameter(new Parameter(Axis2Constants.SERVICE_CLASS, className));
 
         AxisOperation axisOp = new InOutAxisOperation(opName);
 
         axisOp.setMessageReceiver(messageReceiver);
         axisOp.setStyle(WSDLConstants.STYLE_RPC);
         service.addOperation(axisOp);
-        service.mapActionToOperation(Constants.AXIS2_NAMESPACE_URI + "/" + opName.getLocalPart(),
+        service.mapActionToOperation(Axis2Constants.AXIS2_NAMESPACE_URI + "/" + opName.getLocalPart(),
                                      axisOp);
 
         return service;
@@ -160,7 +160,7 @@ public class Utils {
         AxisService service = new AxisService(serviceName.getLocalPart());
 
         service.setClassLoader(getContextClassLoader_DoPriv());
-        service.addParameter(new Parameter(Constants.SERVICE_CLASS, className));
+        service.addParameter(new Parameter(Axis2Constants.SERVICE_CLASS, className));
 
         AxisOperation axisOp = new OutInAxisOperation(opName);
 
@@ -285,7 +285,7 @@ public class Utils {
         Boolean exists = AccessController.doPrivileged(
                 new PrivilegedAction<Boolean>() {
                     public Boolean run() {
-                        return new Boolean(file.exists());
+                        return Boolean.valueOf(file.exists());
                     }
                 }
         );
@@ -518,7 +518,7 @@ public class Utils {
      */
     public static AxisFault getInboundFaultFromMessageContext(MessageContext messageContext) {
         // Get the fault if it's already been extracted by a handler
-        AxisFault result = (AxisFault) messageContext.getProperty(Constants.INBOUND_FAULT_OVERRIDE);
+        AxisFault result = (AxisFault) messageContext.getProperty(Axis2Constants.INBOUND_FAULT_OVERRIDE);
         // Else, extract it from the SOAPBody
         if (result == null) {
             SOAPEnvelope envelope = messageContext.getEnvelope();
@@ -561,9 +561,9 @@ public class Utils {
     public static int getMtomThreshold(MessageContext msgCtxt){
     	Integer value = null;
         if(!msgCtxt.isServerSide()){
-	        value = (Integer)msgCtxt.getProperty(Constants.Configuration.MTOM_THRESHOLD);
+	        value = (Integer)msgCtxt.getProperty(Axis2Constants.Configuration.MTOM_THRESHOLD);
         }else{
-        	Parameter param = msgCtxt.getParameter(Constants.Configuration.MTOM_THRESHOLD);
+        	Parameter param = msgCtxt.getParameter(Axis2Constants.Configuration.MTOM_THRESHOLD);
         	if(param!=null){
         		value = (Integer)param.getValue();
         	}
