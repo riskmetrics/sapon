@@ -19,6 +19,11 @@
 
 package org.apache.axis2.addressing;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.xml.namespace.QName;
+
 import org.apache.axiom.om.OMAbstractFactory;
 import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMNamespace;
@@ -27,8 +32,8 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPFaultCode;
 import org.apache.axiom.soap.SOAPFaultSubCode;
 import org.apache.axiom.soap.SOAPFaultValue;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingConstants.Final;
 import org.apache.axis2.addressing.AddressingConstants.Submission;
 import org.apache.axis2.addressing.i18n.AddressingMessages;
@@ -36,10 +41,6 @@ import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OperationContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import javax.xml.namespace.QName;
-import java.util.HashMap;
-import java.util.Map;
 
 public class AddressingFaultsHelper {
 
@@ -294,13 +295,15 @@ public class AddressingFaultsHelper {
                                    AddressingConstants.WSA_DEFAULT_PREFIX + ":" + missingHeaderName,
                                    Submission.FAULT_ADDRESSING_HEADER_REQUIRED, null,
                                    AddressingMessages.getMessage(
-                                           "spec.submission.FAULT_ADDRESSING_HEADER_REQUIRED_REASON"));
+                                           "spec.submission.FAULT_ADDRESSING_HEADER_REQUIRED_REASON")
+                                           + " " + missingHeaderName );
         } else {
             triggerAddressingFault(messageContext, Final.FAULT_HEADER_PROB_HEADER_QNAME,
                                    AddressingConstants.WSA_DEFAULT_PREFIX + ":" + missingHeaderName,
                                    Final.FAULT_ADDRESSING_HEADER_REQUIRED, null,
                                    AddressingMessages.getMessage(
-                                           "spec.final.FAULT_ADDRESSING_HEADER_REQUIRED_REASON"));
+                                           "spec.final.FAULT_ADDRESSING_HEADER_REQUIRED_REASON")
+                                           + " " + missingHeaderName );
         }
     }
 
@@ -352,7 +355,6 @@ public class AddressingFaultsHelper {
             faultInformation = new HashMap<String, Object>();
             messageContext.setProperty(Axis2Constants.FAULT_INFORMATION_FOR_HEADERS, faultInformation);
         }
-
         faultInformation.put(faultInformationKey, faultInformationValue);
 
         if (messageContext.isSOAP11()) {
