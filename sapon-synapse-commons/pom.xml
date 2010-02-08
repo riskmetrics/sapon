@@ -8,11 +8,11 @@
     <parent>
         <groupId>com.riskmetrics.sapon</groupId>
         <artifactId>sapon-parent</artifactId>
-        <version>0.0.1</version>
+        <version>0.0.2</version>
     </parent>
 
     <artifactId>synapse-commons</artifactId>
-    <version>0.0.1</version>
+    <version>0.0.2</version>
     <name>Sapon Synapse Commons</name>
     <description>Sapon's modified Synapse common classes</description>
 
