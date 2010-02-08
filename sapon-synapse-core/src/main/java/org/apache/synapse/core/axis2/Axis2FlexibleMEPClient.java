@@ -21,8 +21,6 @@ package org.apache.synapse.core.axis2;
 
 import javax.xml.namespace.QName;
 
-import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingConstants;
@@ -70,6 +68,37 @@ public class Axis2FlexibleMEPClient {
     							SynapseMessageContext synapseOutMessageContext )
     	throws AxisFault
     {
+        // save the original message context wihout altering it, so we can tie the response
+        MessageContext originalInMsgCtx
+            = ((Axis2SynapseMessageContext) synapseOutMessageContext).getAxis2MessageContext();
+
+        // create a new MessageContext to be sent out as this should not corrupt the original
+        // we need to create the response to the original message later on
+        MessageContext axisOutMsgCtx = cloneForSend(originalInMsgCtx,
+            (String) synapseOutMessageContext.getProperty(SynapseConstants.PRESERVE_WS_ADDRESSING));
+
+        if (log.isDebugEnabled()) {
+            log.debug("Message [Original Request Message ID : "
+                    + synapseOutMessageContext.getMessageID() + "]"
+                    + " [New Cloned Request Message ID : " + axisOutMsgCtx.getMessageID() + "]");
+        }
+        // set all the details of the endpoint only to the cloned message context
+        // so that we can use the original message context for resending through different endpoints
+        if (endpoint != null) {
+        	prepMessageContextForEndpoint(axisOutMsgCtx, endpoint);
+        } else {
+            processHttpGetMethod(originalInMsgCtx, axisOutMsgCtx);
+        }
+
+        if (axisOutMsgCtx.isDoingREST()) {
+            if (axisOutMsgCtx.getProperty(WSDL2Constants.ATTR_WHTTP_LOCATION) == null
+                    && axisOutMsgCtx.getEnvelope().getBody().getFirstElement() != null) {
+                axisOutMsgCtx.setProperty(WSDL2Constants.ATTR_WHTTP_LOCATION,
+                        axisOutMsgCtx.getEnvelope().getBody().getFirstElement()
+                                .getQName().getLocalPart());
+            }
+        }
+
         boolean separateListener      = false;
         boolean wsSecurityEnabled     = false;
         String wsSecPolicyKey         = null;
@@ -109,135 +138,16 @@ public class Axis2FlexibleMEPClient {
                 "] [to " + synapseOutMessageContext.getTo() + "]");
         }
 
-        // save the original message context wihout altering it, so we can tie the response
-        MessageContext originalInMsgCtx
-            = ((Axis2SynapseMessageContext) synapseOutMessageContext).getAxis2MessageContext();
-
-        // create a new MessageContext to be sent out as this should not corrupt the original
-        // we need to create the response to the original message later on
-        MessageContext axisOutMsgCtx = cloneForSend(originalInMsgCtx,
-            (String) synapseOutMessageContext.getProperty(SynapseConstants.PRESERVE_WS_ADDRESSING));
-
-        if (log.isDebugEnabled()) {
-            log.debug("Message [Original Request Message ID : "
-                    + synapseOutMessageContext.getMessageID() + "]"
-                    + " [New Cloned Request Message ID : " + axisOutMsgCtx.getMessageID() + "]");
-        }
-        // set all the details of the endpoint only to the cloned message context
-        // so that we can use the original message context for resending through different endpoints
-        if (endpoint != null) {
-
-            if (SynapseConstants.FORMAT_POX.equals(endpoint.getFormat())) {
-                axisOutMsgCtx.setDoingREST(true);
-                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
-                        org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_APPLICATION_XML);
-
-            } else if (SynapseConstants.FORMAT_GET.equals(endpoint.getFormat())) {
-                axisOutMsgCtx.setDoingREST(true);
-                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
-                    Axis2Constants.Configuration.HTTP_METHOD_GET);
-                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
-                        org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_X_WWW_FORM);
-
-            } else if (SynapseConstants.FORMAT_SOAP11.equals(endpoint.getFormat())) {
-                axisOutMsgCtx.setDoingREST(false);
-                axisOutMsgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
-                // We need to set this ezplicitly here in case the requset was not a POST
-                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
-                    Axis2Constants.Configuration.HTTP_METHOD_POST);
-                if (axisOutMsgCtx.getSoapAction() == null && axisOutMsgCtx.getWSAAction() != null) {
-                    axisOutMsgCtx.setSoapAction(axisOutMsgCtx.getWSAAction());
-                }
-                if(!axisOutMsgCtx.isSOAP11()) {
-                    SOAPUtils.convertSOAP12toSOAP11(axisOutMsgCtx);
-                }
-
-            } else if (SynapseConstants.FORMAT_SOAP12.equals(endpoint.getFormat())) {
-                axisOutMsgCtx.setDoingREST(false);
-                axisOutMsgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
-                // We need to set this ezplicitly here in case the requset was not a POST
-                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
-                    Axis2Constants.Configuration.HTTP_METHOD_POST);
-                if (axisOutMsgCtx.getSoapAction() == null && axisOutMsgCtx.getWSAAction() != null) {
-                    axisOutMsgCtx.setSoapAction(axisOutMsgCtx.getWSAAction());
-                }
-                if(axisOutMsgCtx.isSOAP11()) {
-                    SOAPUtils.convertSOAP11toSOAP12(axisOutMsgCtx);
-                }
-
-            } else if (SynapseConstants.FORMAT_REST.equals(endpoint.getFormat())) {
-                axisOutMsgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
-                axisOutMsgCtx.setDoingREST(true);
-            } else {
-                processHttpGetMethod(originalInMsgCtx, axisOutMsgCtx);
-            }
-
-            if (endpoint.isUseMTOM()) {
-                axisOutMsgCtx.setDoingMTOM(true);
-                // fix / workaround for AXIS2-1798
-                axisOutMsgCtx.setProperty(
-                        Axis2Constants.Configuration.ENABLE_MTOM,
-                        Axis2Constants.VALUE_TRUE);
-                axisOutMsgCtx.setDoingMTOM(true);
-
-            } else if (endpoint.isUseSwa()) {
-                axisOutMsgCtx.setDoingSwA(true);
-                // fix / workaround for AXIS2-1798
-                axisOutMsgCtx.setProperty(
-                        Axis2Constants.Configuration.ENABLE_SWA,
-                        Axis2Constants.VALUE_TRUE);
-                axisOutMsgCtx.setDoingSwA(true);
-            }
-
-            if (endpoint.getCharSetEncoding() != null) {
-                axisOutMsgCtx.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING,
-                        endpoint.getCharSetEncoding());
-            }
-
-            if (endpoint.getAddress() != null) {
-                if (SynapseConstants.FORMAT_REST.equals(endpoint.getFormat()) &&
-                    axisOutMsgCtx.getProperty(NhttpConstants.REST_URL_POSTFIX) != null) {
-                    axisOutMsgCtx.setTo(
-                        new EndpointReference(endpoint.getAddress() +
-                        axisOutMsgCtx.getProperty(NhttpConstants.REST_URL_POSTFIX)
-                    ));
-                } else {
-                    axisOutMsgCtx.setTo(new EndpointReference(endpoint.getAddress()));
-                }
-                axisOutMsgCtx.setProperty(NhttpConstants.ENDPOINT_PREFIX, endpoint.getAddress());
-            }
-
-            if (endpoint.isUseSeparateListener()) {
-                axisOutMsgCtx.getOptions().setUseSeparateListener(true);
-            }
-        } else {
-            processHttpGetMethod(originalInMsgCtx, axisOutMsgCtx);
-        }
-
-        if (axisOutMsgCtx.isDoingREST()) {
-            if (axisOutMsgCtx.getProperty(WSDL2Constants.ATTR_WHTTP_LOCATION) == null
-                    && axisOutMsgCtx.getEnvelope().getBody().getFirstElement() != null) {
-                axisOutMsgCtx.setProperty(WSDL2Constants.ATTR_WHTTP_LOCATION,
-                        axisOutMsgCtx.getEnvelope().getBody().getFirstElement()
-                                .getQName().getLocalPart());
-            }
-        }
-
         if (wsAddressingEnabled) {
-
-            if (wsAddressingVersion != null &&
-                    SynapseConstants.ADDRESSING_VERSION_SUBMISSION.equals(wsAddressingVersion)) {
-
+        	if (wsAddressingVersion == null) {
+        		//do nothing
+        	} else if ( SynapseConstants.ADDRESSING_VERSION_SUBMISSION.equals(wsAddressingVersion)) {
                 axisOutMsgCtx.setProperty(AddressingConstants.WS_ADDRESSING_VERSION,
-                        AddressingConstants.Submission.WSA_NAMESPACE);
-
-            } else if (wsAddressingVersion != null &&
-                    SynapseConstants.ADDRESSING_VERSION_FINAL.equals(wsAddressingVersion)) {
-
+                                          AddressingConstants.Submission.WSA_NAMESPACE);
+            } else if (SynapseConstants.ADDRESSING_VERSION_FINAL.equals(wsAddressingVersion)) {
                 axisOutMsgCtx.setProperty(AddressingConstants.WS_ADDRESSING_VERSION,
-                        AddressingConstants.Final.WSA_NAMESPACE);
+                                          AddressingConstants.Final.WSA_NAMESPACE);
             }
-
             axisOutMsgCtx.setProperty
                     (AddressingConstants.DISABLE_ADDRESSING_FOR_OUT_MESSAGES, Boolean.FALSE);
         } else {
@@ -248,63 +158,46 @@ public class Axis2FlexibleMEPClient {
         ConfigurationContext axisCfgCtx = axisOutMsgCtx.getConfigurationContext();
         AxisConfiguration axisCfg       = axisCfgCtx.getAxisConfiguration();
 
-        AxisService anoymousService =
+        AxisService anonymousService =
             AnonymousServiceFactory.getAnonymousService(synapseOutMessageContext.getConfiguration(),
             axisCfg, wsAddressingEnabled, wsRMEnabled, wsSecurityEnabled);
         // mark the anon services created to be used in the client side of synapse as hidden
         // from the server side of synapse point of view
-        anoymousService.getServiceGroup().addParameter(new Parameter(SynapseConstants.HIDDEN_SERVICE_PARAM, "true"));
+        anonymousService.getServiceGroup().addParameter(new Parameter(SynapseConstants.HIDDEN_SERVICE_PARAM, "true"));
         ServiceGroupContext sgc = new ServiceGroupContext(
-            axisCfgCtx, anoymousService.getServiceGroup());
-        ServiceContext serviceCtx = sgc.getServiceContext(anoymousService);
+            axisCfgCtx, anonymousService.getServiceGroup());
+        ServiceContext serviceCtx = sgc.getServiceContext(anonymousService);
 
-        boolean outOnlyMessage = "true".equals(synapseOutMessageContext.getProperty(
-                SynapseConstants.OUT_ONLY)) || WSDL2Constants.MEP_URI_IN_ONLY.equals(
-                originalInMsgCtx.getOperationContext()
-                        .getAxisOperation().getMessageExchangePattern());
+        boolean outOnlyMessage = "true".equals(synapseOutMessageContext.getProperty(SynapseConstants.OUT_ONLY))
+                               || WSDL2Constants.MEP_URI_IN_ONLY.equals(originalInMsgCtx.getOperationContext().getAxisOperation().getMessageExchangePattern());
 
         // get a reference to the DYNAMIC operation of the Anonymous Axis2 service
-        AxisOperation axisAnonymousOperation = anoymousService.getOperation(
+        AxisOperation axisAnonymousOperation = anonymousService.getOperation(
             outOnlyMessage ?
                 new QName(AnonymousServiceFactory.OUT_ONLY_OPERATION) :
                 new QName(AnonymousServiceFactory.OUT_IN_OPERATION));
 
         Options clientOptions = MessageHelper.cloneOptions(originalInMsgCtx.getOptions());
         clientOptions.setUseSeparateListener(separateListener);
-        // if RM is requested,
-        if (wsRMEnabled) {
-            // if a WS-RM policy is specified, use it
-            if (wsRMPolicyKey != null) {
-                clientOptions.setProperty(
-                    SynapseConstants.SANDESHA_POLICY,
-                        MessageHelper.getPolicy(synapseOutMessageContext, wsRMPolicyKey));
-            }
+
+        if (wsRMEnabled && wsRMPolicyKey != null) {
+        	clientOptions.setProperty( SynapseConstants.SANDESHA_POLICY,
+                                       MessageHelper.getPolicy(synapseOutMessageContext, wsRMPolicyKey));
         }
 
-        // if security is enabled,
         if (wsSecurityEnabled) {
-            // if a WS-Sec policy is specified, use it
             if (wsSecPolicyKey != null) {
-                clientOptions.setProperty(
-                    SynapseConstants.RAMPART_POLICY,
-                        MessageHelper.getPolicy(synapseOutMessageContext, wsSecPolicyKey));
+                clientOptions.setProperty( SynapseConstants.RAMPART_POLICY,
+                                           MessageHelper.getPolicy(synapseOutMessageContext, wsSecPolicyKey));
             } else {
                 if (inboundWsSecPolicyKey != null) {
                     clientOptions.setProperty(SynapseConstants.RAMPART_IN_POLICY,
-                            MessageHelper.getPolicy(
-                                    synapseOutMessageContext, inboundWsSecPolicyKey));
+                                              MessageHelper.getPolicy(synapseOutMessageContext, inboundWsSecPolicyKey));
                 }
                 if (outboundWsSecPolicyKey != null) {
                     clientOptions.setProperty(SynapseConstants.RAMPART_OUT_POLICY,
-                            MessageHelper.getPolicy(
-                                    synapseOutMessageContext, outboundWsSecPolicyKey));
+                                              MessageHelper.getPolicy(synapseOutMessageContext, outboundWsSecPolicyKey));
                 }
-            }
-            // temporary workaround for https://issues.apache.org/jira/browse/WSCOMMONS-197
-            if (axisOutMsgCtx.getEnvelope().getHeader() == null) {
-                SOAPFactory fac = axisOutMsgCtx.isSOAP11() ?
-                        OMAbstractFactory.getSOAP11Factory() : OMAbstractFactory.getSOAP12Factory();
-                fac.createSOAPHeader(axisOutMsgCtx.getEnvelope());
             }
         }
 
@@ -344,6 +237,96 @@ public class Axis2FlexibleMEPClient {
         mepClient.execute(true);
    }
 
+    private static void prepMessageContextForEndpoint(MessageContext msgCtx,
+    		                                          EndpointDefinition endpoint)
+    	throws AxisFault
+    {
+    	if (SynapseConstants.FORMAT_POX.equals(endpoint.getFormat())) {
+            msgCtx.setDoingREST(true);
+            msgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
+                    org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_APPLICATION_XML);
+
+        } else if (SynapseConstants.FORMAT_GET.equals(endpoint.getFormat())) {
+            msgCtx.setDoingREST(true);
+            msgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
+                Axis2Constants.Configuration.HTTP_METHOD_GET);
+            msgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
+                    org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_X_WWW_FORM);
+
+        } else if (SynapseConstants.FORMAT_SOAP11.equals(endpoint.getFormat())) {
+            msgCtx.setDoingREST(false);
+            msgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
+            // We need to set this ezplicitly here in case the requset was not a POST
+            msgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
+                Axis2Constants.Configuration.HTTP_METHOD_POST);
+            if (msgCtx.getSoapAction() == null && msgCtx.getWSAAction() != null) {
+                msgCtx.setSoapAction(msgCtx.getWSAAction());
+            }
+            if(!msgCtx.isSOAP11()) {
+                SOAPUtils.convertSOAP12toSOAP11(msgCtx);
+            }
+
+        } else if (SynapseConstants.FORMAT_SOAP12.equals(endpoint.getFormat())) {
+            msgCtx.setDoingREST(false);
+            msgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
+            // We need to set this ezplicitly here in case the requset was not a POST
+            msgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
+                Axis2Constants.Configuration.HTTP_METHOD_POST);
+            if (msgCtx.getSoapAction() == null && msgCtx.getWSAAction() != null) {
+                msgCtx.setSoapAction(msgCtx.getWSAAction());
+            }
+            if(msgCtx.isSOAP11()) {
+                SOAPUtils.convertSOAP11toSOAP12(msgCtx);
+            }
+
+        } else if (SynapseConstants.FORMAT_REST.equals(endpoint.getFormat())) {
+            msgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
+            msgCtx.setDoingREST(true);
+        } else {
+            throw new RuntimeException("Unknown endpoint format: "
+            							+ endpoint.getFormat());
+        }
+
+        if (endpoint.isUseMTOM()) {
+            msgCtx.setDoingMTOM(true);
+            // fix / workaround for AXIS2-1798
+            msgCtx.setProperty(
+                    Axis2Constants.Configuration.ENABLE_MTOM,
+                    Axis2Constants.VALUE_TRUE);
+            msgCtx.setDoingMTOM(true);
+
+        } else if (endpoint.isUseSwa()) {
+            msgCtx.setDoingSwA(true);
+            // fix / workaround for AXIS2-1798
+            msgCtx.setProperty(
+                    Axis2Constants.Configuration.ENABLE_SWA,
+                    Axis2Constants.VALUE_TRUE);
+            msgCtx.setDoingSwA(true);
+        }
+
+        if (endpoint.getCharSetEncoding() != null) {
+            msgCtx.setProperty(Axis2Constants.Configuration.CHARACTER_SET_ENCODING,
+                    endpoint.getCharSetEncoding());
+        }
+
+        if (endpoint.getAddress() != null) {
+            if (SynapseConstants.FORMAT_REST.equals(endpoint.getFormat()) &&
+                msgCtx.getProperty(NhttpConstants.REST_URL_POSTFIX) != null) {
+                msgCtx.setTo(
+                    new EndpointReference(endpoint.getAddress() +
+                    msgCtx.getProperty(NhttpConstants.REST_URL_POSTFIX)
+                ));
+            } else {
+                msgCtx.setTo(new EndpointReference(endpoint.getAddress()));
+            }
+            msgCtx.setProperty(NhttpConstants.ENDPOINT_PREFIX, endpoint.getAddress());
+        }
+
+        if (endpoint.isUseSeparateListener()) {
+            msgCtx.getOptions().setUseSeparateListener(true);
+        }
+    }
+
     private static MessageContext cloneForSend(MessageContext ori, String preserveAddressing)
             throws AxisFault {
 
@@ -356,13 +339,13 @@ public class Axis2FlexibleMEPClient {
             MessageHelper.removeAddressingHeaders(newMC);
         }
 
-        newMC.setProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS,
-            ori.getProperty(org.apache.axis2.context.MessageContext.TRANSPORT_HEADERS));
+        newMC.setProperty(MessageContext.TRANSPORT_HEADERS,
+        				  ori.getProperty(MessageContext.TRANSPORT_HEADERS));
 
         return newMC;
     }
 
-    public static void clearSecurtityProperties(Options options) {
+    public static void clearSecurityProperties(Options options) {
 
         Options current = options;
         while (current != null && current.getProperty(SynapseConstants.RAMPART_POLICY) != null) {

@@ -76,8 +76,6 @@ public abstract class AbstractEndpoint extends FaultHandler implements Endpoint 
         log = LogFactory.getLog(this.getClass());
     }
 
-    //------------------------------- getters and setters ------------------------------------------
-
     public EndpointView getMetricsMBean() {
         return metricsMBean;
     }
@@ -140,8 +138,6 @@ public abstract class AbstractEndpoint extends FaultHandler implements Endpoint 
         metricsMBean = new EndpointView(endpointName, this);
         MBeanRegistrar.getInstance().registerMBean(metricsMBean, "Endpoint", endpointName);
     }
-
-    //----------------------- default method implementations and common code -----------------------
 
     public void init(SynapseEnvironment synapseEnvironment) {
         ConfigurationContext cc =

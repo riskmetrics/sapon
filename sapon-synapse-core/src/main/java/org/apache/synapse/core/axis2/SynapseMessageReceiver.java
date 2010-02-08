@@ -49,8 +49,8 @@ public class SynapseMessageReceiver implements MessageReceiver {
     	this.synEnv = env;
     }
 
-    protected SynapseMessageContext getSynapseMessageContext(
-    		MessageContext axisMsgCtx) throws AxisFault
+    protected SynapseMessageContext getSynapseMessageContext(MessageContext axisMsgCtx)
+    	throws AxisFault
     {
     	if (synEnv == null) {
             String msg = "Synapse environment has not initialized properly..";

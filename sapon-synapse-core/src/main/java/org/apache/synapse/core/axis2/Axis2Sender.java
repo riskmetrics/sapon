@@ -129,7 +129,7 @@ public class Axis2Sender {
                 fac.createSOAPHeader(messageContext.getEnvelope());
             }
 
-            Axis2FlexibleMEPClient.clearSecurtityProperties(messageContext.getOptions());
+            Axis2FlexibleMEPClient.clearSecurityProperties(messageContext.getOptions());
 
             AxisEngine.send(messageContext);
 

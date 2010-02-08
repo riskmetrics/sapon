@@ -85,11 +85,12 @@ public interface SynapseMessageContext {
     Mediator getMainSequence();
 
     /**
-     * Return the fault sequence from the configuration, or the local message context
-     * This method looks up for the sequence named Constants.FAULT_SEQUENCE_KEY from
-     * the local message context to make this look up transactional - i.e. a request and
-     * response message pair will not see a difference in the fault sequence if the fault
-     * sequence was dynamic and changed in between at the registry
+     * Return the fault sequence from the configuration, or the local message
+     * context.  This method looks up for the sequence named
+     * Constants.FAULT_SEQUENCE_KEY from the local message context to make this
+     * look up transactional - i.e. a request and response message pair will
+     * not see a difference in the fault sequence if the fault sequence was
+     * dynamic and changed in between at the registry
      * @return the fault sequence to be used for mediation
      */
     Mediator getFaultSequence();

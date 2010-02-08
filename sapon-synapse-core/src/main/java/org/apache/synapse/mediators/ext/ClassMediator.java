@@ -44,9 +44,8 @@ import org.apache.synapse.mediators.AbstractMediator;
 public class ClassMediator extends AbstractMediator
 	implements ManagedLifecycle
 {
-
-    /** The reference to the actual class that implments the Mediator interface */
     private Mediator mediator = null;
+
     /** A list of simple properties that would be set on the class before being used */
     private final Map<String, Object> properties = new HashMap<String, Object>();
 
