@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>rampart-core</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>Sapon Rampart Core</name>
     <description>Sapon's modified Rampart core functionality.</description>
 

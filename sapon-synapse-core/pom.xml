@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>synapse-core</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
     <name>Sapon Synapse Core</name>
     <description>Sapon's modified Synapse core functionality.</description>
     
