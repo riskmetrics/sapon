@@ -58,9 +58,9 @@ public class RampartEngine {
 	private static Log log = LogFactory.getLog(RampartEngine.class);
 	private static Log tlog = LogFactory.getLog(RampartConstants.TIME_LOG);
 
-	public Vector process(MessageContext msgCtx) throws WSSPolicyException,
-	RampartException, WSSecurityException, AxisFault {
-
+	public Vector process(MessageContext msgCtx)
+		throws WSSPolicyException, RampartException, WSSecurityException, AxisFault
+	{
 		boolean doDebug = log.isDebugEnabled();
 		boolean dotDebug = tlog.isDebugEnabled();
 
@@ -69,16 +69,12 @@ public class RampartEngine {
 		}
 
 		RampartMessageData rmd = new RampartMessageData(msgCtx, false);
-
 		RampartPolicyData rpd = rmd.getPolicyData();
 
 		msgCtx.setProperty(RampartMessageData.RAMPART_POLICY_DATA, rpd);
 
-        RampartUtil.validateTransport(rmd);
-
-
-	    //If there is no policy information or if the message is a security fault or no security
-                // header required by the policy
+	    //If there is no policy information or if the message is a security
+		//fault or no security header required by the policy
 		if(rpd == null || isSecurityFault(rmd) || !RampartUtil.isSecHeaderRequired(rpd,rmd.isInitiator(),true)) {
 			SOAPEnvelope env = Axis2Util.getSOAPEnvelopeFromDOMDocument(rmd.getDocument(), true);
 
@@ -90,9 +86,6 @@ public class RampartEngine {
 			}
 			return null;
 		}
-
-
-		Vector results = null;
 
 		WSSecurityEngine engine = new WSSecurityEngine();
 
@@ -135,6 +128,8 @@ public class RampartEngine {
 		Crypto signatureCrypto = RampartUtil.getSignatureCrypto(rpd.getRampartConfig(),
         		msgCtx.getAxisService().getClassLoader());
         TokenCallbackHandler tokenCallbackHandler = new TokenCallbackHandler(rmd.getTokenStorage(), RampartUtil.getPasswordCB(rmd));
+
+        Vector results = null;
         if(rpd.isSymmetricBinding()) {
 			//Here we have to create the CB handler to get the tokens from the
 			//token storage
@@ -163,45 +158,45 @@ public class RampartEngine {
 			t1 = System.currentTimeMillis();
 		}
 
-                //Store symm tokens
-                //Pick the first SAML token
-                //TODO : This is a hack , MUST FIX
-                //get the sec context id from the req msg ctx
+		//Store symm tokens
+		//Pick the first SAML token
+		//TODO : This is a hack , MUST FIX
+		//get the sec context id from the req msg ctx
 
 		//Store username in MessageContext property
 
-                for (int j = 0; j < results.size(); j++) {
-                    WSSecurityEngineResult wser = (WSSecurityEngineResult) results.get(j);
-                    final Integer actInt =
-                        (Integer)wser.get(WSSecurityEngineResult.TAG_ACTION);
-                    if(WSConstants.ST_UNSIGNED == actInt.intValue()) {
-                        final SAMLAssertion assertion =
-                            ((SAMLAssertion) wser
-                                .get(WSSecurityEngineResult.TAG_SAML_ASSERTION));
-                        String id = assertion.getId();
-                        Date created = assertion.getNotBefore();
-                        Date expires = assertion.getNotOnOrAfter();
-                        SAMLKeyInfo samlKi = SAMLUtil.getSAMLKeyInfo(assertion,
-                                signatureCrypto, tokenCallbackHandler);
-                        try {
-                            TokenStorage store = rmd.getTokenStorage();
-                            if(store.getToken(id) == null) {
-                                Token token = new Token(id, (OMElement)assertion.toDOM(), created, expires);
-                                token.setSecret(samlKi.getSecret());
-                                store.add(token);
-                            }
-                        } catch (Exception e) {
-                            throw new RampartException(
-                                    "errorInAddingTokenIntoStore", e);
-                        }
-
-                    } else if (WSConstants.UT == actInt.intValue()) {
-                        String username = ((Principal)wser.get(WSSecurityEngineResult.TAG_PRINCIPAL))
-                                .getName();
-                        msgCtx.setProperty(RampartMessageData.USERNAME, username);
+        for (int j = 0; j < results.size(); j++) {
+            WSSecurityEngineResult wser = (WSSecurityEngineResult) results.get(j);
+            final Integer actInt =
+                (Integer)wser.get(WSSecurityEngineResult.TAG_ACTION);
+            if(WSConstants.ST_UNSIGNED == actInt.intValue()) {
+                final SAMLAssertion assertion =
+                    ((SAMLAssertion) wser
+                        .get(WSSecurityEngineResult.TAG_SAML_ASSERTION));
+                String id = assertion.getId();
+                Date created = assertion.getNotBefore();
+                Date expires = assertion.getNotOnOrAfter();
+                SAMLKeyInfo samlKi = SAMLUtil.getSAMLKeyInfo(assertion,
+                        signatureCrypto, tokenCallbackHandler);
+                try {
+                    TokenStorage store = rmd.getTokenStorage();
+                    if(store.getToken(id) == null) {
+                        Token token = new Token(id, (OMElement)assertion.toDOM(), created, expires);
+                        token.setSecret(samlKi.getSecret());
+                        store.add(token);
                     }
-
+                } catch (Exception e) {
+                    throw new RampartException(
+                            "errorInAddingTokenIntoStore", e);
                 }
+
+            } else if (WSConstants.UT == actInt.intValue()) {
+                String username = ((Principal)wser.get(WSSecurityEngineResult.TAG_PRINCIPAL))
+                        .getName();
+                msgCtx.setProperty(RampartMessageData.USERNAME, username);
+            }
+
+        }
 
 		SOAPEnvelope env = Axis2Util.getSOAPEnvelopeFromDOMDocument(rmd.getDocument(), true);
 
@@ -230,12 +225,8 @@ public class RampartEngine {
 		return results;
 	}
 
-	// Check whether this a soap fault because of failure in processing the security header
-	//and if so, we don't expect the security header
-	//
-	//
-
-
+	// Check whether this a soap fault because of failure in processing the
+	// security header and if so, we don't expect the security header
 	private boolean isSecurityFault(RampartMessageData rmd) {
 
 	    SOAPEnvelope soapEnvelope = rmd.getMsgContext().getEnvelope();

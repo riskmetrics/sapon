@@ -44,7 +44,6 @@ import org.apache.axiom.soap.SOAP12Constants;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.SOAPHeader;
 import org.apache.axiom.soap.SOAPHeaderBlock;
-import org.apache.axis2.Axis2Constants;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.AddressingConstants;
 import org.apache.axis2.client.Options;
@@ -77,7 +76,6 @@ import org.apache.rampart.policy.RampartPolicyData;
 import org.apache.rampart.policy.model.CryptoConfig;
 import org.apache.rampart.policy.model.RampartConfig;
 import org.apache.ws.secpolicy.SPConstants;
-import org.apache.ws.secpolicy.model.HttpsToken;
 import org.apache.ws.secpolicy.model.IssuedToken;
 import org.apache.ws.secpolicy.model.SecureConversationToken;
 import org.apache.ws.secpolicy.model.SupportingToken;
@@ -1526,34 +1524,6 @@ public class RampartUtil {
 
         return  wssConfig;
 
-    }
-
-    public static void validateTransport(RampartMessageData rmd) throws RampartException {
-
-        RampartPolicyData rpd = rmd.getPolicyData();
-
-        if (rpd == null) {
-            return;
-        }
-
-        if (rpd.isTransportBinding() && !rmd.isInitiator()) {
-            if (rpd.getTransportToken() instanceof HttpsToken) {
-                String incomingTransport = rmd.getMsgContext().getIncomingTransportName();
-                if (!incomingTransport.equals(Axis2Constants.TRANSPORT_HTTPS)) {
-                    throw new RampartException("invalidTransport",
-                            new String[]{incomingTransport});
-                }
-                if (((HttpsToken) rpd.getTransportToken()).isRequireClientCertificate()) {
-                	//TODO: it's bullshit to expect a servletRequest.
-//                    MessageContext messageContext = rmd.getMsgContext();
-//                    HttpServletRequest request = ((HttpServletRequest) messageContext.getProperty(HTTPConstants.MC_HTTP_SERVLETREQUEST));
-//                    if (request == null || request.getAttribute("javax.servlet.request.X509Certificate") == null) {
-//                        throw new RampartException("clientAuthRequired");
-//                    }
-                }
-
-            }
-        }
     }
 
 }
