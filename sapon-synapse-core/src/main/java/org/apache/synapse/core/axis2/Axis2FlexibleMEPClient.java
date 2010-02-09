@@ -241,19 +241,22 @@ public class Axis2FlexibleMEPClient {
     		                                          EndpointDefinition endpoint)
     	throws AxisFault
     {
-    	if (SynapseConstants.FORMAT_POX.equals(endpoint.getFormat())) {
+    	final String format = endpoint.getFormat();
+    	if (format == null) {
+    		//do nothing
+    	} else if (SynapseConstants.FORMAT_POX.equals(format)) {
             msgCtx.setDoingREST(true);
             msgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
                     org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_APPLICATION_XML);
 
-        } else if (SynapseConstants.FORMAT_GET.equals(endpoint.getFormat())) {
+        } else if (SynapseConstants.FORMAT_GET.equals(format)) {
             msgCtx.setDoingREST(true);
             msgCtx.setProperty(Axis2Constants.Configuration.HTTP_METHOD,
                 Axis2Constants.Configuration.HTTP_METHOD_GET);
             msgCtx.setProperty(Axis2Constants.Configuration.MESSAGE_TYPE,
                     org.apache.axis2.transport.http.HTTPConstants.MEDIA_TYPE_X_WWW_FORM);
 
-        } else if (SynapseConstants.FORMAT_SOAP11.equals(endpoint.getFormat())) {
+        } else if (SynapseConstants.FORMAT_SOAP11.equals(format)) {
             msgCtx.setDoingREST(false);
             msgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
             // We need to set this ezplicitly here in case the requset was not a POST
@@ -266,7 +269,7 @@ public class Axis2FlexibleMEPClient {
                 SOAPUtils.convertSOAP12toSOAP11(msgCtx);
             }
 
-        } else if (SynapseConstants.FORMAT_SOAP12.equals(endpoint.getFormat())) {
+        } else if (SynapseConstants.FORMAT_SOAP12.equals(format)) {
             msgCtx.setDoingREST(false);
             msgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
             // We need to set this ezplicitly here in case the requset was not a POST
@@ -279,12 +282,13 @@ public class Axis2FlexibleMEPClient {
                 SOAPUtils.convertSOAP11toSOAP12(msgCtx);
             }
 
-        } else if (SynapseConstants.FORMAT_REST.equals(endpoint.getFormat())) {
+        } else if (SynapseConstants.FORMAT_REST.equals(format)) {
             msgCtx.removeProperty(Axis2Constants.Configuration.MESSAGE_TYPE);
             msgCtx.setDoingREST(true);
+
         } else {
             throw new RuntimeException("Unknown endpoint format: "
-            							+ endpoint.getFormat());
+            							+ format);
         }
 
         if (endpoint.isUseMTOM()) {
@@ -310,7 +314,7 @@ public class Axis2FlexibleMEPClient {
         }
 
         if (endpoint.getAddress() != null) {
-            if (SynapseConstants.FORMAT_REST.equals(endpoint.getFormat()) &&
+            if (SynapseConstants.FORMAT_REST.equals(format) &&
                 msgCtx.getProperty(NhttpConstants.REST_URL_POSTFIX) != null) {
                 msgCtx.setTo(
                     new EndpointReference(endpoint.getAddress() +
