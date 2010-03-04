@@ -376,10 +376,10 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
 
             return axisService;
         } catch (WSDLException e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw AxisFault.makeFault(e);
         } catch (Exception e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             throw AxisFault.makeFault(e);
         }
     }
@@ -2757,7 +2757,7 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
     		URL url = new URL(endpointURL);
     		axisEndpoint.setTransportInDescription(url.getProtocol());
     	} catch (Exception e) {
-    		log.debug(e.getMessage(),e);
+    		log.error(e);
 		}
     }
 
