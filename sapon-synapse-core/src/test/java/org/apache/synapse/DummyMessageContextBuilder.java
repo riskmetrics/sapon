@@ -43,6 +43,7 @@ import org.apache.axis2.context.OldMessageContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.synapse.config.Entry;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.config.SynapseConfigurationImpl;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseMessageContextImpl;
@@ -111,7 +112,7 @@ public class DummyMessageContextBuilder {
      * @throws Exception
      */
     public SynapseMessageContext build() throws Exception {
-        SynapseConfiguration testConfig = new SynapseConfiguration();
+        SynapseConfiguration testConfig = new SynapseConfigurationImpl();
         // TODO: check whether we need a SynapseEnvironment in all cases
         SynapseEnvironment synEnv
             = new Axis2SynapseEnvironment(new ConfigurationContext(new AxisConfiguration()),

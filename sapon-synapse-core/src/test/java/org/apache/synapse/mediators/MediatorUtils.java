@@ -27,11 +27,12 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.context.OldMessageContext;
-import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.DummyMessageContextBuilder;
+import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.config.Entry;
 import org.apache.synapse.config.SynapseConfigUtils;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.config.SynapseConfigurationImpl;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseMessageContext;
@@ -70,7 +71,7 @@ public class MediatorUtils {
     public static SynapseMessageContext createLightweightSynapseMessageContext(
             String payload) throws Exception {
         MessageContext mc = new OldMessageContext();
-        SynapseConfiguration config = new SynapseConfiguration();
+        SynapseConfiguration config = new SynapseConfigurationImpl();
         SynapseEnvironment env = new Axis2SynapseEnvironment(config);
         SynapseMessageContext synMc = Axis2SynapseMessageContextImpl.newInstance(mc, config, env);
         SOAPEnvelope envelope =

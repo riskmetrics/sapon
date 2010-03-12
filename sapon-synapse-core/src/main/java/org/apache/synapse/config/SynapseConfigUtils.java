@@ -741,7 +741,7 @@ public class SynapseConfigUtils {
      * @return a SynapseConfiguration instance
      */
     public static SynapseConfiguration newConfiguration() {
-        SynapseConfiguration synConfig = new SynapseConfiguration();
+        SynapseConfiguration synConfig = new SynapseConfigurationImpl();
         SynapsePropertiesLoader.loadSynapseProperties();
         return synConfig;
     }

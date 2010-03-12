@@ -27,6 +27,7 @@ import org.apache.axis2.description.AxisService;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.synapse.config.Entry;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.config.SynapseConfigurationImpl;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.util.resolver.ResourceMap;
 
@@ -57,7 +58,7 @@ public class ProxyServiceTest extends TestCase {
      * for SYNAPSE-362.
      */
     public void testWSDLWithPublishWSDLAndRecursiveImports() throws Exception {
-        SynapseConfiguration synCfg = new SynapseConfiguration();
+        SynapseConfiguration synCfg = new SynapseConfigurationImpl();
         AxisConfiguration axisCfg = new AxisConfiguration();
         // Add local entries
         Entry entry = new Entry();
@@ -92,7 +93,7 @@ public class ProxyServiceTest extends TestCase {
      */
     public void testRecursiveImports2() throws Exception {
         ProxyService testService = new ProxyService("mytest");
-        SynapseConfiguration synCfg = new SynapseConfiguration();
+        SynapseConfiguration synCfg = new SynapseConfigurationImpl();
         AxisConfiguration axisCfg = new AxisConfiguration();
         testService.setWsdlURI(getClass().getResource("SimpleStockService.wsdl").toURI());
         SynapseEnvironment synEnv = new Axis2SynapseEnvironment(synCfg);

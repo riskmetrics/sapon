@@ -19,10 +19,10 @@
 
 package org.apache.synapse.mediators.ext;
 
+import org.apache.synapse.DummyMessageContext;
 import org.apache.synapse.ManagedLifecycle;
 import org.apache.synapse.Mediator;
-import org.apache.synapse.DummyMessageContext;
-import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.config.SynapseConfigurationImpl;
 import org.apache.synapse.config.xml.MediatorFactoryFinder;
 import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
 import org.apache.synapse.mediators.AbstractMediatorTestCase;
@@ -54,7 +54,7 @@ public class ClassMediatorTest extends AbstractMediatorTestCase {
         Mediator cm = MediatorFactoryFinder.getInstance().getMediator(createOMElement(
                 "<class name='org.apache.synapse.mediators.ext.ClassMediatorTestMediator' " +
                         "xmlns='http://ws.apache.org/ns/synapse'/>"));
-        ((ManagedLifecycle) cm).init(new Axis2SynapseEnvironment(new SynapseConfiguration()));
+        ((ManagedLifecycle) cm).init(new Axis2SynapseEnvironment(new SynapseConfigurationImpl()));
         assertTrue(ClassMediatorTestMediator.initialized);
         cm.mediate(new DummyMessageContext());
         assertTrue(ClassMediatorTestMediator.invoked);

@@ -27,6 +27,7 @@ import org.apache.synapse.SynapseConstants;
 import org.apache.synapse.SynapseException;
 import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.config.SynapseConfigurationImpl;
 import org.apache.synapse.core.SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
 import org.apache.synapse.core.axis2.SynapseMessageReceiver;
@@ -118,7 +119,7 @@ public class SequenceMediatorTest extends TestCase {
         seqErr.addChild(t4);
 
         // invoke transformation, with static enveope
-        SynapseConfiguration synConfig = new SynapseConfiguration();
+        SynapseConfiguration synConfig = new SynapseConfigurationImpl();
         synConfig.addSequence("myErrorHandler", seqErr);
         synConfig.addSequence(SynapseConstants.MAIN_SEQUENCE_KEY, seq);
 

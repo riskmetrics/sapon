@@ -7,6 +7,7 @@ import org.apache.axis2.context.OldMessageContext;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.synapse.SynapseMessageContext;
 import org.apache.synapse.config.SynapseConfiguration;
+import org.apache.synapse.config.SynapseConfigurationImpl;
 import org.apache.synapse.config.xml.MediatorFactory;
 import org.apache.synapse.core.axis2.Axis2SynapseEnvironment;
 import org.apache.synapse.core.axis2.Axis2SynapseMessageContext;
@@ -26,7 +27,7 @@ public class AbstractSplitMediatorTestCase extends AbstractMediatorTestCase {
     @Override
 	protected void setUp() throws Exception {
         super.setUp();
-        SynapseConfiguration synCfg = new SynapseConfiguration();
+        SynapseConfiguration synCfg = new SynapseConfigurationImpl();
         AxisConfiguration config = new AxisConfiguration();
         testCtx = Axis2SynapseMessageContextImpl.newInstance(new OldMessageContext(),
             synCfg, new Axis2SynapseEnvironment(new ConfigurationContext(config), synCfg));
