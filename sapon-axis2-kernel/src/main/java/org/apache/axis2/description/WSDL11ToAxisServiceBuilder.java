@@ -857,7 +857,6 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
      */
     private Binding findBinding(Definition dif, Service service) throws AxisFault {
 
-        Binding binding = null;
         Port port = null;
         copyExtensibleElements(service.getExtensibilityElements(), dif, axisService, SERVICE);
         if (portName != null) {
@@ -893,15 +892,16 @@ public class WSDL11ToAxisServiceBuilder extends WSDLToAxisServiceBuilder {
 
         axisService.setName(service.getQName().getLocalPart());
 
-        if (port != null) {
-            copyExtensibleElements(port.getExtensibilityElements(), dif,
-                                   axisService, PORT);
-            Definition parentDefinition = getParentDefinition(dif,
-                    port.getBinding().getQName(), COMPONENT_BINDING, new HashSet<String>());
-            binding = parentDefinition.getBinding(port.getBinding().getQName());
-            if (binding == null) {
-                binding = port.getBinding();
-            }
+        if (port == null) {
+        	return null;
+        }
+
+        copyExtensibleElements(port.getExtensibilityElements(), dif, axisService, PORT);
+        Definition parentDefinition = getParentDefinition(dif, port.getBinding().getQName(), COMPONENT_BINDING, new HashSet<String>());
+
+        Binding binding = parentDefinition.getBinding(port.getBinding().getQName());
+        if (binding == null) {
+        	binding = port.getBinding();
         }
 
         return binding;
