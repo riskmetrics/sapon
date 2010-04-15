@@ -19,7 +19,6 @@ import org.apache.synapse.registry.Registry;
 public interface SynapseConfiguration extends ManagedLifecycle {
 	
 	void addSequence(String key, Mediator mediator);
-	void addSequence(String key, Entry entry);  //Why is this called addSequence?
 	Map<String, SequenceMediator> getDefinedSequences();
 	Mediator getMandatorySequence();
 	void setMandatorySequence(Mediator mandatorySequence);
@@ -35,7 +34,7 @@ public interface SynapseConfiguration extends ManagedLifecycle {
 	Entry getEntryDefinition(String key);  //How is this different from getEntry()?
 	void removeEntry(String key);
 	void clearCachedEntry(String key);
-	void clearCache(); //Which cache?  (Entry cache, it turns out)
+	void clearCachedEntries(); 
 	
 	void addEndpoint(String key, Endpoint endpoint);
 	Map<String, Endpoint> getDefinedEndpoints();

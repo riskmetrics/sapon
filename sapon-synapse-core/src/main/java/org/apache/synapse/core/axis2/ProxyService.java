@@ -309,111 +309,91 @@ public class ProxyService implements AspectConfigurable {
         	return null;
         }
     }
-
-    private AxisService buildProxyService(OMElement wsdlElement, SynapseConfiguration synCfg) {
-
-    	OMNamespace wsdlNamespace = wsdlElement.getNamespace();
-
-    	// serialize and create an inputstream to read WSDL
-    	InputStream wsdlInputStream = null;
-    	ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    
+    private InputStream elementToInputStream(OMElement elem) {
     	try {
-    		if (log.isTraceEnabled()) {
-    			log.trace("Serializing wsdlElement found to build an Axis2 service");
-    		}
-    		wsdlElement.serialize(baos);
-    		wsdlInputStream = new ByteArrayInputStream(baos.toByteArray());
+    		ByteArrayOutputStream baos = new ByteArrayOutputStream();	
+    		elem.serialize(baos);
+    		return new ByteArrayInputStream(baos.toByteArray());
     	} catch (XMLStreamException e) {
-    		handleException("Error converting to a StreamSource", e);
+    		throw new SynapseException("Error converting to an InputStream", e);
     	}
+    }
 
-    	if (wsdlInputStream != null) {
-    		try {
-    			// detect version of the WSDL 1.1 or 2.0
-    			if (log.isTraceEnabled()) {
-    				log.trace("WSDL Namespace is : "
-    					+ wsdlNamespace.getNamespaceURI());
-    			}
+    private AxisService buildProxyService( OMElement wsdlElement, 
+    		                               SynapseConfiguration synCfg ) 
+    {
+    	final OMNamespace wsdlNamespace = wsdlElement.getNamespace();
+		if (log.isTraceEnabled()) {
+			log.trace("WSDL Namespace: " + wsdlNamespace.getNamespaceURI());
+		}
 
-    			if (wsdlNamespace != null) {
-    				WSDLToAxisServiceBuilder wsdlToAxisServiceBuilder = null;
+		InputStream wsdlInputStream = elementToInputStream(wsdlElement);
+		
+		WSDLToAxisServiceBuilder wsdlToAxisServiceBuilder = null;
+		if (WSDL2Constants.WSDL_NAMESPACE.equals(wsdlNamespace.getNamespaceURI())) {
+			throw new SynapseException("WSDL 2.0 is not currently supported");
+			//wsdlToAxisServiceBuilder 
+			//	= new WSDL20ToAxisServiceBuilder(wsdlInputStream, null, null);
+		} else if (org.apache.axis2.namespace.Constants.NS_URI_WSDL11.
+				   equals(wsdlNamespace.getNamespaceURI())) {
+			wsdlToAxisServiceBuilder =
+				new WSDL11ToAxisServiceBuilder(wsdlInputStream);
+		} else {
+			throw new SynapseException("Unknown WSDL format: " 
+					                   + wsdlNamespace.getNamespaceURI());
+		}
 
-    				if (WSDL2Constants.WSDL_NAMESPACE.equals(wsdlNamespace.getNamespaceURI())) {
-    					handleException("WSDL 2.0 is not currently supported");
-//    					wsdlToAxisServiceBuilder =
-//    						new WSDL20ToAxisServiceBuilder(wsdlInputStream, null, null);
+		wsdlToAxisServiceBuilder.setBaseUri(
+				wsdlURI != null ? wsdlURI.toString() 
+						        : SynapseConfigUtils.getSynapseHome());
 
-    				} else if (org.apache.axis2.namespace.Constants.NS_URI_WSDL11.
-    						equals(wsdlNamespace.getNamespaceURI())) {
-    					wsdlToAxisServiceBuilder =
-    						new WSDL11ToAxisServiceBuilder(wsdlInputStream);
-    				} else {
-    					handleException("Unknown WSDL format.. not WSDL 1.1 or WSDL 2.0");
-    				}
+		if (log.isTraceEnabled()) {
+			log.trace("Setting up custom resolvers");
+		}
 
-    				if (wsdlToAxisServiceBuilder == null) {
-    					throw new SynapseException(
-    							"Could not get the WSDL to Axis Service Builder");
-    				}
+		if (resourceMap != null) {
+			wsdlToAxisServiceBuilder.setCustomResolver(
+					new CustomXmlSchemaURIResolver(resourceMap, synCfg));
+			// Axis 2 also needs a WSDLLocator for WSDL 1.1 documents
+			if (wsdlToAxisServiceBuilder instanceof WSDL11ToAxisServiceBuilder) {
+				((WSDL11ToAxisServiceBuilder)
+						wsdlToAxisServiceBuilder).setCustomWSDLResolver(
+								new CustomWSDLLocator(new InputSource(wsdlInputStream),
+										wsdlURI != null ? wsdlURI.toString() : "",
+												resourceMap, synCfg));
+			}
+		} else {
+			//if the resource map isn't available ,
+			//then each import URIs will be resolved using base URI
+			wsdlToAxisServiceBuilder.setCustomResolver(
+					new CustomXmlSchemaURIResolver());
+			// Axis 2 also needs a WSDLLocator for WSDL 1.1 documents
+			if (wsdlToAxisServiceBuilder instanceof WSDL11ToAxisServiceBuilder) {
+				((WSDL11ToAxisServiceBuilder)
+						wsdlToAxisServiceBuilder).setCustomWSDLResolver(
+								new CustomWSDLLocator(new InputSource(wsdlInputStream),
+										wsdlURI != null ? wsdlURI.toString() : ""));
+			}
+		}
 
-    				wsdlToAxisServiceBuilder.setBaseUri(
-    						wsdlURI != null ? wsdlURI.toString() :
-    							SynapseConfigUtils.getSynapseHome());
+		if (log.isTraceEnabled()) {
+			log.trace("Populating Axis2 service using WSDL");
+			log.trace("WSDL : " + wsdlElement.toString());
+		}
+		try {
+			final AxisService proxyService
+				= wsdlToAxisServiceBuilder.populateService();
 
-    				if (log.isTraceEnabled()) {
-    					log.trace("Setting up custom resolvers");
-    				}
-    				// Set up the URIResolver
-
-    				if (resourceMap != null) {
-    					// if the resource map is available use it
-    					wsdlToAxisServiceBuilder.setCustomResolver(
-    							new CustomXmlSchemaURIResolver(resourceMap, synCfg));
-    					// Axis 2 also needs a WSDLLocator for WSDL 1.1 documents
-    					if (wsdlToAxisServiceBuilder instanceof WSDL11ToAxisServiceBuilder) {
-    						((WSDL11ToAxisServiceBuilder)
-    								wsdlToAxisServiceBuilder).setCustomWSDLResolver(
-    										new CustomWSDLLocator(new InputSource(wsdlInputStream),
-    												wsdlURI != null ? wsdlURI.toString() : "",
-    														resourceMap, synCfg));
-    					}
-    				} else {
-    					//if the resource map isn't available ,
-    					//then each import URIs will be resolved using base URI
-    					wsdlToAxisServiceBuilder.setCustomResolver(
-    							new CustomXmlSchemaURIResolver());
-    					// Axis 2 also needs a WSDLLocator for WSDL 1.1 documents
-    					if (wsdlToAxisServiceBuilder instanceof WSDL11ToAxisServiceBuilder) {
-    						((WSDL11ToAxisServiceBuilder)
-    								wsdlToAxisServiceBuilder).setCustomWSDLResolver(
-    										new CustomWSDLLocator(new InputSource(wsdlInputStream),
-    												wsdlURI != null ? wsdlURI.toString() : ""));
-    					}
-    				}
-
-    				if (log.isTraceEnabled()) {
-    					log.trace("Populating Axis2 service using WSDL");
-    					log.trace("WSDL : " + wsdlElement.toString());
-    				}
-    				final AxisService proxyService
-    					= wsdlToAxisServiceBuilder.populateService();
-
-    				// this is to clear the bindinigs and ports already in the WSDL so that the
-    				// service will generate the bindings on calling the printWSDL otherwise
-    				// the WSDL which will be shown is same as the original WSDL except for the
-    				// service name
-    				proxyService.getEndpoints().clear();
-    				return proxyService;
-    			} else {
-    				handleException("Unknown WSDL format.. not WSDL 1.1 or WSDL 2.0");
-    			}
-
-    		} catch (AxisFault af) {
-    			handleException("Error building service from WSDL", af);
-    		}
-    	}
-
-    	return null;
+			// this clears the bindings and ports already in the WSDL so that 
+			// the service will generate the bindings on calling printWSDL.
+			// Without this, the WSDL which will be shown is same as the 
+			// original WSDL except for the service name.
+			proxyService.getEndpoints().clear();
+			return proxyService;
+		} catch (AxisFault af) {
+			throw new SynapseException("Error building service from WSDL", af);
+		}					
     }
 
     /**
@@ -478,7 +458,7 @@ public class ProxyService implements AspectConfigurable {
             try {
                 proxyService.addParameter(p);
             } catch (AxisFault af) {
-                handleException("Error setting parameter : " + name + "" +
+                throw new SynapseException("Error setting parameter : " + name + "" +
                     "to proxy service as a Parameter", af);
             }
         }
@@ -495,7 +475,7 @@ public class ProxyService implements AspectConfigurable {
         			op.attachPolicy(
         					getPolicyFromKey(pi.getPolicyKey(), synCfg));
         		} else {
-        			handleException("Couldn't find the operation specified " +
+        			throw new SynapseException("Couldn't find the operation specified " +
         					"by the QName : " + opi.getOperation());
         		}
         	} else if (pi instanceof MessagePolicyInfo) {
@@ -506,7 +486,7 @@ public class ProxyService implements AspectConfigurable {
         				op.getMessage(mpi.getMessageLabel()).attachPolicy(
         						getPolicyFromKey(pi.getPolicyKey(), synCfg));
         			} else {
-        				handleException("Couldn't find the operation " +
+        				throw new SynapseException("Couldn't find the operation " +
         						"specified by the QName : " + mpi.getOperation());
         			}
         		} else {
@@ -543,7 +523,7 @@ public class ProxyService implements AspectConfigurable {
 				}
         	}
         	else {
-        		handleException("Undefined Policy type");
+        		throw new SynapseException("Undefined Policy type");
         	}
         }
 
@@ -572,7 +552,7 @@ public class ProxyService implements AspectConfigurable {
                     axisCfg.removeService(proxyService.getName());
                 }
             } catch (AxisFault ignore) {}
-            handleException("Error adding Proxy service to the Axis2 engine", axisFault);
+            throw new SynapseException("Error adding Proxy service to the Axis2 engine", axisFault);
         }
 
 		if(ensuredSwAElems.size() > 0) {
@@ -593,7 +573,7 @@ public class ProxyService implements AspectConfigurable {
                 proxyService.engageModule(axisCfg.getModule(
                     SynapseConstants.ADDRESSING_MODULE_NAME), axisCfg);
             } catch (AxisFault axisFault) {
-                handleException("Error loading WS Addressing module on proxy service : " + name, axisFault);
+                throw new SynapseException("Error loading WS Addressing module on proxy service : " + name, axisFault);
             }
         }
 
@@ -604,7 +584,7 @@ public class ProxyService implements AspectConfigurable {
                 proxyService.engageModule(axisCfg.getModule(
                     SynapseConstants.RM_MODULE_NAME), axisCfg);
             } catch (AxisFault axisFault) {
-                handleException("Error loading WS RM module on proxy service : " + name, axisFault);
+                throw new SynapseException("Error loading WS RM module on proxy service : " + name, axisFault);
             }
         }
 
@@ -615,7 +595,7 @@ public class ProxyService implements AspectConfigurable {
                 proxyService.engageModule(axisCfg.getModule(
                     SynapseConstants.SECURITY_MODULE_NAME), axisCfg);
             } catch (AxisFault axisFault) {
-                handleException("Error loading WS Sec module on proxy service : "
+                throw new SynapseException("Error loading WS Sec module on proxy service : "
                         + name, axisFault);
             }
         }
@@ -694,24 +674,12 @@ public class ProxyService implements AspectConfigurable {
                 this.setRunning(false);
                 auditInfo("Stopped the proxy service : " + name);
             } catch (AxisFault axisFault) {
-                handleException("Error stopping the proxy service : " + name, axisFault);
+                throw new SynapseException("Error stopping the proxy service : " + name, axisFault);
             }
         } else {
             auditWarn("Unable to stop proxy service : " + name +
                 ". Couldn't access Axis configuration");
         }
-    }
-
-    private void handleException(String msg) {
-        serviceLog.error(msg);
-        log.error(msg);
-        throw new SynapseException(msg);
-    }
-
-    private void handleException(String msg, Exception e) {
-        serviceLog.error(msg);
-        log.error(msg, e);
-        throw new SynapseException(msg, e);
     }
 
     /**

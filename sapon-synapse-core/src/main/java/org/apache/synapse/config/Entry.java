@@ -34,10 +34,9 @@ public class Entry {
 
     private static final Log log = LogFactory.getLog(Entry.class);
 
-    /** The key of the entry */
     private String key;
-    /** The type of the entry */
     private int type;
+
     /** Source URL of the entry if it is a URL_SRC */
     private URL src;
     /** The value of the entry. This can be either an OMElement or an String */

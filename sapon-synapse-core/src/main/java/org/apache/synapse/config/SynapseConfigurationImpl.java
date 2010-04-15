@@ -135,21 +135,6 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
     }
 
     /**
-     * Allow a dynamic sequence to be cached and made available through the
-     * local registry
-     *
-     * @param key
-     *            the key to lookup the sequence from the remote registry
-     * @param entry
-     *            the Entry object which holds meta information and the cached
-     *            resource
-     */
-    public void addSequence(String key, Entry entry) {
-        assertAlreadyExists(key,ENTRY);
-        localRegistry.put(key, entry);
-    }
-
-    /**
      * Returns the map of defined sequences in the configuration excluding the
      * fetched sequences from remote registry.
      *
@@ -214,7 +199,7 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
             }
         }
 
-        assertEnrtyNull(entry, key);
+        assertEntryNull(entry, key);
 
         if (entry.getMapper() == null) {
             entry.setMapper(MediatorFactoryFinder.getInstance());
@@ -295,7 +280,7 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
                         .toString()));
                 localRegistry.put(key, entry);
             } catch (IOException e) {
-                handleException("Can not read from source URL : "
+                throw new SynapseException("Can not read from source URL : "
                         + entry.getSrc());
             }
         } else {
@@ -453,7 +438,7 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
      * Clears the cache of all the remote entries which has been
      * cached in the configuration
      */
-    public void clearCache() {
+    public void clearCachedEntries() {
 
         for (Object o : localRegistry.values()) {
 
@@ -524,7 +509,7 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
             }
         }
 
-        assertEnrtyNull(entry, key);
+        assertEntryNull(entry, key);
 
         if (entry.getMapper() == null) {
             entry.setMapper(XMLToEndpointMapper.getInstance());
@@ -593,21 +578,20 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
     public void removeProxyService(String name) {
         ProxyService proxy = proxyServices.get(name);
         if (proxy == null) {
-            handleException("Unknown proxy service for name : " + name);
-        } else {
-            try {
-                if (getAxisConfiguration().getServiceForActivation(name) != null) {
-                    if (getAxisConfiguration().getServiceForActivation(name)
-                            .isActive()) {
-                        getAxisConfiguration().getService(name)
-                                .setActive(false);
-                    }
-                    getAxisConfiguration().removeService(name);
+            throw new SynapseException("Unknown proxy service for name : " + name);
+        }
+        try {
+            if (getAxisConfiguration().getServiceForActivation(name) != null) {
+                if (getAxisConfiguration().getServiceForActivation(name)
+                        .isActive()) {
+                    getAxisConfiguration().getService(name)
+                            .setActive(false);
                 }
-                proxyServices.remove(name);
-            } catch (AxisFault axisFault) {
-                handleException(axisFault.getMessage());
+                getAxisConfiguration().removeService(name);
             }
+            proxyServices.remove(name);
+        } catch (AxisFault axisFault) {
+            throw new SynapseException(axisFault.getMessage());
         }
     }
 
@@ -946,11 +930,6 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
     	return initialized;
     }
 
-    private void handleException(String msg) {
-        log.error(msg);
-        throw new SynapseException(msg);
-    }
-
 //    public void addEventSource(String name, SynapseEventSource eventSource) {
 //        eventSources.put(name, eventSource);
 //    }
@@ -974,17 +953,17 @@ public class SynapseConfigurationImpl implements SynapseConfiguration {
     private void assertAlreadyExists(String key, String type) {
 
         if (key == null || "".equals(key)) {
-            handleException("Given entry key is empty or null.");
+            throw new SynapseException("Given entry key is empty or null.");
         }
 
         if (localRegistry.containsKey(key.trim())) {
-            handleException("Duplicate " + type + " definition for key : " + key);
+            throw new SynapseException("Duplicate " + type + " definition for key : " + key);
         }
     }
 
-    private void assertEnrtyNull(Entry entry, String key) {
+    private void assertEntryNull(Entry entry, String key) {
         if (entry == null) {
-            handleException("Cannot locate an either local or remote enrty for key : " + key);
+            throw new SynapseException("Cannot locate an either local or remote enrty for key : " + key);
         }
     }
 }
