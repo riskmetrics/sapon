@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ 		    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+ 		    xmlns:b="urn:synapse.apache.org/jaxb/base"
+ 		    xmlns="urn:synapse.apache.org/jaxb/endpoints"
+ 		    targetNamespace="urn:synapse.apache.org/jaxb/endpoints"
+        	jxb:version="2.0">
+        	
+	<xs:import 	id="base" 
+    			namespace="urn:synapse.apache.org/jaxb/base"
+    			schemaLocation="Base.xsd" />
+    			
+    <xs:complexType name="EndpointType" abstract="true" />
+        	
+    <xs:element name="endpointsg" type="EndpointType" />
+        	
+	<xs:element name="enableRM">
+		<xs:complexType>
+			<xs:attribute name="policy" type="xs:string" />		
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="enableSec">
+		<xs:complexType>
+			<xs:attribute name="policy" type="xs:string" />		
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:simpleType name="addressingVersionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="final" />
+			<xs:enumeration value="submission" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:element name="enableAddressing">
+		<xs:complexType>
+			<xs:attribute name="version" type="addressingVersionType" />
+			<xs:attribute name="separateListener" type="xs:boolean" />		
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:simpleType name="timeoutActionType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="discard" />
+			<xs:enumeration value="fault" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:element name="timeout">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="duration" type="xs:int" />
+				<xs:element name="action" type="timeoutActionType" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="suspendDurationOnFailure" type="xs:int" />
+	
+	<xs:simpleType name="formatAttrType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="soap11" />
+			<xs:enumeration value="soap12" />
+			<xs:enumeration value="pox" />
+			<xs:enumeration value="get" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="optimizeAttrType"> 
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="mtom" />
+			<xs:enumeration value="swa" />
+		</xs:restriction>
+	</xs:simpleType>
+	
+	<xs:simpleType name="enableDisableType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="enable" />
+			<xs:enumeration value="disable" />
+		</xs:restriction>
+	</xs:simpleType>
+
+	<xs:element name="default" type="DefaultEndpointType" substitutionGroup="endpointsg" />
+	<xs:complexType name="DefaultEndpointType">
+		<xs:complexContent>
+			<xs:extension base="EndpointType">
+				<xs:sequence>
+					<!-- TODO: how can we add extensibility elements? -->
+					<xs:element ref="enableRM" minOccurs="0" />
+					<xs:element ref="enableSec" minOccurs="0" />
+					<xs:element ref="enableAddressing" minOccurs="0" />
+					<xs:element ref="timeout" minOccurs="0" />
+					<xs:element ref="suspendDurationOnFailure" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="format" type="formatAttrType" />
+				<xs:attribute name="optimize" type="optimizeAttrType" />
+				<xs:attribute name="encoding" type="xs:string" />
+				<xs:attribute name="statistics" type="enableDisableType" />
+				<xs:attribute name="trace" type="enableDisableType" />			
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+		
+	<xs:element name="address" type="AddressEndpointType" substitutionGroup="endpointsg" />
+	<xs:complexType name="AddressEndpointType">
+		<xs:complexContent>
+			<xs:extension base="EndpointType">	
+				<xs:sequence>
+					<!-- TODO: how can we add extensibility elements? -->
+					<xs:element ref="enableRM" minOccurs="0" />
+					<xs:element ref="enableSec" minOccurs="0" />
+					<xs:element ref="enableAddressing" minOccurs="0" />
+					<xs:element ref="timeout" minOccurs="0" />
+					<xs:element name="suspendDurationOnFailure" type="xs:int" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="uri" type="xs:anyURI" use="required" />
+				<xs:attribute name="format" type="formatAttrType" />
+				<xs:attribute name="optimize" type="optimizeAttrType" />
+				<xs:attribute name="encoding" type="xs:string" />
+				<xs:attribute name="statistics" type="enableDisableType" />
+				<xs:attribute name="trace" type="enableDisableType" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="map">
+		<xs:complexType>
+			<xs:attribute name="from" type="xs:anyURI" use="required" />		
+			<xs:attribute name="to" type="xs:anyURI" use="required" />		
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="mapping" type="MappingEndpointType" substitutionGroup="endpointsg" />
+	<xs:complexType name="MappingEndpointType">
+		<xs:complexContent>
+			<xs:extension base="EndpointType">
+				<xs:sequence>
+					<!-- TODO: how can we add extensibility elements? -->
+					<xs:element ref="map" maxOccurs="unbounded" />
+					<xs:element ref="enableRM" minOccurs="0" />
+					<xs:element ref="enableSec" minOccurs="0" />
+					<xs:element ref="enableAddressing" minOccurs="0" />
+					<xs:element ref="timeout" minOccurs="0" />
+					<xs:element ref="suspendDurationOnFailure" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="sender" type="xs:string" use="required" />
+				<xs:attribute name="format" type="formatAttrType" />
+				<xs:attribute name="optimize" type="optimizeAttrType" />
+				<xs:attribute name="encoding" type="xs:string" />
+				<xs:attribute name="statistics" type="enableDisableType" />
+				<xs:attribute name="trace" type="enableDisableType" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+    <xs:element name="membershipHandler">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="b:property" minOccurs="0" maxOccurs="unbounded" />
+    		</xs:sequence>
+    		<xs:attribute name="class" type="xs:string" use="required" />
+    	</xs:complexType>
+    </xs:element>
+
+	<xs:element name="dynamicLoadbalance" type="DynamicLoadbalanceEndpointType" substitutionGroup="endpointsg" />
+	<xs:complexType name="DynamicLoadbalanceEndpointType">
+		<xs:complexContent>
+			<xs:extension base="EndpointType">
+				<xs:sequence>
+					<xs:element ref="membershipHandler" />
+				</xs:sequence>
+				<xs:attribute name="failover" type="xs:boolean" />
+				<xs:attribute name="policy" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="failover" type="FailoverEndpointType" substitutionGroup="endpointsg" />
+	<xs:complexType name="FailoverEndpointType">
+		<xs:complexContent>
+			<xs:extension base="EndpointType">
+				<xs:sequence>
+					<xs:element ref="endpoint" maxOccurs="unbounded" />
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+
+	<xs:element name="member">
+		<xs:complexType>
+			<xs:attribute name="hostName" type="xs:string" />
+			<xs:attribute name="httpPort" type="xs:positiveInteger" />
+			<xs:attribute name="httpsPort" type="xs:positiveInteger" />
+		</xs:complexType>
+	</xs:element>
+		
+	<xs:element name="loadbalance" type="LoadBalanceType" substitutionGroup="endpointsg" />
+	<xs:complexType name="LoadBalanceType">
+		<xs:complexContent>
+			<xs:extension base="EndpointType">
+				<xs:sequence>
+					<xs:element ref="endpoint" maxOccurs="unbounded" />
+					<xs:element ref="member" maxOccurs="unbounded" />
+				</xs:sequence>
+				<xs:attribute name="policy" type="xs:string" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="session">
+		<xs:complexType>
+			<xs:attribute name="type" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="wsdl" type="WSDLEndpointType" substitutionGroup="endpointsg" />
+	<xs:complexType name="WSDLEndpointType">
+		<xs:complexContent>
+			<xs:extension base="EndpointType">	
+				<xs:sequence>
+					<!-- TODO: how can we add extensibility elements? -->
+					<xs:element name="definition" type="xs:anyType" minOccurs="0" />
+					<xs:element name="description" type="xs:anyType" minOccurs="0" />
+					<xs:element ref="enableRM" minOccurs="0" />
+					<xs:element ref="enableSec" minOccurs="0" />
+					<xs:element ref="enableAddressing" minOccurs="0" />
+					<xs:element ref="timeout" minOccurs="0" />
+					<xs:element ref="suspendDurationOnFailure" minOccurs="0" />
+				</xs:sequence>
+				<xs:attribute name="uri" type="xs:anyURI" />
+				<xs:attribute name="service" type="xs:string" use="required" />
+				<xs:attribute name="port" type="xs:string" use="required" />
+				<xs:attribute name="format" type="formatAttrType" />
+				<xs:attribute name="optimize" type="optimizeAttrType" />
+				<xs:attribute name="encoding" type="xs:string" />
+				<xs:attribute name="statistics" type="enableDisableType" />
+				<xs:attribute name="trace" type="enableDisableType" />
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	
+	<xs:element name="endpoint">
+    	<xs:complexType>
+    		<xs:sequence>
+    			<xs:element ref="endpointsg" />
+    			<!-- TODO: model SALoadBalanceEndpoint -->
+    		</xs:sequence>
+    		<xs:attribute name="name" type="xs:string" />
+    		<xs:attribute name="key" type="xs:string" />
+    		<xs:attribute name="key-expression" type="xs:string" />
+    	</xs:complexType>
+    </xs:element>
+	
+	        	
+</xs:schema>
