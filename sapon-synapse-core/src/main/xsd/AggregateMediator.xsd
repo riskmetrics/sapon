@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ 		    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+ 		    xmlns:b="urn:synapse.apache.org/jaxb/base"
+ 		    xmlns="urn:synapse.apache.org/jaxb/aggregate"
+ 		    targetNamespace="urn:synapse.apache.org/jaxb/aggregate"
+        	jxb:version="2.0">
+        	
+    <xs:import id="base" namespace="urn:synapse.apache.org/jaxb/base" schemaLocation="Base.xsd" />
+
+	<xs:element name="correlateOn">
+		<xs:complexType>
+			<xs:attribute name="expression" type="xs:string" use="required" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="messageCount">
+		<xs:complexType>
+			<xs:attribute name="min" type="xs:int" use="required" />
+			<xs:attribute name="max" type="xs:int" use="required" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="completeCondition">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="messageCount" minOccurs="0" />
+			</xs:sequence>
+			<xs:attribute name="timeout" type="xs:int" />
+		</xs:complexType>
+	</xs:element>	
+	
+	<xs:element name="onComplete">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="b:mediator" minOccurs="0" maxOccurs="unbounded" />
+			</xs:sequence>
+			<xs:attribute name="expression" type="xs:string" use="required" />
+			<xs:attribute name="sequence" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:element name="aggregate" substitutionGroup="b:mediator">
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element ref="correlateOn" minOccurs="0" />
+				<xs:element ref="completeCondition" minOccurs="0" />
+				<xs:element ref="onComplete" />
+			</xs:sequence>
+		</xs:complexType>
+	</xs:element>
+	
+</xs:schema>
