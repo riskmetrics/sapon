@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ 		    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+ 		    xmlns:b="urn:synapse.apache.org/jaxb/base"
+ 		    xmlns="urn:synapse.apache.org/jaxb/mediators/annotatedcommand"
+ 		    targetNamespace="urn:synapse.apache.org/jaxb/mediators/annotatedcommand"
+        	jxb:version="2.0">
+        	
+    <xs:import id="base" namespace="urn:synapse.apache.org/jaxb/base" schemaLocation="Base.xsd" />
+	
+	<xs:element name="aggregate" type="AnnotatedCommandType" substitutionGroup="b:mediator" />
+	<xs:complexType name="AnnotatedCommandType">
+		<xs:attribute name="name" type="xs:string" use="required" />
+		<xs:attribute name="class-name" type="xs:string" use="required" />
+	</xs:complexType>
+	
+</xs:schema>

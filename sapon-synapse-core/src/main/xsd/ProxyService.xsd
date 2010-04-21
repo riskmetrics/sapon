@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema 	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+ 		    xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
+ 		    xmlns:b="urn:synapse.apache.org/jaxb/base"
+ 		    xmlns:e="urn:synapse.apache.org/jaxb/endpoints"
+ 		    xmlns="urn:synapse.apache.org/jaxb/proxyservice"
+ 		    targetNamespace="urn:synapse.apache.org/jaxb/proxyservice"
+        	jxb:version="2.0">
+        	
+    <xs:import id="base" namespace="urn:synapse.apache.org/jaxb/base" schemaLocation="Base.xsd" />
+    <xs:import id="endpoints" namespace="urn:synapse.apache.org/jaxb/endpoints" schemaLocation="Endpoints.xsd" />
+    
+	<xs:complexType name="ProxyTargetType">
+    	<xs:sequence>
+    		<xs:element ref="e:endpoint" minOccurs="0" />
+    		<!-- TODO: define Sequences at higher level -->
+    		<xs:element name="inSequence" type="xs:anyType" minOccurs="0" />
+    		<xs:element name="outSequence" type="xs:anyType" minOccurs="0" />
+    		<xs:element name="faultSequence" type="xs:anyType" minOccurs="0" />
+    	</xs:sequence>
+    	<xs:attribute name="inSequenceId" type="xs:string" />
+    	<xs:attribute name="outSequenceId" type="xs:string" />
+    	<xs:attribute name="faultSequenceId" type="xs:string" />
+    	<xs:attribute name="endpointId" type="xs:string" />
+    </xs:complexType>
+    
+	<xs:complexType name="PublishWSDLType">
+    	<!-- TODO: expand to full definition -->
+    	<xs:attribute name="uri" type="xs:anyURI" use="required" />
+    	<xs:attribute name="key" type="xs:string" use="required" />
+    </xs:complexType>
+
+	<xs:complexType name="EnsureSWAType">
+   		<xs:sequence>
+   			<xs:element name="namespace" maxOccurs="unbounded">
+   				<xs:complexType>
+   					<xs:sequence>
+   						<xs:element name="element" maxOccurs="unbounded">
+   							<xs:complexType>
+   								<xs:attribute name="name" type="xs:string" />
+   							</xs:complexType>
+   						</xs:element>
+   					</xs:sequence>
+   				</xs:complexType>
+   			</xs:element>
+   		</xs:sequence>
+   	</xs:complexType>
+    
+    <xs:complexType name="PolicyType">
+    	<xs:attribute name="where" type="xs:string" />
+    	<xs:attribute name="key" type="xs:string" />
+    	<xs:attribute name="type" type="xs:string" />
+    </xs:complexType>
+    
+    <xs:complexType name="ParameterType">
+    	<xs:attribute name="name" type="xs:string" />
+    </xs:complexType>
+    
+    <xs:complexType name="ProxyServiceType">
+    	<xs:sequence>
+    		<xs:element name="description" type="xs:string" minOccurs="0" />
+    		<xs:element name="target" type="ProxyTargetType" minOccurs="0" />
+    		<xs:element name="publishWSDL" type="PublishWSDLType" minOccurs="0" />
+    		<xs:element name="ensureSWA" type="EnsureSWAType" minOccurs="0" />
+    		<xs:element name="enableAddressing" type="b:empty" minOccurs="0" />
+    		<xs:element name="enableSec" type="b:empty" minOccurs="0" />
+    		<xs:element name="enableRM" type="b:empty" minOccurs="0" />
+    		<xs:element name="policy" type="PolicyType" minOccurs="0" maxOccurs="unbounded" />
+    		<xs:element name="parameter" type="ParameterType" minOccurs="0" />
+    	</xs:sequence>
+    	<xs:attribute name="name" type="xs:string" use="required" />
+    	<xs:attribute name="transports" type="xs:string" />
+    	<xs:attribute name="pinnedServers" type="xs:string" />
+    	<xs:attribute name="trace" type="xs:string" />
+    </xs:complexType>
+</xs:schema>
