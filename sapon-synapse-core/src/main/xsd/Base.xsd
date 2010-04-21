@@ -1,10 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema	xmlns:xs="http://www.w3.org/2001/XMLSchema"
  		   	xmlns:jxb="http://java.sun.com/xml/ns/jaxb"
- 		   	xmlns="urn:synapse.apache.org/base"
+ 		   	xmlns="urn:synapse.apache.org/jaxb/base"
  		    targetNamespace="urn:synapse.apache.org/jaxb/base"
           	jxb:version="2.0">
           	
-	<xs:element name="mediator" />
+	<xs:element name="mediator" abstract="true" />
+	
+	<xs:element name="property">
+		<xs:complexType>
+			<xs:attribute name="name" type="xs:string" />
+			<xs:attribute name="value" type="xs:string" />
+		</xs:complexType>
+	</xs:element>
+	
+	<xs:complexType name="empty" />
 	
 </xs:schema>
