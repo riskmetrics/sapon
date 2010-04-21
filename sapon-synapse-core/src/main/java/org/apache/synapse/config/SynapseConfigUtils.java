@@ -207,8 +207,7 @@ public class SynapseConfigUtils {
                 }
                 return null;
             }
-            XMLToObjectMapper xmlToObject =
-                    getXmlToObjectMapper(connection.getContentType());
+
             InputStream inputStream = connection.getInputStream();
             try {
                 XMLStreamReader parser = XMLInputFactory.newInstance().
@@ -220,11 +219,7 @@ public class SynapseConfigUtils {
                 // TODO remove this
                 omElem.build();
 
-                if (xmlToObject != null) {
-                    return xmlToObject.getObjectFromOMNode(omElem);
-                } else {
-                    return omElem;
-                }
+                return omElem;
 
             } catch (XMLStreamException e) {
                 if (log.isDebugEnabled()) {
@@ -502,17 +497,6 @@ public class SynapseConfigUtils {
     private static void handleException(String msg) {
         log.warn(msg);
         throw new SynapseException(msg);
-    }
-
-    /**
-     * Return a suitable XMLToObjectMapper for the given content type if one
-     * is available, else return null;
-     *
-     * @param contentType the content type for which a mapper is required
-     * @return a suitable XMLToObjectMapper or null if none can be found
-     */
-    public static XMLToObjectMapper getXmlToObjectMapper(String contentType) {
-        return null;
     }
 
     /**
