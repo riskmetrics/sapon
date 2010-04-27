@@ -27,7 +27,7 @@ import javax.xml.stream.XMLStreamReader;
  * @author scheu
  *
  */
-public interface OMXMLStreamReader extends XMLStreamReader, OMAttachmentAccessor {
+public interface OMXMLStreamReader extends XMLStreamReader {
     
     /**
      * By default, an OMText item that has an MTOM datahandler 

@@ -88,30 +88,6 @@ public class TextHelper {
         } while (!eos);
     }
     
-    /**
-     * Append data in the omText to the specified buffer
-     * @param inStream InputStream
-     * @param buffer Buffer
-     * @throws IOException
-     */
-    public static void toStringBuffer(OMText omText, StringBuffer buffer) throws IOException {
-        // If an InputStream is present, stream the BASE64 text to the StreamBuffer
-        if (omText.isOptimized()) {
-           Object dh = omText.getDataHandler();
-           if (dh instanceof DataHandler) {
-               InputStream is = ((DataHandler) dh).getInputStream();
-               if (is != null) {
-                   toStringBuffer(is, buffer);
-                   return;
-               }
-           }
-        }
-        
-        // Otherwise append the text
-        buffer.append(omText.getText());
-        return;
-    }
-    
     
     /**
      * Create an OMText node from a byte array containing binary data

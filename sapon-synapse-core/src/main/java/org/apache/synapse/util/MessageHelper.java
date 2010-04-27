@@ -198,18 +198,10 @@ public class MessageHelper {
         newMC.setDoingMTOM(ori.isDoingMTOM());
         newMC.setDoingSwA(ori.isDoingSwA());
 
-        // if the original request carries any attachments, copy them to the clone
-        // as well, except for the soap part if any
-        Attachments attachments = ori.getAttachments();
-        if (attachments != null && attachments.getAllContentIDs().length > 0) {
-            String[] cIDs = attachments.getAllContentIDs();
-            String soapPart = attachments.getSOAPPartContentID();
-            for (String cID : cIDs) {
-                if (!cID.equals(soapPart)) {
-                    newMC.addAttachment(cID, attachments.getDataHandler(cID));
-                }
-            }
-        }
+        // if the original request carries any attachments, copy them to the 
+        // clone as well.  TODO: does it actually matter if the soap part is 
+        // included?  for now, let's pretend it doesn't.
+        newMC.setAttachments(ori.getAttachments());
 
         for(final String key: ori.getPropertyNames()) {
             if (key != null) {

@@ -21,7 +21,7 @@ package org.apache.axiom.attachments;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import javax.activation.DataHandler;
 import javax.mail.Header;
@@ -90,6 +90,6 @@ public interface Part {
      * @return Enumeration of javax.mail.Header
      * @throws MessagingException
      */
-    Enumeration<Header> getAllHeaders() throws MessagingException;
+    Iterator<Header> getAllHeaders() throws MessagingException;
 
 }

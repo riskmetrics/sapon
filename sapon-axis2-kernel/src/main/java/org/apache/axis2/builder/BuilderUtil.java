@@ -39,6 +39,7 @@ import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
 import org.apache.axiom.attachments.Attachments;
+import org.apache.axiom.attachments.StreamingAttachments;
 import org.apache.axiom.attachments.lifecycle.LifecycleManager;
 import org.apache.axiom.attachments.lifecycle.impl.LifecycleManagerImpl;
 import org.apache.axiom.attachments.utils.IOUtils;
@@ -61,8 +62,8 @@ import org.apache.axiom.soap.SOAPFactory;
 import org.apache.axiom.soap.SOAPProcessingException;
 import org.apache.axiom.soap.impl.builder.MTOMStAXSOAPModelBuilder;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.deployment.DeploymentConstants;
 import org.apache.axis2.description.AxisMessage;
@@ -593,13 +594,13 @@ public class BuilderUtil {
                 log.debug("Exception getting Attachments LifecycleManager", e);
             }
         }
-        return new Attachments(manager,
-                               inStream,
-                               contentTypeString,
-                               fileCacheForAttachments,
-                               attachmentRepoDir,
-                               attachmentSizeThreshold,
-                               contentLength);
+        return new StreamingAttachments(manager,
+        								inStream,
+        								contentTypeString,
+        								fileCacheForAttachments,
+        								attachmentRepoDir,
+        								attachmentSizeThreshold,
+        								contentLength);
     }
 
     /**

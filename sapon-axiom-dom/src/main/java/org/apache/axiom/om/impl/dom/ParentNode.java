@@ -574,11 +574,11 @@ public abstract class ParentNode extends ChildNode implements OMContainerEx {
             case (OMNode.TEXT_NODE): {
                 OMText importedText = (OMText) child;
                 OMText newText;
-                if (importedText.isBinary()) {
+                /*if (importedText.isBinary()) {
                     boolean isOptimize = importedText.isOptimized();
-                    newText = this.factory.createOMText(importedText
-                            .getDataHandler(), isOptimize);
-                } else if (importedText.isCharacters()) {
+                    newText = this.factory.createOMText(importedText.getDataHandler(), 
+                    									isOptimize);
+                } else*/ if (importedText.isCharacters()) {
                     newText = new TextImpl((DocumentImpl) this.getOwnerDocument(),
                                            importedText.getTextCharacters(), this.factory);
                 } else {

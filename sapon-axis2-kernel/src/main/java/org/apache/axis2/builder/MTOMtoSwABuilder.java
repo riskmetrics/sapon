@@ -25,8 +25,8 @@ import org.apache.axiom.om.util.StAXUtils;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -125,9 +125,6 @@ public class MTOMtoSwABuilder implements Builder, MTOMConstants {
 				e.setText("cid:foo");
 			} else if(XOP_QNAME.equals(child.getQName())) {
 				String attach = desuckify(child.getAttributeValue(XOP_HREF_ATTR));
-				if(!attachments.getContentIDSet().contains(attach)) {
-					log.warn("Unkwown Content Id in message: " + attach);
-				}
 				e.setText(CID + attach);
 				child.detach();
 			}

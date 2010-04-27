@@ -30,7 +30,6 @@ import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMAttachmentAccessor;
 import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMSerializer;
 import org.apache.axiom.om.OMText;
@@ -82,14 +81,11 @@ public class StreamingOMSerializer implements XMLStreamConstants, OMSerializer {
      * @param startAtNext indicate if reading should start at next event or current event
      * @throws XMLStreamException
      */
-    public void serialize(XMLStreamReader node, XMLStreamWriter writer, boolean startAtNext)
-            throws XMLStreamException {
-
-        // Set attachment status
-        if (node instanceof OMAttachmentAccessor) {
-            inputHasAttachments = true;
-        }
-
+    public void serialize(	XMLStreamReader node, 
+    						XMLStreamWriter writer, 
+    						boolean startAtNext )
+    	throws XMLStreamException 
+    {
         serializeNode(node, writer, startAtNext);
     }
 
@@ -550,13 +546,9 @@ public class StreamingOMSerializer implements XMLStreamConstants, OMSerializer {
     protected boolean serializeXOPInclude(XMLStreamReader reader,
                                           XMLStreamWriter writer) {
        String cid = ElementHelper.getContentID(reader);
-       DataHandler dh = getDataHandler(cid, (OMAttachmentAccessor) reader);
-       if (dh == null) {
-           return false;
-       }
 
        OMFactory omFactory = OMAbstractFactory.getOMFactory();
-       OMText omText = omFactory.createOMText(dh, true);
+       OMText omText = omFactory.createOMText(cid);
        omText.setContentID(cid);
 
 
@@ -566,8 +558,8 @@ public class StreamingOMSerializer implements XMLStreamConstants, OMSerializer {
                        null;
 
        if (mtomWriter != null &&
-               mtomWriter.isOptimized() &&
-               mtomWriter.isOptimizedThreshold(omText)) {
+               mtomWriter.isOptimized() ) { //&&
+               //mtomWriter.isOptimizedThreshold(omText)) {
            // This will write the attachment after the xml message
            mtomWriter.writeOptimized(omText);
            return false;
@@ -583,30 +575,6 @@ public class StreamingOMSerializer implements XMLStreamConstants, OMSerializer {
            return false;
        }
 
-    }
-
-    private DataHandler getDataHandler(String cid, OMAttachmentAccessor oaa) {
-        DataHandler dh = null;
-
-        String blobcid = cid;
-        if (blobcid.startsWith("cid:")) {
-            blobcid = blobcid.substring(4);
-        }
-        // Get the attachment
-        if (oaa != null) {
-             dh = oaa.getDataHandler(blobcid);
-        }
-
-        if (dh == null) {
-            blobcid = getNewCID(cid);
-            if (blobcid.startsWith("cid:")) {
-                blobcid = blobcid.substring(4);
-            }
-            if (oaa != null) {
-                dh = oaa.getDataHandler(blobcid);
-           }
-        }
-        return dh;
     }
 
     /**

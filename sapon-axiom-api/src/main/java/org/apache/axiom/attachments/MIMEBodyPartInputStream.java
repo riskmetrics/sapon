@@ -24,48 +24,39 @@ import java.io.InputStream;
 import java.io.PushbackInputStream;
 
 /**
- * MIMEBodyPartInputStream
- *
+ * An InputStream for a single MIME Body Part.
  */
-public class MIMEBodyPartInputStream extends InputStream {
+public class MIMEBodyPartInputStream extends InputStream 
+{
     BoundaryPushbackInputStream bpis;
     PushbackInputStream inStream;
-    Attachments parent = null;
     boolean done = false;
 
     /**
      * @param inStream
      * @param boundary
      */
-    public MIMEBodyPartInputStream(PushbackInputStream inStream, byte[] boundary) {
-        this (inStream, boundary, null, boundary.length + 2);
+    public MIMEBodyPartInputStream(	PushbackInputStream inStream, 
+    		                       	byte[] boundary ) 
+    {
+        this (inStream, boundary, boundary.length + 2);
     }
 
-    /**
-     * @param inStream
-     * @param boundary
-     * @param parent
-     */
-    public MIMEBodyPartInputStream(PushbackInputStream inStream, byte[] boundary, Attachments parent) {
-        this (inStream, boundary, parent, boundary.length + 2);
-    }
-    
     /**
      * @param inStream
      * @param boundary
      * @param parent
      * @param pushbacksize <= size of pushback buffer on inStream
      */
-    public MIMEBodyPartInputStream(PushbackInputStream inStream,
-            byte[] boundary, Attachments parent, int pushbacksize) {
+    public MIMEBodyPartInputStream(	PushbackInputStream inStream,
+            						byte[] boundary, 
+            						int pushbacksize ) 
+    {
         bpis = new BoundaryPushbackInputStream(inStream, boundary, pushbacksize);
         this.inStream = inStream;
-        this.parent = parent;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#read()
-     */
+    @Override
     public int read() throws IOException {
         if (done) {
             return -1;
@@ -77,9 +68,7 @@ public class MIMEBodyPartInputStream extends InputStream {
         return rc;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#read(byte[], int, int)
-     */
+    @Override
     public int read(byte[] b, int off, int len) throws IOException {
         if (done) {
             return -1;
@@ -91,9 +80,7 @@ public class MIMEBodyPartInputStream extends InputStream {
         return rc;
     }
 
-    /* (non-Javadoc)
-     * @see java.io.InputStream#read(byte[])
-     */
+    @Override
     public int read(byte[] b) throws IOException {
         if (done) {
             return -1;
@@ -106,8 +93,7 @@ public class MIMEBodyPartInputStream extends InputStream {
     }
 
     /**
-     * Called when done reading
-     * This method detects trailing -- and alerts the parent
+     * Called when done reading to detect and consumes trailing -- 
      * @throws IOException
      */
     private void finish() throws IOException {
@@ -120,9 +106,6 @@ public class MIMEBodyPartInputStream extends InputStream {
                 if (two != -1) {
                     if (one == 45 && two == 45) {
                         // Accept --
-                        if (parent != null) {
-                            parent.setEndOfStream(true);
-                        }
                     } else {
                         inStream.unread(two);
                         inStream.unread(one);
@@ -151,7 +134,6 @@ public class MIMEBodyPartInputStream extends InputStream {
         }
         done = true;
     }
-    
     
     public boolean getBoundaryStatus()
     {

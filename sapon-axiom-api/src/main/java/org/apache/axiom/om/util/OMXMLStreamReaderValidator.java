@@ -20,7 +20,6 @@ package org.apache.axiom.om.util;
 
 import java.util.Stack;
 
-import javax.activation.DataHandler;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.Location;
@@ -364,11 +363,6 @@ public class OMXMLStreamReaderValidator implements OMXMLStreamReader {
             }
         }
     }
-
-    public DataHandler getDataHandler(String blobcid) {
-        return delegate.getDataHandler(blobcid);
-    }
-
 
     public boolean isInlineMTOM() {
         return delegate.isInlineMTOM();

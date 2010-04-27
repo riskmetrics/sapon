@@ -22,9 +22,10 @@ package org.apache.axiom.attachments;
 import org.apache.axiom.om.OMException;
 
 /**
- * Container for AttachmentStream s. This class provides an SwA like access mechanism, allowing
- * applications to access the streams directly. Access it intentionally restrictred to either SwA
- * like (stream access), or MTOM like (part/data handler access via blob id), not both.
+ * Container for AttachmentStreams. This class provides an SwA like access 
+ * mechanism, allowing applications to access the streams directly. Access it 
+ * intentionally restrictred to either SwA like (stream access), or MTOM like 
+ * (part/data handler access via blob id), not both.
  */
 public abstract class IncomingAttachmentStreams {
 

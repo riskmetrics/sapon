@@ -130,12 +130,6 @@ public class XOPAwareStAXOMBuilder
             } else if (lastNode.isComplete() && lastNode.getParent() != null) {
                 node = omfactory.createOMText(contentID, lastNode
                         .getParent(), this);
-                if (log.isDebugEnabled()) {
-                    log.debug("Create createOMText for cid:" + contentID);
-                    Object dh = node.getDataHandler();
-                    String dhClass = (dh==null) ? "null" : dh.getClass().toString();
-                    log.debug("The datahandler is " + dhClass);
-                }
                 ((OMNodeEx) lastNode).setNextOMSibling(node);
                 ((OMNodeEx) node).setPreviousOMSibling(lastNode);
             } else {

@@ -30,7 +30,6 @@ import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.om.OMAttachmentAccessor;
 import org.apache.axiom.om.OMAttribute;
 import org.apache.axiom.om.OMComment;
 import org.apache.axiom.om.OMConstants;
@@ -875,14 +874,14 @@ public class DOMStAXWrapper implements OMXMLStreamReader, XMLStreamConstants {
                 return Boolean.valueOf(text.isBinary());
             }
             return Boolean.FALSE;
-        } else if (OMConstants.DATA_HANDLER.equals(s)) {
+        } /*else if (OMConstants.DATA_HANDLER.equals(s)) {
             if (lastNode instanceof OMText) {
                 OMText text = (OMText) lastNode;
                 if (text.isBinary()) {
 					return text.getDataHandler();
 				}
             }
-        }
+        } */
         // Per spec, throw IllegalArgumentException
         if (s == null) {
             throw new IllegalArgumentException();
@@ -1210,15 +1209,6 @@ public class DOMStAXWrapper implements OMXMLStreamReader, XMLStreamConstants {
 
     public void setParser(XMLStreamReader parser) {
         this.parser = parser;
-    }
-
-    public DataHandler getDataHandler(String blobcid) {
-        DataHandler dh = null;
-        if (builder != null &&
-                builder instanceof OMAttachmentAccessor) {
-            dh = ((OMAttachmentAccessor) builder).getDataHandler(blobcid);
-        }
-        return dh;
     }
 
     public boolean isInlineMTOM() {

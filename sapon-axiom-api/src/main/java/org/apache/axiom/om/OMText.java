@@ -41,13 +41,6 @@ public interface OMText extends OMNode {
 
     QName getTextAsQName();
 
-    /**
-     * Gets the datahandler.
-     *
-     * @return Returns datahandler.
-     */
-    Object getDataHandler();
-
     /** @return Returns boolean flag saying whether the node contains an optimized text or not. */
     boolean isOptimized();
 

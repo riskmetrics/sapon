@@ -22,8 +22,8 @@ package org.apache.axiom.attachments.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -47,7 +47,7 @@ import org.apache.commons.logging.LogFactory;
 public class PartOnMemoryEnhanced extends AbstractPart {
 
     private static Log log = LogFactory.getLog(PartOnMemoryEnhanced.class);
-    ArrayList<byte[]> data;  // Arrays of 4K buffers
+    List<byte[]> data;  // Arrays of 4K buffers
     int length;      // total length of data
 
     /**
@@ -56,7 +56,10 @@ public class PartOnMemoryEnhanced extends AbstractPart {
      * @param data array list of 4K byte[]
      * @param length (length of data in bytes)
      */
-    PartOnMemoryEnhanced(Hashtable<String, Header> headers, ArrayList<byte[]> data, int length) {
+    PartOnMemoryEnhanced(	Map<String, Header> headers, 
+    						List<byte[]> data, 
+    						int length ) 
+    {
         super(headers);
         this.data =  data;
         this.length = length;
@@ -78,7 +81,9 @@ public class PartOnMemoryEnhanced extends AbstractPart {
     }
 
     @Override
-	public InputStream getInputStream() throws IOException, MessagingException {
+	public InputStream getInputStream() 
+    	throws IOException, MessagingException 
+    {
         return new BAAInputStream(data, length);
     }
 

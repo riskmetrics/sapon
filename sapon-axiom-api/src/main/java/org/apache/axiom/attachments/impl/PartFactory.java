@@ -23,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.Header;
@@ -73,12 +73,14 @@ public class PartFactory {
      * @return Part
      * @throws OMException if any exception is encountered while processing.
      */
-    public static Part createPart(LifecycleManager manager, MIMEBodyPartInputStream in,
-                    boolean isSOAPPart,
-                    int thresholdSize,
-                    String attachmentDir,
-                    int messageContentLength
-                    ) throws OMException {
+    public static Part createPart(	LifecycleManager manager, 
+    								MIMEBodyPartInputStream in,
+    								boolean isSOAPPart,
+    								int thresholdSize,
+    								String attachmentDir,
+    								int messageContentLength ) 
+    	throws OMException 
+    {
         if(log.isDebugEnabled()){
             log.debug("Start createPart()");
             log.debug("  isSOAPPart=" + isSOAPPart);
@@ -91,7 +93,7 @@ public class PartFactory {
             // Read enough of the InputStream to build the headers
             // The readHeaders returns some extra bits that were read, but are part
             // of the data section.
-            Hashtable<String, Header> headers = new Hashtable<String, Header>();
+            Map<String, Header> headers = new HashMap<String, Header>();
             InputStream dross = readHeaders(in, headers);
 
             Part part;
@@ -134,7 +136,9 @@ public class PartFactory {
                     BAAOutputStream baaos = new BAAOutputStream();
                     BufferUtils.inputStream2OutputStream(dross, baaos);
                     BufferUtils.inputStream2OutputStream(in, baaos);
-                    part = new PartOnMemoryEnhanced(headers, baaos.buffers(), baaos.length());
+                    part = new PartOnMemoryEnhanced(	headers, 
+                    									baaos.buffers(), 
+                    									baaos.length());
                 } else {
                     // We need to read the input stream to determine whether
                     // the size is bigger or smaller than the threshold.
@@ -150,10 +154,11 @@ public class PartFactory {
                         BAAInputStream baais =
                             new BAAInputStream(baaos.buffers(), baaos.length());
 
-                        part = new PartOnFile(manager, headers,
-                                              baais,
-                                              in,
-                                              attachmentDir);
+                        part = new PartOnFile(	manager, 
+                        						headers,
+                                              	baais,
+                                              	in,
+                                              	attachmentDir );
                     }
 
                 }
@@ -179,19 +184,21 @@ public class PartFactory {
      * @param is
      * @param headers
      */
-    private static InputStream readHeaders(InputStream in, Map<String, Header> headers) throws IOException {
+    private static InputStream readHeaders(	InputStream in, 
+    										Map<String, Header> headers ) 
+    	throws IOException 
+    {
         if(log.isDebugEnabled()){
             log.debug("initHeaders");
         }
         boolean done = false;
-
 
         final int BUF_SIZE = 1024;
         byte[] headerBytes = new byte[BUF_SIZE];
 
         int size = in.read(headerBytes);
         int index = 0;
-        StringBuffer sb = new StringBuffer(50);
+        StringBuilder sb = new StringBuilder(50);
 
         while (!done && index < size) {
 
@@ -266,7 +273,9 @@ public class PartFactory {
         if (index >= size) {
             index = size;
         }
-        ByteArrayInputStream dross = new ByteArrayInputStream(headerBytes, index, size-index);
+        ByteArrayInputStream dross = new ByteArrayInputStream(	headerBytes, 
+        														index, 
+        														size-index );
         return dross;
     }
 
@@ -277,7 +286,9 @@ public class PartFactory {
      * @param header StringBuffer
      * @param headers Map
      */
-    private static void readHeader(StringBuffer header, Map<String, Header> headers) {
+    private static void readHeader(	StringBuilder header, 
+    								Map<String, Header> headers	) 
+    {
         int delimiter = header.indexOf(":");
         String name = header.substring(0, delimiter).trim();
         String value = header.substring(delimiter + 1, header.length()).trim();

@@ -22,7 +22,7 @@ package org.apache.axiom.attachments.impl;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Hashtable;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.mail.Header;
@@ -50,7 +50,13 @@ public class PartOnFile extends AbstractPart {
      * @param in2 InputStream containing data
      * @param attachmentDir String
      */
-    PartOnFile(LifecycleManager manager, Hashtable<String, Header> headers, InputStream is1, InputStream is2, String attachmentDir) throws IOException {
+    PartOnFile(	LifecycleManager manager, 
+    			Map<String, Header> headers, 
+    			InputStream is1, 
+    			InputStream is2, 
+    			String attachmentDir) 
+    	throws IOException 
+    {
         super(headers);
         fileAccessor = manager.create(attachmentDir);
 

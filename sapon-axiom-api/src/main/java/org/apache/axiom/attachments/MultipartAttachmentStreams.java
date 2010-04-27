@@ -29,15 +29,20 @@ import javax.mail.internet.InternetHeaders;
 import org.apache.axiom.om.OMException;
 
 /**
- * The MultipartAttachmentStreams class is used to create IncomingAttachmentInputStream objects when
- * the HTTP stream shows a marked separation between the SOAP and each attachment parts. Unlike the
- * DIME version, this class will use the BoundaryDelimitedStream to parse data in the SwA format.
- * Another difference between the two is that the MultipartAttachmentStreams class must also provide
- * a way to hold attachment parts parsed prior to where the SOAP part appears in the HTTP stream
- * (i.e. the root part of the multipart-related message). Our DIME counterpart didn't have to worry
- * about this since the SOAP part is guaranteed to be the first in the stream. But since SwA has no
- * such guarantee, we must fall back to caching these first parts. Afterwards, we can stream the
- * rest of the attachments that are after the SOAP part of the request message.
+ * The MultipartAttachmentStreams class is used to create 
+ * IncomingAttachmentInputStream objects when the HTTP stream shows a marked 
+ * separation between the SOAP and each attachment parts. Unlike the DIME 
+ * version, this class will use the BoundaryDelimitedStream to parse data in 
+ * the SwA format.
+ * 
+ * Another difference between the two is that the MultipartAttachmentStreams 
+ * class must also provide a way to hold attachment parts parsed prior to where 
+ * the SOAP part appears in the HTTP stream (i.e. the root part of the 
+ * multipart-related message). Our DIME counterpart didn't have to worry
+ * about this since the SOAP part is guaranteed to be the first in the stream. 
+ * But since SwA has no such guarantee, we must fall back to caching these 
+ * first parts. Afterwards, we can stream the rest of the attachments that are 
+ * after the SOAP part of the request message.
  */
 public final class MultipartAttachmentStreams extends IncomingAttachmentStreams {
     private BoundaryDelimitedStream _delimitedStream = null;

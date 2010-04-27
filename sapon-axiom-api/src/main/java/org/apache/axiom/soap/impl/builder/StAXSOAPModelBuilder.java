@@ -19,12 +19,9 @@
 
 package org.apache.axiom.soap.impl.builder;
 
-import javax.activation.DataHandler;
 import javax.xml.stream.XMLStreamReader;
 
-import org.apache.axiom.attachments.Attachments;
 import org.apache.axiom.om.OMAbstractFactory;
-import org.apache.axiom.om.OMAttachmentAccessor;
 import org.apache.axiom.om.OMContainer;
 import org.apache.axiom.om.OMDocument;
 import org.apache.axiom.om.OMElement;
@@ -53,16 +50,7 @@ import org.apache.commons.logging.LogFactory;
  * It builds SOAP specific objects such as {@link SOAPEnvelope}, {@link SOAPHeader},
  * {@link SOAPHeaderBlock} and {@link SOAPBody}.
  */
-public class StAXSOAPModelBuilder extends StAXOMBuilder implements OMAttachmentAccessor {
-
-	private static ThreadLocal<Attachments> attachments
-		= new ThreadLocal<Attachments>();
-	public static void setMTOMAttachments(Attachments attach) {
-		StAXSOAPModelBuilder.attachments.set(attach);
-	}
-	public static Attachments getMTOMAttachments() {
-		return attachments.get();
-	}
+public class StAXSOAPModelBuilder extends StAXOMBuilder {
 
     SOAPMessage soapMessage;
     /** Field envelope */
@@ -518,14 +506,5 @@ public class StAXSOAPModelBuilder extends StAXOMBuilder implements OMAttachmentA
      */
     void adjustElementLevel(int value) {
         elementLevel = elementLevel + value;
-    }
-
-    //Wow, this is hideous.
-    public DataHandler getDataHandler(String blobcid) {
-    	Attachments a = getMTOMAttachments();
-    	if(a != null) {
-    		return a.getDataHandler(blobcid);
-    	}
-    	return null;
     }
 }

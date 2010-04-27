@@ -434,28 +434,6 @@ public class TextImpl extends CharacterImpl implements Text, OMText {
         return this.contentID;
     }
 
-    public Object getDataHandler() {
-        /*
-         * this should return a DataHandler containing the binary data
-         * reperesented by the Base64 strings stored in OMText
-         */
-        if ((textValue != null || charArray != null || textNS != null) & isBinary) {
-            String text = textNS == null ? getTextFromProperPlace() : getTextString();
-            return DataHandlerUtils
-                    .getDataHandlerFromText(text, mimeType);
-        } else {
-
-            if (dataHandlerObject == null) {
-                if (contentID == null) {
-                    throw new RuntimeException("ContentID is null");
-                }
-                dataHandlerObject = ((XOPBuilder) builder)
-                        .getDataHandler(contentID);
-            }
-            return dataHandlerObject;
-        }
-    }
-
     public java.io.InputStream getInputStream() throws OMException {
         if (isBinary) {
             if (dataHandlerObject == null) {

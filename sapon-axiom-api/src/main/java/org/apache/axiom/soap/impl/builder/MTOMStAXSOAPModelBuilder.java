@@ -91,12 +91,6 @@ public class MTOMStAXSOAPModelBuilder extends StAXSOAPModelBuilder implements
                 node = omfactory.createOMText(contentID, lastNode.getParent(), this);
                 ((OMNodeEx) lastNode).setNextOMSibling(node);
                 ((OMNodeEx) node).setPreviousOMSibling(lastNode);
-                if (log.isDebugEnabled()) {
-                    log.debug("Create createOMText for cid:" + contentID);
-                    Object dh = node.getDataHandler();
-                    String dhClass = (dh==null) ? "null" : dh.getClass().toString();
-                    log.debug("The datahandler is " + dhClass);
-                }
             } else {
                 OMContainerEx e = (OMContainerEx) lastNode;
                 node = omfactory.createOMText(contentID, (OMElement) lastNode,
@@ -108,24 +102,6 @@ public class MTOMStAXSOAPModelBuilder extends StAXSOAPModelBuilder implements
         } else {
             return super.createOMElement();
         }
-    }
-
-    /* (non-Javadoc)
-      * @see org.apache.axiom.soap.impl.builder.XOPBuilder#getDataHandler(java.lang.String)
-      */
-    @Override
-	public DataHandler getDataHandler(String blobContentID) throws OMException {
-        DataHandler dataHandler = attachments.getDataHandler(blobContentID);
-        /* The getDataHandler javadoc indicates that null indicate that the datahandler
-         * was not found
-         *
-        if (dataHandler == null) {
-            throw new OMException(
-                    "Referenced Attachment not found in the MIME Message. ContentID:"
-                            + blobContentID);
-        }
-        */
-        return dataHandler;
     }
 
     public Attachments getAttachments() {

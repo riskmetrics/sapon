@@ -194,14 +194,6 @@ public class CopyUtils {
         if (log.isDebugEnabled()) {
             log.debug("start copyOMText");
         }
-        if (sourceText.isBinary()) {
-            // This forces a load of the datahandler so that it is saved on the copy.
-            Object dh = sourceText.getDataHandler();
-            if (log.isDebugEnabled()) {
-                String dhclass = (dh == null) ? "null" : dh.getClass().toString();
-                log.debug("The source text's binary data handler is " + dhclass);
-            }
-        }
         factory.createOMText(targetParent, sourceText);
         if (log.isDebugEnabled()) {
             log.debug("end copyOMText");

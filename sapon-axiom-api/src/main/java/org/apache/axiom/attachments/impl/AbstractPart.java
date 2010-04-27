@@ -21,8 +21,9 @@ package org.apache.axiom.attachments.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Enumeration;
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.mail.Header;
@@ -44,7 +45,7 @@ abstract class AbstractPart implements Part {
 
     // Key is the lower-case name.
     // Value is a javax.mail.Header object
-    private Hashtable<String, Header> headers;
+    private Map<String, Header> headers;
 
 
     /**
@@ -52,10 +53,10 @@ abstract class AbstractPart implements Part {
      * @see org.apache.axiom.attachments.impl.PartFactory
      * @param headers
      */
-    AbstractPart(Hashtable<String, Header> in) {
+    AbstractPart(Map<String, Header> in) {
         headers = in;
         if (headers == null) {
-            headers = new Hashtable<String, Header>();
+            headers = new HashMap<String, Header>();
         }
     }
 
@@ -70,11 +71,11 @@ abstract class AbstractPart implements Part {
         headers.put(key, headerObj);
     }
 
-    public Enumeration<Header> getAllHeaders() throws MessagingException {
+    public Iterator<Header> getAllHeaders() throws MessagingException {
         if(log.isDebugEnabled()){
             log.debug("getAllHeaders");
         }
-        return headers.elements();
+        return headers.values().iterator();
     }
 
     public String getHeader(String name) {

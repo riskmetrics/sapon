@@ -315,24 +315,7 @@ public class MTOMXMLStreamWriter implements XMLStreamWriter {
      * return false otherwise.
      */
     public boolean isOptimizedThreshold(OMText node){
-    	if(isDebugEnabled){
-            log.debug("Start MTOMXMLStreamWriter.isOptimizedThreshold()");
-        }
-        DataHandler dh = (DataHandler)node.getDataHandler();
-        int optimized = UNSUPPORTED;
-        if(dh!=null){
-            if(isDebugEnabled){
-                log.debug("DataHandler fetched, starting optimized Threshold processing");
-            }
-            optimized= BufferUtils.doesDataHandlerExceedLimit(dh, format.getOptimizedThreshold());
-        }
-        if(optimized == UNSUPPORTED || optimized == EXCEED_LIMIT){
-            if(log.isDebugEnabled()){
-                log.debug("node should be added to binart NodeList for optimization");
-            }
-            return true;
-        }
-        return false;
+    	return true;
     }
 
     public void setXmlStreamWriter(XMLStreamWriter xmlWriter) {

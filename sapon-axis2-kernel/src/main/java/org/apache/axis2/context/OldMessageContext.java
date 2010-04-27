@@ -35,6 +35,7 @@ import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
 
 import org.apache.axiom.attachments.Attachments;
+import org.apache.axiom.attachments.StreamingAttachments;
 import org.apache.axiom.om.util.DetachableInputStream;
 import org.apache.axiom.om.util.UUIDGenerator;
 import org.apache.axiom.soap.RolePlayer;
@@ -1357,7 +1358,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
      */
     public Attachments getAttachments() {
         if (attachments == null) {
-            attachments = new Attachments();
+            attachments = new StreamingAttachments();
         }
         return attachments;
     }
@@ -1373,7 +1374,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
      */
     public void addAttachment(String contentID, DataHandler dataHandler) {
         if (attachments == null) {
-            attachments = new Attachments();
+            attachments = new StreamingAttachments();
         }
         attachments.addDataHandler(contentID, dataHandler);
     }
@@ -1403,7 +1404,7 @@ public class OldMessageContext extends AbstractContext<OperationContext>
      */
     public DataHandler getAttachment(String contentID) {
         if (attachments == null) {
-            attachments = new Attachments();
+            attachments = new StreamingAttachments();
         }
         return attachments.getDataHandler(contentID);
     }

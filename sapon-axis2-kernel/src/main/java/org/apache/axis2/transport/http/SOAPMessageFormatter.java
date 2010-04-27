@@ -31,8 +31,8 @@ import org.apache.axiom.om.OMElement;
 import org.apache.axiom.om.OMOutputFormat;
 import org.apache.axiom.om.impl.MIMEOutputUtils;
 import org.apache.axiom.om.util.UUIDGenerator;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.axis2.transport.MessageFormatter;
 import org.apache.axis2.util.JavaUtils;
@@ -44,8 +44,12 @@ public class SOAPMessageFormatter implements MessageFormatter {
 
     private static final Log log = LogFactory.getLog(SOAPMessageFormatter.class);
 
-    public void writeTo(MessageContext msgCtxt, OMOutputFormat format,
-                        OutputStream out, boolean preserve) throws AxisFault {
+    public void writeTo(	MessageContext msgCtxt,
+    						OMOutputFormat format,
+    						OutputStream out,
+    						boolean preserve)
+    	throws AxisFault
+    {
         if (log.isDebugEnabled()) {
             log.debug("start writeTo()");
             log.debug("  preserve=" + preserve);

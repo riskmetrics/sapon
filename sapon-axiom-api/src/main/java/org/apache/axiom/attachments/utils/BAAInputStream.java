@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.axiom.attachments.impl.BufferUtils;
 
@@ -34,7 +35,7 @@ import org.apache.axiom.attachments.impl.BufferUtils;
  */
 public class BAAInputStream extends InputStream {
 
-    ArrayList<byte[]> data = new ArrayList<byte[]>();
+    List<byte[]> data = new ArrayList<byte[]>();
     final static int BUFFER_SIZE = BufferUtils.BUFFER_LEN;
     int i;
     int size;
@@ -44,7 +45,7 @@ public class BAAInputStream extends InputStream {
     byte[] currBuffer = null;
     byte[] read_byte = new byte[1];
 
-    public BAAInputStream(ArrayList<byte[]> data, int size) {
+    public BAAInputStream(List<byte[]> data, int size) {
         this.data = data;
         this.size = size;
         i = 0;
