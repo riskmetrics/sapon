@@ -450,8 +450,7 @@ public abstract class AxisDescriptionBase
 
 	@Override
 	public void attachPolicy(Policy policy) {
-		// TODO Auto-generated method stub
-
+		policySubject.attachPolicy(policy);
 	}
 
 	@Override
