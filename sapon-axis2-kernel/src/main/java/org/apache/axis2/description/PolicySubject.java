@@ -23,16 +23,11 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
 
-import org.apache.axis2.AxisFault;
 import org.apache.neethi.Policy;
 import org.apache.neethi.PolicyComponent;
 import org.apache.neethi.PolicyReference;
 
 public interface PolicySubject {
-
-	//TODO: what's the difference between applyPolicy and attachPolicy?
-	void applyPolicy(Policy policy) throws AxisFault;
-	void applyPolicy() throws AxisFault;
 
 	void attachPolicy(Policy policy);
 	void attachPolicyReference(PolicyReference reference);
@@ -52,5 +47,4 @@ public interface PolicySubject {
 	boolean isPolicyUpdated();
 	void updatePolicy(Policy policy);
 	Date getLastPolicyUpdateTime();
-
 }

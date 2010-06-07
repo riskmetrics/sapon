@@ -178,6 +178,7 @@ public abstract class AxisDescriptionBase
      *                   AxisDescription instance successfully or no module to execute some portion
      *                   (one or more PrimtiveAssertions ) of that effective policy.
      */
+    @Override
     public void applyPolicy(Policy policy) throws AxisFault {
         // sets AxisDescription policy
         policySubject.clearPolicyComponents();
@@ -196,6 +197,7 @@ public abstract class AxisDescriptionBase
      *
      * @throws AxisFault an error occurred applying the policy
      */
+    @Override
     public void applyPolicy() throws AxisFault {
         AxisConfiguration configuration = getConfiguration();
         if (configuration == null) {
@@ -208,21 +210,20 @@ public abstract class AxisDescriptionBase
         }
 
         //TODO: make sure implementations apply policy recursively.
-//        for (final AxisDescription child: getChildren()) {
-//            child.applyPolicy();
-//        }
+        for (final AxisDescription child: getChildrenAsDescriptions()) {
+            child.applyPolicy();
+        }
     }
 
 
 
-    private boolean canSupportAssertion(Assertion assertion, List<AxisModule> moduleList) {
-
-        Module module;
-
+    private boolean canSupportAssertion(	Assertion assertion,
+    										List<AxisModule> moduleList )
+    {
         for (AxisModule axisModule : moduleList) {
             // FIXME is this step really needed ??
             // Shouldn't axisMoudle.getModule always return not-null value ??
-            module = axisModule.getModule();
+        	Module module = axisModule.getModule();
 
             if (!(module == null || module.canSupportAssertion(assertion))) {
                 log.debug(axisModule.getName() + " says it can't support " + assertion.getName());

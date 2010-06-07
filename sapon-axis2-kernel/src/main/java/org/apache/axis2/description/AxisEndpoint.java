@@ -20,6 +20,7 @@
 package org.apache.axis2.description;
 
 import java.net.SocketException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +30,7 @@ import org.apache.axiom.om.OMFactory;
 import org.apache.axiom.om.OMNamespace;
 import org.apache.axis2.AxisFault;
 import org.apache.axis2.addressing.EndpointReference;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.description.hierarchy.ServiceDescendant;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.transport.TransportListener;
@@ -246,5 +248,10 @@ public class AxisEndpoint extends AxisDescriptionBase
 	@Override
 	public Policy getEffectivePolicy() {
 		return getEffectivePolicy(getService());
+	}
+
+	@Override
+	public Iterable<AxisDescription> getChildrenAsDescriptions() {
+		return Collections.emptyList();
 	}
 }

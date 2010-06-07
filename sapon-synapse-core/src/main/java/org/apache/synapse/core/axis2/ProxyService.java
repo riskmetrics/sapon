@@ -622,6 +622,15 @@ public class ProxyService implements AspectConfigurable {
                         + name, axisFault);
             }
         }
+        
+        // apply policies
+        auditInfo("Applying policies for service : " + name);
+        try {
+        	proxyService.applyPolicy();
+        } catch (AxisFault axisFault) {
+        	handleException("Error applying policies for proxy service : "
+        			+ name, axisFault);
+        }
 
         auditInfo("Successfully created the Axis2 service for Proxy service : " + name);
         return proxyService;

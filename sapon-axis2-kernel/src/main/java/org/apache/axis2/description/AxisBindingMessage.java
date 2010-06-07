@@ -20,12 +20,14 @@
 package org.apache.axis2.description;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.description.hierarchy.BindingOperationDescendant;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.axis2.util.PolicyUtil;
@@ -274,4 +276,9 @@ public class AxisBindingMessage extends AxisDescriptionBase
 	public AxisConfiguration getConfiguration() {
 		return parent.getConfiguration();
 	}
+
+	@Override
+	public Iterable<? extends AxisDescription> getChildrenAsDescriptions(){
+    	return Collections.emptyList();
+    }
 }

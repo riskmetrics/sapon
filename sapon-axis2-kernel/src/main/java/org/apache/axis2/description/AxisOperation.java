@@ -567,4 +567,8 @@ public abstract class AxisOperation extends AxisDescriptionBase
 	public Policy getEffectivePolicy() {
 		return getEffectivePolicy(getService());
 	}
+
+	public Iterable<? extends AxisDescription> getChildrenAsDescriptions() {
+		return getMessages();
+	}
 }

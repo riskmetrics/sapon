@@ -178,4 +178,9 @@ public class AxisServiceGroupImpl extends AxisDescriptionBase
 	public Policy getEffectivePolicy() {
 		return getEffectivePolicy(null);
 	}
+
+	@Override
+	public Iterable<? extends AxisDescription> getChildrenAsDescriptions() {
+		return getServices();
+	}
 }

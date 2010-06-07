@@ -2830,4 +2830,9 @@ public class AxisService extends AxisDescriptionBase
 	public Policy getEffectivePolicy() {
 		return getEffectivePolicy(this);
 	}
+
+	@Override
+	public Iterable<? extends AxisDescription> getChildrenAsDescriptions() {
+		return operations.values();
+	}
 }
