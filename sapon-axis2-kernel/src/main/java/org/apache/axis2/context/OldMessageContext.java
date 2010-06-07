@@ -1287,34 +1287,26 @@ public class OldMessageContext extends AbstractContext<OperationContext>
         if (LoggingControl.debugLoggingAllowed) {
             checkActivateWarning("isEngaged");
         }
-        boolean enegage;
         if (configurationContext != null) {
             AxisConfiguration axisConfig = configurationContext.getAxisConfiguration();
             AxisModule module = axisConfig.getModule(moduleName);
             if (module == null) {
                 return false;
             }
-            enegage = axisConfig.isEngaged(module);
-            if (enegage) {
+            if (axisConfig.isEngaged(module)) {
                 return true;
             }
-            if (axisServiceGroup != null) {
-                enegage = axisServiceGroup.isEngaged(module);
-                if (enegage) {
-                    return true;
-                }
+            if (axisServiceGroup != null && axisServiceGroup.isEngaged(module)) {
+            	return true;
             }
-            if (axisService != null) {
-                enegage = axisService.isEngaged(module);
-                if (enegage) {
-                    return true;
-                }
+            if (axisService != null && axisService.isEngaged(module)) {
+            	return true;
             }
-            if (axisOperation != null) {
-                enegage = axisOperation.isEngaged(module);
-                if (enegage) {
-                    return true;
-                }
+            if (axisOperation != null && axisOperation.isEngaged(module)) {
+            	return true;
+            }
+            if (axisMessage != null && axisMessage.isEngaged(module)) {
+            	return true;
             }
         }
         return false;
