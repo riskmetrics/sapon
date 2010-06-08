@@ -8,6 +8,7 @@ import org.apache.axis2.description.AxisModule;
 import org.apache.axis2.description.DescriptionConstants;
 import org.apache.axis2.description.ParameterInclude;
 import org.apache.axis2.description.PolicySubject;
+import org.apache.neethi.Policy;
 
 
 public interface AxisDescription
@@ -24,9 +25,13 @@ public interface AxisDescription
 //
 //	void addChild(AxisDescription child);
 //	void addChild(Object key, AxisDescription child);
-//	Iterable<AxisDescription> getChildren();
 //	AxisDescription getChild(Object key);
 //	void removeChild(Object key);
+
+	Iterable<? extends AxisDescription> getChildrenAsDescriptions();
+
+	void applyPolicy(Policy policy) throws AxisFault;
+	void applyPolicy() throws AxisFault;
 
 	void engageModule(AxisModule module) throws AxisFault;
 	void engageModule(AxisModule module, AxisDescription source)

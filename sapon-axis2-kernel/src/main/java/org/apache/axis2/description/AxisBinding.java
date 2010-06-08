@@ -25,6 +25,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.description.hierarchy.EndpointDescendant;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.neethi.Policy;
@@ -35,17 +36,13 @@ import org.apache.neethi.Policy;
 public class AxisBinding extends AxisDescriptionBase
 	implements EndpointDescendant
 {
-    private QName name;
-
-    private String type;
-
-    private AxisEndpoint parent;
-
-    private final Map<String, Object> options;
-
+	private final Map<String, Object> options;
     private final Map<String, AxisBindingMessage> faults;
-
     private final Map<QName, AxisBindingOperation> children;
+
+    private QName name;
+    private String type;
+    private AxisEndpoint parent;
 
     public AxisBinding() {
         options = new HashMap<String, Object>();
@@ -115,6 +112,10 @@ public class AxisBinding extends AxisDescriptionBase
 
 	public Iterable<AxisBindingOperation> getChildren(){
     	return children.values();
+    }
+
+	public Iterable<? extends AxisDescription> getChildrenAsDescriptions(){
+    	return getChildren();
     }
 
 	public AxisBindingOperation getBindingOperation(QName opName) {

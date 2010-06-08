@@ -28,7 +28,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.axiom.om.util.UUIDGenerator;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.util.ChainIterator;
 import org.apache.axis2.util.PolicyUtil;
 import org.apache.neethi.Policy;
@@ -38,7 +37,6 @@ import org.apache.neethi.PolicyReference;
 public class PolicySubjectMixin {
 
 	private PolicySubject parent;
-	private Collection<PolicySubject> children;
 
 	private boolean updated = false;
 	private Date lastUpdatedTime = new Date();
@@ -137,16 +135,6 @@ public class PolicySubjectMixin {
 
 	private void setLastUpdatedTime(Date lastUpdatedTime) {
 		this.lastUpdatedTime = lastUpdatedTime;
-	}
-
-	public void applyPolicy(Policy policy) throws AxisFault {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void applyPolicy() throws AxisFault {
-		// TODO Auto-generated method stub
-
 	}
 
 	public Iterator<PolicyComponent> getEffectivePolicyComponents() {

@@ -179,6 +179,9 @@ public class ProxyService implements AspectConfigurable {
      * message level or hybrid level policies as well.
      */
     private List<PolicyInfo> policies = new ArrayList<PolicyInfo>();
+    
+    private Map<String, Policy> policyCache = new HashMap<String, Policy>();
+    
     /**
      * The keys for any supplied policies that would apply at the service level
      */
@@ -619,16 +622,29 @@ public class ProxyService implements AspectConfigurable {
                         + name, axisFault);
             }
         }
+        
+        // apply policies
+        auditInfo("Applying policies for service : " + name);
+        try {
+        	proxyService.applyPolicy();
+        } catch (AxisFault axisFault) {
+        	handleException("Error applying policies for proxy service : "
+        			+ name, axisFault);
+        }
 
         auditInfo("Successfully created the Axis2 service for Proxy service : " + name);
         return proxyService;
     }
 
     private Policy getPolicyFromKey(String key, SynapseConfiguration synCfg) {
-
-        synCfg.getEntryDefinition(key);
-        return PolicyEngine.getPolicy(
-                SynapseConfigUtils.getStreamSource(synCfg.getEntry(key)).getInputStream());
+    	Policy out = policyCache.get(key);
+    	if(out == null) {
+    		synCfg.getEntryDefinition(key);
+            out = PolicyEngine.getPolicy(
+                    SynapseConfigUtils.getStreamSource(synCfg.getEntry(key)).getInputStream());
+            policyCache.put(key, out);
+    	}
+        return out;
     }
 
     /**

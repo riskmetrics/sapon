@@ -8,6 +8,7 @@ import java.net.URLDecoder;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.activation.DataHandler;
 import javax.xml.namespace.QName;
@@ -25,8 +26,8 @@ import org.apache.axiom.om.util.StAXUtils;
 import org.apache.axiom.soap.SOAPBody;
 import org.apache.axiom.soap.SOAPEnvelope;
 import org.apache.axiom.soap.impl.builder.StAXSOAPModelBuilder;
-import org.apache.axis2.AxisFault;
 import org.apache.axis2.Axis2Constants;
+import org.apache.axis2.AxisFault;
 import org.apache.axis2.context.MessageContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -121,8 +122,9 @@ public class MTOMtoSwABuilder implements Builder, MTOMConstants {
 				DataHandler dh
 					= new DataHandler(
 							new ByteArrayDataSource(decoded, "text/xml"));
-				attachments.addDataHandler("foo", dh);
-				e.setText("cid:foo");
+				String uuid = UUID.randomUUID().toString();
+				attachments.addDataHandler(uuid, dh);
+				e.setText("cid:" + uuid);
 			} else if(XOP_QNAME.equals(child.getQName())) {
 				String attach = desuckify(child.getAttributeValue(XOP_HREF_ATTR));
 				if(!attachments.getContentIDSet().contains(attach)) {

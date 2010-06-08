@@ -114,7 +114,7 @@ public class ProxyServiceFactory {
         		aspectConfiguration.enableStatistics();
             }
         }
-
+        
         return proxy;
     }
 

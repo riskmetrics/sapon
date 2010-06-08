@@ -4,14 +4,16 @@ import javax.xml.namespace.QName;
 
 import org.apache.axis2.wsdl.WSDLConstants;
 
-public class MessagePolicyInfo extends OperationPolicyInfo {
+public class MessagePolicyInfo extends AbstractPolicyInfo {
     public static final int MESSAGE_TYPE_IN = 1;
     public static final int MESSAGE_TYPE_OUT = 2;
 
     private final int type;
+    private final QName operation;
 
     public MessagePolicyInfo(final String policyKey, final QName op, final int type) {
-    	super(policyKey, op);
+    	super(policyKey);
+    	this.operation = op;
     	this.type = type;
     }
 
@@ -27,5 +29,9 @@ public class MessagePolicyInfo extends OperationPolicyInfo {
 
     public int getType() {
     	return type;
+    }
+    
+    public QName getOperation() {
+    	return operation;
     }
 }

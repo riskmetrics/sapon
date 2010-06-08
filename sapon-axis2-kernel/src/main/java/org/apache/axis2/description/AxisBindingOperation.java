@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.xml.namespace.QName;
 
 import org.apache.axis2.AxisFault;
+import org.apache.axis2.description.hierarchy.AxisDescription;
 import org.apache.axis2.description.hierarchy.BindingDescendant;
 import org.apache.axis2.engine.AxisConfiguration;
 import org.apache.neethi.Policy;
@@ -126,6 +127,10 @@ public class AxisBindingOperation extends AxisDescriptionBase
 	public AxisBindingMessage getChild(String key) {
 		return children.get(key);
 	}
+
+	public Iterable<? extends AxisDescription> getChildrenAsDescriptions() {
+    	return children.values();
+    }
 
 	public Iterable<AxisBindingMessage> getBindingMessages() {
 		return children.values();

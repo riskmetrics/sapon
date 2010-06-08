@@ -89,7 +89,7 @@ public class AxisEngine {
                 throw new AxisFault(errorMsg);
             }
         } catch (AxisFault e) {
-            log.error(e.getMessage(), e);
+            log.error(e);
             msgContext.setFailureReason(e);
             flowComplete(msgContext);
             throw e;

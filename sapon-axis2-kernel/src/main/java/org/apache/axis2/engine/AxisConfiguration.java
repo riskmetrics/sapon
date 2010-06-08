@@ -1158,4 +1158,8 @@ public class AxisConfiguration extends AxisDescriptionBase
 		// TODO Auto-generated method stub
 		throw new UnsupportedOperationException();
 	}
+
+	public Iterable<? extends AxisDescription> getChildrenAsDescriptions() {
+		return getServiceGroups();
+	}
 }

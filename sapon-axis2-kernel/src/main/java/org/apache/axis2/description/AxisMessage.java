@@ -20,6 +20,7 @@
 package org.apache.axis2.description;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -224,5 +225,10 @@ public class AxisMessage extends AxisDescriptionBase
 	@Override
 	public Policy getEffectivePolicy() {
 		return getEffectivePolicy(getService());
+	}
+
+	@Override
+	public Iterable<AxisDescription> getChildrenAsDescriptions() {
+		return Collections.emptyList();
 	}
 }

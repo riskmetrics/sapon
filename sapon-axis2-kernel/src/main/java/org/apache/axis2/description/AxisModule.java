@@ -251,16 +251,6 @@ public class AxisModule
 	}
 
 	@Override
-	public void applyPolicy(Policy policy) throws AxisFault {
-		policySubject.applyPolicy(policy);
-	}
-
-	@Override
-	public void applyPolicy() throws AxisFault {
-		policySubject.applyPolicy();
-	}
-
-	@Override
 	public void attachPolicy(Policy policy) {
 		policySubject.attachPolicy(policy);
 	}
