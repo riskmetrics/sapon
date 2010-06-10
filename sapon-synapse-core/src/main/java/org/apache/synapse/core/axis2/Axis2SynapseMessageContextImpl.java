@@ -60,7 +60,7 @@ public class Axis2SynapseMessageContextImpl implements Axis2SynapseMessageContex
 	private final Stack<FaultHandler> faultStack = new Stack<FaultHandler>();
 
 	/** The Axis2 MessageContext reference */
-	private MessageContext axis2MessageContext = new OldMessageContext();
+	private MessageContext axis2MessageContext;
 
 	/** Attribute of the MC specifying whether this is a response or not */
 	private boolean response = false;
