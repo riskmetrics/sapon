@@ -326,7 +326,7 @@ public class AxisService2WSDL11 implements Java2WSDLConstants {
 		portType.addAttribute(ATTRIBUTE_NAME, axisService.getName() + PORT_TYPE_SUFFIX,
 				null);
 
-		addPolicyAsExtAttribute(axisService, portType, fac);
+		//addPolicyAsExtAttribute(axisService, portType, fac);
 
 		for(final AxisOperation axisOperation: axisService.getOperations()) {
 			if (axisOperation.isControlOperation()
